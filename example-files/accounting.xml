@@ -1,0 +1,33 @@
+
+<root>
+    <voucher>
+      <calculationmode>net</calculationmode>
+      <!--calculationmode>gross</calculationmode-->
+      <voucherdate format="ansi">2018-06-11</voucherdate>
+      <!--number>1</number>-->
+      <description>Test Company Oy, invoice 1</description>
+      <voucherclass>Myyntilasku</voucherclass>
+      <voucherline>
+        <linesum type="net">-10000.00</linesum>
+        <description>Test Company Oy, invoice 1</description>
+        <accountnumber>3000</accountnumber>
+        <vatpercent vatcode="KOMY">24</vatpercent>
+        <dimension>
+          <dimensionname>Projects</dimensionname>
+          <dimensionitem>Project X</dimensionitem>
+        </dimension>
+      </voucherline>
+      <voucherline>
+        <linesum type="net">-5000</linesum>
+        <description>Test Company Oy, invoice 1</description>
+        <accountnumber>2939</accountnumber>
+        <vatpercent vatcode="NONE">0</vatpercent>
+      </voucherline>
+      <voucherline>
+        <linesum type="net">20000</linesum>
+        <description>Test Company Oy, invoice 1</description>
+        <accountnumber>1701</accountnumber>
+        <vatpercent vatcode="NONE">0</vatpercent>
+      </voucherline>
+    </voucher>
+</root>

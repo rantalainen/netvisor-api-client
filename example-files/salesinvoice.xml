@@ -1,0 +1,109 @@
+<root>
+    <salesInvoice>
+        <salesInvoiceNumber>103</salesInvoiceNumber>
+        <salesInvoiceDate format="ansi">2018-05-29</salesInvoiceDate>
+		<SalesInvoiceEventDate format="ansi">2018-05-01</SalesInvoiceEventDate >
+        <!--salesInvoiceValueDate format="ansi">2018-5-29</salesInvoiceValueDate-->
+        <salesInvoiceDueDate format="ansi">2018-5-29</salesInvoiceDueDate>
+        <salesInvoiceDeliveryDate format="ansi">2018-5-29</salesInvoiceDeliveryDate>
+        <!--salesInvoiceReferenceNumber>123456</salesInvoiceReferenceNumber-->
+        <salesInvoiceAmount iso4217currencyCode="USD" currencyRate="1,23">1240,00</salesInvoiceAmount>
+        <!--sellerIdentifier type="netvisor">1</sellerIdentifier-->
+        <!--sellerName>Sally Seller</sellerName-->
+        <invoiceType>invoice</invoiceType>
+        <salesInvoiceStatus type="netvisor">open</salesInvoiceStatus>
+        <salesInvoiceFreeTextBeforeLines>This text appears before invoice lines</salesInvoiceFreeTextBeforeLines>
+        <salesInvoiceFreeTextAfterLines>This text appears after invoice lines</salesInvoiceFreeTextAfterLines>
+        <salesInvoiceOurReference>Our reference</salesInvoiceOurReference>
+        <salesInvoiceYourReference>Your reference</salesInvoiceYourReference>
+        <salesInvoicePrivateComment>Private comment</salesInvoicePrivateComment>
+        <invoicingCustomeridentifier type="customer">101012</invoicingCustomeridentifier>
+        <invoicingCustomerName>Eric Example</invoicingCustomerName>
+        <invoicingCustomerNameExtension>Extension of name</invoicingCustomerNameExtension>
+        <invoicingCustomerAddressLine>Example street 1</invoicingCustomerAddressLine>
+        <invoicingCustomerAdditionalAddressLine>Additional address line</invoicingCustomerAdditionalAddressLine>
+        <invoicingCustomerPostNumber>00000</invoicingCustomerPostNumber>
+        <invoicingCustomerTown>Example</invoicingCustomerTown>
+        <invoicingCustomerCountryCode type="ISO-3316">FI</invoicingCustomerCountryCode>
+        <deliveryAddressName>Eric Example</deliveryAddressName>
+        <deliveryAddressLine>Example street 1</deliveryAddressLine>
+        <deliveryAddressPostNumber>00000</deliveryAddressPostNumber>
+        <deliveryAddressTown>Example</deliveryAddressTown>
+        <deliveryAddressCountryCode type="ISO-3316">FI</deliveryAddressCountryCode>
+        <deliveryMethod>Installed</deliveryMethod>
+        <deliveryTerm>According to the agreement</deliveryTerm>
+        <!--salesInvoiceTaxHandlingType>countrygroup</salesInvoiceTaxHandlingType-->
+        <!--paymentTermNetDays>14</paymentTermNetDays-->
+        <!--paymentTermCashDiscountDays>5</paymentTermCashDiscountDays-->
+        <!--paymentTermCashDiscount type="percentage">10</paymentTermCashDiscount-->
+        <!--expectPartialPayments mode="ignore_error">1</expectPartialPayments-->
+        <!--overrideVoucherSalesReceivablesAccountNumber>3000</overrideVoucherSalesReceivablesAccountNumber-->
+        <!--salesInvoiceAgreementIdentifier>123456</salesInvoiceAgreementIdentifier-->
+        <!--printChannelFormat type="netvisor">2</printChannelFormat-->
+        <!--secondName type="netvisor">123</secondName-->
+        <invoiceLines>
+            <invoiceLine> 
+                <salesInvoiceProductLine>
+                    <productIdentifier type="customer">0001</productIdentifier>
+                    <productName>Example product</productName>
+                    <productunitPrice type="net">12,40</productunitPrice>
+                    <!--productUnitPurchasePrice type="net">3,00</productUnitPurchasePrice-->
+                    <productVatPercentage vatcode="KOMY">24</productVatPercentage>
+                    <salesInvoiceProductLineQuantity>10</salesInvoiceProductLineQuantity>
+                    <!--salesInvoiceProductLineDiscountPercentage>5</salesInvoiceProductLineDiscountPercentage>
+                    <salesInvoiceProductLineFreeText>Free Text</salesInvoiceProductLineFreeText>
+                    <salesInvoiceProductLineVatSum>2,00</salesInvoiceProductLineVatSum>
+                    <salesInvoiceProductLineSum>9,00</salesInvoiceProductLineSum>
+					<salesinvoiceproductlineinventoryid>1</salesinvoiceproductlineinventoryid>
+                    <accountingAccountSuggestion>3000</accountingAccountSuggestion>
+                    <skipaccrual>0</skipaccrual-->
+                    <dimension>
+                        <dimensionName>Example Dimension</dimensionName>
+                        <dimensionItem>Example Dimension Item</dimensionItem>
+                    </dimension>
+					<accrualrule>
+						<startmonth>5</startmonth>
+						<startyear>2018</startyear>
+						<endmonth>12</endmonth>
+						<endyear>2018</endyear>
+					</accrualrule>
+					<productunitname>pcs</productunitname>
+                </salesInvoiceProductLine>
+            </invoiceLine>
+            <invoiceline>
+                <salesInvoiceCommentLine>
+                    <comment>comment</comment>
+                </salesInvoiceCommentLine>
+            </invoiceline>
+        </invoiceLines>
+        <invoicevoucherlines>
+            <voucherline>
+                <lineSum type="gross">12,40</lineSum>
+                <!--lineSum type="net">10,00</lineSum-->
+                <description>Description</description>
+                <accountNumber>3000</accountNumber>
+                <VatPercent vatcode="KOMY">24</VatPercent>
+                <!--skipaccrual>0</skipaccrual-->
+                    <dimension>
+                        <dimensionName>Example Dimension</dimensionName>
+                        <dimensionItem>Example Dimension Item</dimensionItem>
+                    </dimension>
+            </voucherline>
+        </invoicevoucherlines>
+		<!--accrualrule>
+			<startmonth>11</startmonth>
+            <startyear>2019</startyear>
+            <endmonth>12</endmonth>
+            <endyear>2019</endyear>
+        </accrualrule-->
+        <!--salesInvoiceAttachments>
+            <salesinvoiceattachment>
+                <mimeType>Application/pdf</mimeType>
+                <attachmentDescription>Description</attachmentDescription>
+                <fileName>attachment.pdf</fileName>
+                <documentData type="pdf">input encoded file</documentData>
+                <printByDefault>0</printByDefault>
+            </salesinvoiceattachment>
+        </salesInvoiceAttachments-->
+    </salesInvoice>
+</root>

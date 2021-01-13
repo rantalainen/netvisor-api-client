@@ -1,0 +1,21 @@
+<root>
+    <Payment>
+        <BankPaymentMessageType>FreeText</BankPaymentMessageType>
+        <BankPaymentMessage>Example</BankPaymentMessage>
+        <Recipient>
+        	<organizationcode>0000000-0</Organizationcode>
+            <Name>Eric Example</Name>
+            <address>Example Street 1</address>
+            <postcode>00000</postcode>
+            <town>Example</town>
+        </Recipient>
+        <SourceBankAccountNumber>FI5247620010056273</SourceBankAccountNumber>
+        <DestinationBankAccount>
+            <BankName>Nordea</BankName>
+            <BankBranch>NDEAFIHH</BankBranch>
+            <DestinationBankAccountNumber>FI4928926160002568</DestinationBankAccountNumber>
+        </DestinationBankAccount>
+        <DueDate>2018-05-15</DueDate>
+        <Amount>100,00</Amount>
+    </Payment>
+</Root>

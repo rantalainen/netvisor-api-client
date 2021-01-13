@@ -1,0 +1,34 @@
+<Root>
+	<AccountingBudget>
+		<Ratio type="account">3070</Ratio>
+		<Sum>35500</Sum>
+		<Year>2021</Year>
+		<Month>12</Month>
+		<Version>Budjetti 2021</Version>
+		<VatClass>0</VatClass>
+		<Combinations>
+			<Combination>
+				<CombinationSum>35000</CombinationSum>
+				<Dimension>
+					<DimensionName>1. Kustannuspaikka</DimensionName>
+					<DimensionItem>100 Kamppi</DimensionItem>
+				</Dimension>
+				<Dimension>
+					<DimensionName>2. Projekti</DimensionName>
+					<DimensionItem>1001 Netvisor</DimensionItem>
+				</Dimension>
+			</Combination>
+			<Combination>
+				<CombinationSum>500</CombinationSum>
+				<Dimension>
+					<DimensionName>1. Kustannuspaikka</DimensionName>
+					<DimensionItem>200 Myyrm�ki</DimensionItem>
+				</Dimension>
+				<Dimension>
+					<DimensionName>2. Projekti</DimensionName>
+					<DimensionItem>1002 Fivaldi</DimensionItem>
+				</Dimension>
+			</Combination>
+		</Combinations>
+	</AccountingBudget>
+</Root>
