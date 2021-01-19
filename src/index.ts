@@ -142,8 +142,6 @@ export class NetvisorApiClient {
 
     console.log(request);
 
-    //const result: any = await this._checkRequestStatus(request.body);
-
     return request;
   }
 
