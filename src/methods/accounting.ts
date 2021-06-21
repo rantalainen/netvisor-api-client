@@ -1,33 +1,29 @@
 import { NetvisorApiClient } from "..";
 import fs from 'fs';
 import path from 'path';
+import { NetvisorMethod } from "./_method";
 
-/*export interface INetvisorAccountingMethodsOptions {
-  [propName: string]: string;
-}*/
 
-export class NetvisorAccountingMethods {
-  private _client!: NetvisorApiClient;
-  private _endpointUri: string;
-
+export class NetvisorAccountingMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
-    Object.defineProperty(this, '_client', {
-      enumerable: false,
-      value: client
-    });
+    super(client);
 
     this._endpointUri = 'accounting.nv';
   }
-
+  
 
   /**
-   * Save vouchers to Netvisor accounting
-   * @param filePath Filepath
+   * Get vouchers from Netvisor accounting
+   * @param startDate mandatory
+   * @param endDate mandatory
    */
-  async saveVouchersByXmlFilePath(filePath: string, encoding: BufferEncoding = 'latin1') {
-    const fileContents = fs.readFileSync(filePath, { encoding });
+   async getVouchers(startDate: string, endDate: string) : Promise<any> {
 
-    return await this._client.post(this._endpointUri, fileContents);
+    const vouchers = await this._client.get(`accountingledger.nv`, {
+      startdate : startDate,
+      enddate : endDate
+    });
+    return vouchers;
   }
 
 }

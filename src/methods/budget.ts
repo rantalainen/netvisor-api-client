@@ -1,7 +1,7 @@
 import { NetvisorApiClient } from "..";
 import fs from 'fs';
 import path from 'path';
-import { NetvisorMethods } from "./_method";
+import { NetvisorMethod } from "./_method";
 import { DOMParser } from 'xmldom';
 var js2xmlparser = require('js2xmlparser');
 
@@ -31,7 +31,7 @@ export interface IAccountingBudgetDataSet {
 }
 
 
-export class NetvisorBudgetMethods extends NetvisorMethods {
+export class NetvisorBudgetMethod extends NetvisorMethod {
 
   constructor(client: NetvisorApiClient) {
     super(client);
@@ -56,15 +56,30 @@ export class NetvisorBudgetMethods extends NetvisorMethods {
 
   /**
    * Save one months budget / file to Netvisor
-   * @param filePath Filepath
+   * @param filePath
+   * @param checkDimensions true/false to produce errors if diemnsions are not found
    */
-  async saveBudgetByXmlFilePath(filePath: string, encoding: BufferEncoding = 'latin1') {
-    const fileContents = fs.readFileSync(filePath, { encoding });
-
-    console.log(fileContents);
-
+  async saveBudgetByXmlFilePath(filePath: string, encoding: BufferEncoding = 'latin1', checkDimensions?: boolean) {
+    
+    // Get dimensionlist from Netvisor
+    const dimensionListNv = await this._client.get('dimensionlist.nv');
     //Create a new DOMParser object.
     const domParser = new DOMParser();
+    
+    //Parse the XML string into an XMLDocument object
+    var xmlDocument = domParser.parseFromString(dimensionListNv);
+
+    // Get dimensions elements from xmlDocument
+    const parsedDimensions = xmlDocument.getElementsByTagName('Name');
+    
+    const nvDimensions = [];
+    
+    for (const item of Array.from(parsedDimensions)) {
+      nvDimensions.push(item?.firstChild?.nodeValue);
+    }
+    
+    
+    const fileContents = fs.readFileSync(filePath, { encoding });
     
     //Parse the XML string into an XMLDocument object
     var xmlDocument = domParser.parseFromString(fileContents);
@@ -72,19 +87,16 @@ export class NetvisorBudgetMethods extends NetvisorMethods {
     // Get dimensions elements from xmlDocument
     const dimensions = xmlDocument.getElementsByTagName('DimensionItem');
 
-    // Get dimensionlist from Netvisor
-    //const dimensions = await this._client.get('dimensionlist.nv');
-
     // Loop budget dimensions and compare to Netvisor dimensions
     for (const item of Array.from(dimensions)) {
       const dimensionValue = item?.firstChild?.nodeValue;
 
-      if (dimensionValue) {
-        console.log(dimensionValue);
+      if (!nvDimensions.includes(dimensionValue) && checkDimensions) {
+        throw new Error (`Dimension value ${dimensionValue} is not found from Netvisor`);
       }  
     }
 
-    //return await this._client.post(this._endpointUri, fileContents);
+    return await this._client.post(this._endpointUri, fileContents);
   }
 
 }

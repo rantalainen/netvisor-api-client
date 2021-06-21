@@ -1,11 +1,11 @@
-import got from 'got';
-import { NetvisorAccountingMethods } from './methods/accounting';
-import { NetvisorPaymentMethods } from './methods/payments';
-import { NetvisorSalesMethods } from './methods/sales';
-import { NetvisorBudgetMethods } from './methods/budget';
+import got, { Got, GotReturn } from 'got';
+import { NetvisorAccountingMethod } from './methods/accounting';
+import { NetvisorPaymentMethod } from './methods/payments';
+import { NetvisorSalesMethod } from './methods/salesinvoice';
+import { NetvisorBudgetMethod } from './methods/budget';
+import { NetvisorProductMethod } from './methods/product';
 import moment from 'moment';
 import crypto from 'crypto';
-import path from 'path';
 import * as xml2js from 'xml2js';
 
 export interface INetvisorApiClientOptions {
@@ -38,14 +38,17 @@ export interface INetvisorRequestHeaders {
 
 
 export class NetvisorApiClient {
+  [propName: string]: any;
   options: INetvisorApiClientOptions;
 
-  readonly accounting: NetvisorAccountingMethods;
-  readonly payments: NetvisorPaymentMethods;
-  readonly sales: NetvisorSalesMethods;
-  readonly budget: NetvisorBudgetMethods;
+  readonly accounting: NetvisorAccountingMethod;
+  readonly payments: NetvisorPaymentMethod;
+  readonly sales: NetvisorSalesMethod;
+  readonly budget: NetvisorBudgetMethod;
+  readonly product: NetvisorProductMethod;
 
   constructor(options: INetvisorApiClientOptions) {
+
     // Set default connect URI
     options.baseUri = options.baseUri || 'https://integration.netvisor.fi';
 
@@ -76,13 +79,11 @@ export class NetvisorApiClient {
       throw new Error('Missing options.organizationId');
     }
 
-    this.accounting = new NetvisorAccountingMethods(this);
-
-    this.payments = new NetvisorPaymentMethods(this);
-
-    this.sales = new NetvisorSalesMethods(this);
-
-    this.budget = new NetvisorBudgetMethods(this);
+    this.accounting = new NetvisorAccountingMethod(this);
+    this.payments = new NetvisorPaymentMethod(this);
+    this.sales = new NetvisorSalesMethod(this);
+    this.budget = new NetvisorBudgetMethod(this);
+    this.product = new NetvisorProductMethod(this);
 
     this.options = options;
   }
@@ -93,7 +94,7 @@ export class NetvisorApiClient {
       .digest('hex');
   }
 
-  _generateHeaders(url: string) : INetvisorRequestHeaders {
+  _generateHeaders(url: string, params?: any) : INetvisorRequestHeaders {
     const headers : INetvisorRequestHeaders = {
       'X-Netvisor-Authentication-Sender' : this.options.integrationName,
       'X-Netvisor-Authentication-CustomerId' : this.options.customerId,
@@ -106,6 +107,10 @@ export class NetvisorApiClient {
       'Content-Type' : 'text/xml'
     }
   
+    if (params) {
+      const queryString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
+      url = `${url}?${queryString}`;
+    }
 
     headers['X-Netvisor-Authentication-MAC'] = this._generateHeaderMAC(url, headers);
   
@@ -116,8 +121,9 @@ export class NetvisorApiClient {
     return new URL(endpointUri, this.options.baseUri).href;
   }
 
-  async post(endpointUri: string, body: string) {
+  async post(endpointUri: string, body: string) : Promise<string> {
     const url = this._generateUrl(endpointUri);
+
     const headers = this._generateHeaders(url);
 
     const request : any = await got.post(url, {
@@ -125,35 +131,48 @@ export class NetvisorApiClient {
       headers
     });
 
-    console.log(request.body);
+    try {
+      await this._checkRequestStatus(request.body);
 
-    const result: any = await this._checkRequestStatus(request.body);
-
-    return result;
+      return request.body;
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
-  async get(endpointUri: string) {
+  async get(endpointUri: string, params?: any) : Promise<string> {   
     const url = this._generateUrl(endpointUri);
-    const headers = this._generateHeaders(url);
 
-    const request : any = await got.get(url, {
-      headers
+    const headers = this._generateHeaders(url, params);
+
+    const request: any = await got(url, {
+      headers,
+      searchParams : params
     });
 
-    console.log(request);
+    try {
+      await this._checkRequestStatus(request.body);
 
-    return request;
+      return request.body;
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
-  _checkRequestStatus(request: any) {
+  _checkRequestStatus(request: any): Promise<any> {
     const xmlParser = new xml2js.Parser();
 
     return new Promise(async (resolve, reject) => {
       xmlParser.parseString(request, (error: string, xmlResult: any) => {
         if (error) return reject(error);
 
-        const status: any = xmlResult.Root.ResponseStatus[0].Status
-        resolve(status);
+        const status: any = xmlResult.Root.ResponseStatus[0].Status;
+
+        if (status[0] === 'OK') {
+          resolve(true);
+        } else {
+          reject(status[1]);
+        }
       });
     });
     

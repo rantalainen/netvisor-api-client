@@ -106,3 +106,5 @@ dist
 test.js
 nodemon.json
 dist/
+testData.csv
+testData.xml

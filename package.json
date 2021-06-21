@@ -12,7 +12,7 @@
     "url": "git+https://github.com/rantalainen/netvisor-api-client.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/rantalainen/netvisor-api-client/issues"
   },
@@ -31,9 +31,9 @@
     "form-data": "^3.0.0",
     "got": "^11.8.1",
     "js2xmlparser": "^4.0.1",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "xml2js": "^0.4.23",
-    "xmldom": "^0.4.0"
+    "xmldom": "^0.6.0"
   }
 }
