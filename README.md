@@ -25,7 +25,7 @@ const NetvisorApiClient = require('netvisor-api-client').NetvisorApiClient;
 import { NetvisorApiClient } from 'netvisor-api-client';
 ```
 
-### Setup client with option
+### Setup client
 
 * `integrationName` Name for integration that is visible in Netvisor UI (self defined)
 * `customerId` consult Netvisor (Header: X-Netvisor-Authentication-CustomerId)
@@ -49,10 +49,72 @@ const nvApiClient = new NetvisorApiClient({
 ## Methods (examples)
 
 ```javascript
+// Each resource type has saveByXmlData() and saveByXmlFilePath() posts (below examples with products):
+const data = = `<root>
+  <product>
+    <productbaseinformation>
+      <productcode>CC</productcode>
+      <productgroup>Books</productgroup>
+      <name>Code Complete 2</name>
+      <unitprice type="net">42,5</unitprice>
+      <unit>pcs</unit>
+      <isactive>1</isactive>
+      <issalesproduct>1</issalesproduct>
+      <inventoryenabled>1</inventoryenabled>
+    </productbaseinformation>
+    <productbookkeepingdetails>
+      <defaultvatpercentage>24</defaultvatpercentage>
+    </productbookkeepingdetails>
+  </product>
+</root>`
+await nvApiClient.products.saveByXmlData(data);
+
+const filepath = 'my\filepath\myfile.xml';
+await nvApiClient.products.saveByXmlFilePath(filepath);
+
 // Get vouchers by date
 const vouchers = await nvApiClient.accounting.getVouchers('2021-01-01', '2021-01-31');
 
-// TODO: documentation
+// Get products by keyword
+const products = await nvApiClient.products.getProducts('keyword');
+
+// Save budget by json dataset
+const data = {
+  AccountingBudget: {
+    Ratio: { '@': {type: 'account'}, '#': 4010 },
+    Sum: -1000,
+    Year: 2021,
+    Month: 02,
+    Version: 'Budjettiversio 1',
+    VatClass: 0,
+    Combinations: {
+      Combination: [
+        {
+          CombinationSum: -500,
+          Dimension: {
+            DimensionName: 'Projects',
+            DimensionItem: 'Project X'
+          }
+        }, 
+        { 
+          CombinationSum: -500,
+          Dimension: {
+            DimensionName: 'Projects',
+            DimensionItem: 'Project Y'
+          }
+        }
+      ]
+    }
+  }
+};
+await nvApiClient.budget.saveBudgetByDataSet(data);
+
+// Save budget from xml
+await nvApiClient.budget.saveBudgetByXmlFilePath(filePath);
+// Add errors for missing dimensions
+await nvApiClient.budget.saveBudgetByXmlFilePath(filePath, true);
+
+// More methods coming
 ```
 
 ## Changelog

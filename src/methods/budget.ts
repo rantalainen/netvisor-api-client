@@ -1,9 +1,8 @@
 import { NetvisorApiClient } from "..";
 import fs from 'fs';
-import path from 'path';
 import { NetvisorMethod } from "./_method";
 import { DOMParser } from 'xmldom';
-var js2xmlparser = require('js2xmlparser');
+const js2xmlparser = require('js2xmlparser');
 
 export interface IAccountingBudgetDataSet {
   AccountingBudget:{
@@ -18,13 +17,15 @@ export interface IAccountingBudgetDataSet {
     VatClass: number;
     Combinations?:{
       Combination?:[
-        CombinationSum: number,
-        Dimension?:[
-          {
-            DimensionName: string;
-            DimensionItem: string;
-          }
-        ]
+        {
+          CombinationSum: number,
+          Dimension?:[
+            {
+              DimensionName: string;
+              DimensionItem: string;
+            }
+          ]
+        }
       ]
     }
   }
@@ -44,8 +45,6 @@ export class NetvisorBudgetMethod extends NetvisorMethod {
    * @param dataset as IAccountingBudgetDataSet as budget object
    */
   async saveBudgetByDataSet(dataset: IAccountingBudgetDataSet) {
-    
-    console.log(dataset);
 
     const xml = js2xmlparser.parse('Root', dataset);
     console.log(xml.replace("<?xml version='1.0'?>",""));
@@ -59,7 +58,7 @@ export class NetvisorBudgetMethod extends NetvisorMethod {
    * @param filePath
    * @param checkDimensions true/false to produce errors if diemnsions are not found
    */
-  async saveBudgetByXmlFilePath(filePath: string, encoding: BufferEncoding = 'latin1', checkDimensions?: boolean) {
+  async saveBudgetByXmlFilePath(filePath: string, checkDimensions?: boolean, encoding: BufferEncoding = 'latin1') {
     
     // Get dimensionlist from Netvisor
     const dimensionListNv = await this._client.get('dimensionlist.nv');
