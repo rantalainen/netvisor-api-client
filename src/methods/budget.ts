@@ -47,7 +47,6 @@ export class NetvisorBudgetMethod extends NetvisorMethod {
   async saveBudgetByDataSet(dataset: IAccountingBudgetDataSet) {
 
     const xml = js2xmlparser.parse('Root', dataset);
-    console.log(xml.replace("<?xml version='1.0'?>",""));
     
     return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>",""));
   }

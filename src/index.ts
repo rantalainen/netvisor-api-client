@@ -121,14 +121,15 @@ export class NetvisorApiClient {
     return new URL(endpointUri, this.options.baseUri).href;
   }
 
-  async post(endpointUri: string, body: string) : Promise<string> {
+  async post(endpointUri: string, body: string, params?: any) : Promise<string> {
     const url = this._generateUrl(endpointUri);
 
-    const headers = this._generateHeaders(url);
+    const headers = this._generateHeaders(url, params);
 
     const request : any = await got.post(url, {
       body,
-      headers
+      headers, 
+      searchParams : params
     });
 
     try {

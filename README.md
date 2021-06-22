@@ -75,8 +75,8 @@ await nvApiClient.products.saveByXmlFilePath(filepath);
 // Get vouchers by date
 const vouchers = await nvApiClient.accounting.getVouchers('2021-01-01', '2021-01-31');
 
-// Get products by keyword
-const products = await nvApiClient.products.getProducts('keyword');
+// Get products by product code
+const products = await nvApiClient.products.getProducts('productCode');
 
 // Save budget by json dataset
 const data = {
@@ -120,3 +120,4 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath, true);
 ## Changelog
 
 0.0.1 Under development
+0.0.2 Under development
