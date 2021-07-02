@@ -67,16 +67,16 @@ const data = = `<root>
     </productbookkeepingdetails>
   </product>
 </root>`
-await nvApiClient.products.saveByXmlData(data);
+await nvApiClient.product.saveByXmlData(data);
 
 const filepath = 'my\filepath\myfile.xml';
-await nvApiClient.products.saveByXmlFilePath(filepath);
+await nvApiClient.product.saveByXmlFilePath(filepath);
 
 // Get vouchers by date
 const vouchers = await nvApiClient.accounting.getVouchers('2021-01-01', '2021-01-31');
 
 // Get products by product code
-const products = await nvApiClient.products.getProducts('productCode');
+const products = await nvApiClient.product.getProducts('productCode');
 
 // Save budget by json dataset
 const data = {
@@ -121,3 +121,4 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath, true);
 
 0.0.1 Under development
 0.0.2 Under development
+0.0.3 Added method saveInvoiceByDataSet in salesinvoice
