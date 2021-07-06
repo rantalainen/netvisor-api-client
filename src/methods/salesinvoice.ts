@@ -1,13 +1,13 @@
 import { NetvisorApiClient } from "..";
-import { NetvisorMethod, STRING_ANSI } from "./_method";
+import { NetvisorMethod } from "./_method";
 const js2xmlparser = require('js2xmlparser');
 
 export interface ISalesInvoice {
   salesInvoice: {
     salesInvoiceNumber: number,
-    salesInvoiceDate: { '@': {format: STRING_ANSI}, '#': string },
-    salesInvoiceEventDate: { '@': {format: STRING_ANSI}, '#': string },
-    salesInvoiceDueDate: { '@': {format: STRING_ANSI}, '#': string },
+    salesInvoiceDate: { '@': {format: string}, '#': string },
+    salesInvoiceEventDate: { '@': {format: string}, '#': string },
+    salesInvoiceDueDate: { '@': {format: string}, '#': string },
     salesInvoiceReferenceNumber: string,
     salesInvoiceAmount: string,
     invoiceType: string,

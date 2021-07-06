@@ -1,8 +1,6 @@
 import { NetvisorApiClient } from "..";
 import fs from 'fs';
 
-export type STRING_ANSI = 'ansi';
-
 export class NetvisorMethod {
   protected _client!: NetvisorApiClient;
   protected _endpointUri!: string;

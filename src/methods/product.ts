@@ -1,5 +1,5 @@
 import { NetvisorApiClient } from "..";
-import { NetvisorMethod, STRING_ANSI } from "./_method";
+import { NetvisorMethod } from "./_method";
 import * as xml2js from 'xml2js';
 const js2xmlparser = require('js2xmlparser');
 
@@ -52,7 +52,7 @@ export interface IWarehouseEvent {
   description: string;
   quantity: number;
   unitprice: number;
-  valuedate: { '@': {format: STRING_ANSI}, '#': string };
+  valuedate: { '@': {format: string}, '#': string };
   status: string;
 }
 
