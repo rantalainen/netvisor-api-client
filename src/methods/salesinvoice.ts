@@ -1,36 +1,40 @@
 import { NetvisorApiClient } from "..";
-import { NetvisorMethod } from "./_method";
+import { NetvisorMethod, STRING_ANSI } from "./_method";
 const js2xmlparser = require('js2xmlparser');
 
 export interface ISalesInvoice {
   salesInvoice: {
     salesInvoiceNumber: number,
-    salesInvoiceDate: { '@': {format: 'ansi'}, '#': string },
-    salesInvoiceEventDate: { '@': {format: 'ansi'}, '#': string },
-    salesInvoiceDueDate: { '@': {format: 'ansi'}, '#': string },
+    salesInvoiceDate: { '@': {format: STRING_ANSI}, '#': string },
+    salesInvoiceEventDate: { '@': {format: STRING_ANSI}, '#': string },
+    salesInvoiceDueDate: { '@': {format: STRING_ANSI}, '#': string },
     salesInvoiceReferenceNumber: string,
     salesInvoiceAmount: string,
     invoiceType: string,
-    salesInvoiceStatus: { '@': {type: 'netvisor'}, '#': string },
-    invoicingCustomeridentifier: { '@': {type: 'customer'}, '#': string },
+    salesInvoiceStatus: { '@': {type: string}, '#': string },
+    invoicingCustomeridentifier: { '@': {type: string}, '#': string },
     invoicingCustomerName: string,
     invoicingCustomerAddressLine: string,
     invoicingCustomerPostNumber: string,
     invoicingCustomerTown: string,
-    invoicingCustomerCountryCode: { '@': {type: 'ISO-3316'}, '#': string },
+    invoicingCustomerCountryCode: { '@': {type: string}, '#': string },
     invoiceLines: {
-      invoiceLine: {
-        salesInvoiceProductLine: {
-          productIdentifier: { '@': {type: 'customer'}, '#': string },
-          productName: string,
-          productunitPrice: { '@': {type: 'net'}, '#': number },
-          productVatPercentage: { '@': {vatcode: 'NONE'}, '#': number },
-          salesInvoiceProductLineQuantity: number
-        }
-      }
+      invoiceLine: [
+        ISalesInvoiceProductLine
+      ]
     }
   }
 };
+
+export interface ISalesInvoiceProductLine {
+  salesInvoiceProductLine: {
+    productIdentifier: { '@': {type: string}, '#': string },
+    productName: string,
+    productunitPrice: { '@': {type: string}, '#': number },
+    productVatPercentage: { '@': {vatcode: string}, '#': number },
+    salesInvoiceProductLineQuantity: number
+  }
+}
 
 
 export class NetvisorSalesMethod extends NetvisorMethod {
@@ -47,6 +51,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
    async saveInvoiceByDataSet(dataset: ISalesInvoice) {
 
     const xml = js2xmlparser.parse('Root', dataset);
+    console.log(xml)
     
     return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>",""));
   }

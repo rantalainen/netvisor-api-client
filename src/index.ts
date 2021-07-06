@@ -4,6 +4,7 @@ import { NetvisorPaymentMethod } from './methods/payments';
 import { NetvisorSalesMethod } from './methods/salesinvoice';
 import { NetvisorBudgetMethod } from './methods/budget';
 import { NetvisorProductMethod } from './methods/product';
+import { NetvisorPurchaseInvoiceMethod } from './methods/purchaseinvoice';
 import moment from 'moment';
 import crypto from 'crypto';
 import * as xml2js from 'xml2js';
@@ -46,6 +47,7 @@ export class NetvisorApiClient {
   readonly sales: NetvisorSalesMethod;
   readonly budget: NetvisorBudgetMethod;
   readonly product: NetvisorProductMethod;
+  readonly purchase: NetvisorPurchaseInvoiceMethod;
 
   constructor(options: INetvisorApiClientOptions) {
 
@@ -84,6 +86,7 @@ export class NetvisorApiClient {
     this.sales = new NetvisorSalesMethod(this);
     this.budget = new NetvisorBudgetMethod(this);
     this.product = new NetvisorProductMethod(this);
+    this.purchase = new NetvisorPurchaseInvoiceMethod(this);
 
     this.options = options;
   }
