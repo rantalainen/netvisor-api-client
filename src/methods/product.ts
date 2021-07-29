@@ -52,7 +52,7 @@ export interface IWarehouseEvent {
   description: string;
   quantity: number;
   unitprice: number;
-  valuedate: { '@': {format: string}, '#': string };
+  valuedate: string;
   status: string;
 }
 
@@ -159,7 +159,7 @@ export class NetvisorProductMethod extends NetvisorMethod {
    * Save inventory using inventory dataset
    * @param dataset as IInventory
    */
-   async saveInventoryByDataSet(dataset: IProductDataSet) {
+   async saveInventoryByDataSet(dataset: IInventory) {
 
     const xml = js2xmlparser.parse('Root', dataset);
     

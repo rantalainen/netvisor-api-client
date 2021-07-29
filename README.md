@@ -123,3 +123,5 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath, true);
 0.0.2 Under development
 0.0.3 Added method saveInvoiceByDataSet in salesinvoice
 0.0.4 Added methods: inventory in products and purchaseinvoice
+0.0.5 Type fix
+0.0.6 Type fix
