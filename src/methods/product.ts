@@ -40,7 +40,7 @@ export interface IInventory {
     description: string;
     reference: any;
     warehouseeventlines: {
-      warehouseeventline: [IWarehouseEvent]
+      warehouseeventline: Array<IWarehouseEvent>;
     }
   }
 }

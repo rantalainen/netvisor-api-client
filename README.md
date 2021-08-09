@@ -125,3 +125,4 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath, true);
 0.0.4 Added methods: inventory in products and purchaseinvoice
 0.0.5 Type fix
 0.0.6 Type fix
+0.0.7 Added method getSales in salesinvoice

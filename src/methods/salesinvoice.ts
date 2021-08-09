@@ -1,5 +1,6 @@
 import { NetvisorApiClient } from "..";
 import { NetvisorMethod } from "./_method";
+import * as xml2js from 'xml2js';
 const js2xmlparser = require('js2xmlparser');
 
 export interface ISalesInvoice {
@@ -19,9 +20,7 @@ export interface ISalesInvoice {
     invoicingCustomerTown: string,
     invoicingCustomerCountryCode: { '@': {type: string}, '#': string },
     invoiceLines: {
-      invoiceLine: [
-        ISalesInvoiceProductLine
-      ]
+      invoiceLine: Array<ISalesInvoiceProductLine>
     }
   }
 };
@@ -54,6 +53,92 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     console.log(xml)
     
     return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>",""));
+  }
+
+  // TODO; add types to params
+  async getSales( params: any ) {
+
+    const salesRaw = await this._client.get('salesinvoicelist.nv', params);
+
+    var parser = new xml2js.Parser();
+
+    const salesList: Array<any> = await new Promise(async (resolve, reject) => {
+      parser.parseString(salesRaw, (error: string, xmlResult: any) => {
+        if (error) return reject(error);
+
+        const status: any = xmlResult.Root.ResponseStatus[0].Status;
+        const json: any = xmlResult.Root.SalesInvoiceList[0].SalesInvoice;
+
+        if (status[0] === 'OK') {
+          resolve(json);
+        } else {
+          reject(status[1]);
+        }
+      });
+    });
+
+    const salesInvoiceKeys = [];
+    for (const item of salesList) {
+      salesInvoiceKeys.push(item.NetvisorKey[0]);
+    }
+
+    const salesInvoicesRaw = await this._client.get('getsalesinvoice.nv', {netvisorkeylist: salesInvoiceKeys.join(',')});
+
+    var parser = new xml2js.Parser();
+
+    const salesInvoices: Array<any> = await new Promise(async (resolve, reject) => {
+      parser.parseString(salesInvoicesRaw, (error: string, xmlResult: any) => {
+        if (error) return reject(error);
+
+        const status: any = xmlResult.Root.ResponseStatus[0].Status;
+
+        const json: any =  xmlResult.Root.SalesInvoices[0].SalesInvoice;
+
+        if (status[0] === 'OK') {
+          resolve(json);
+        } else {
+          reject(status[1]);
+        }
+      });
+    });
+    
+
+    const salesInvoiceList = [];
+    for (const item of salesInvoices) {
+
+      const invoiceRows = item.InvoiceLines[0].InvoiceLine[0].SalesInvoiceProductLine;
+      
+      /* if (item.InvoiceLines[0].InvoiceLine[0].ordernumber) {
+        console.log(item.InvoiceLines[0].InvoiceLine[0].ordernumber)
+      } */
+
+      for (const row of invoiceRows) {
+        for (const [key, value] of Object.entries(row)) {
+          if (Array.isArray(value)) {
+            row[key] = value[0];
+          }
+        }
+      }
+
+      const invoice = {
+        netvisorKey: item.SalesInvoiceNetvisorKey[0],
+        SalesInvoiceNumber: item.SalesInvoiceNumber[0],
+        invoiceDate: item.SalesInvoiceDate[0],
+        invoiceAmount: item.SalesInvoiceAmount[0],
+        seller: item.SellerIdentifier[0],
+        invoiceStatus: item.InvoiceStatus[0],
+        customerKey: item.InvoicingCustomerNetvisorKey[0],
+        customerName: item.InvoicingCustomerName[0],
+        customerAddress: item.InvoicingCustomerAddressline[0],
+        customerPostnumber: item.InvoicingCustomerPostnumber[0],
+        customerTown: item.InvoicingCustomerTown[0],
+        customerCountry: item.InvoicingCustomerCountryCode[0],
+        invoiceLines: invoiceRows
+      }
+      salesInvoiceList.push(invoice);
+    }
+
+    return salesInvoiceList;
   }
 
 }
