@@ -27,6 +27,7 @@ export interface IProductList {
   NetvisorKey: [ string ];
   ProductCode: [ string ];
   Name: [ string ];
+  ProductGroup: [ string ];
   UnitPrice: [ string ];
   UnitGrossPrice: [ string ];
   ProductGroupID: [ string ];
@@ -112,7 +113,8 @@ export class NetvisorProductMethod extends NetvisorMethod {
       const product = {
         netvisorKey: item.NetvisorKey[0],
         productCode: item.ProductCode[0],
-        name: item.Name[0]
+        name: item.Name[0],
+        group: item.ProductGroupDescription[0]
       }
       products.push(product);
     }

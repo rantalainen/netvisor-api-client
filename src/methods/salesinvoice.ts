@@ -55,7 +55,11 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>",""));
   }
 
-  // TODO; add types to params
+  /**
+   * Fetch sales or orders with invoicelines
+   * @param params use { listtype: '' } for invoices
+   * and { listtype: 'preinvoice' } for orders
+   */
   async getSales( params: any ) {
 
     const salesRaw = await this._client.get('salesinvoicelist.nv', params);
@@ -82,7 +86,10 @@ export class NetvisorSalesMethod extends NetvisorMethod {
       salesInvoiceKeys.push(item.NetvisorKey[0]);
     }
 
-    const salesInvoicesRaw = await this._client.get('getsalesinvoice.nv', {netvisorkeylist: salesInvoiceKeys.join(',')});
+    let salesInvoicesRaw = await this._client.get('getsalesinvoice.nv', {netvisorkeylist: salesInvoiceKeys.join(',')});
+    if (params.listtype == 'preinvoice') {
+      salesInvoicesRaw = await this._client.get('getorder.nv', {netvisorkeylist: salesInvoiceKeys.join(',')});
+    }
 
     var parser = new xml2js.Parser();
 
@@ -91,7 +98,6 @@ export class NetvisorSalesMethod extends NetvisorMethod {
         if (error) return reject(error);
 
         const status: any = xmlResult.Root.ResponseStatus[0].Status;
-
         const json: any =  xmlResult.Root.SalesInvoices[0].SalesInvoice;
 
         if (status[0] === 'OK') {
@@ -107,10 +113,6 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     for (const item of salesInvoices) {
 
       const invoiceRows = item.InvoiceLines[0].InvoiceLine[0].SalesInvoiceProductLine;
-      
-      /* if (item.InvoiceLines[0].InvoiceLine[0].ordernumber) {
-        console.log(item.InvoiceLines[0].InvoiceLine[0].ordernumber)
-      } */
 
       for (const row of invoiceRows) {
         for (const [key, value] of Object.entries(row)) {
@@ -120,11 +122,20 @@ export class NetvisorSalesMethod extends NetvisorMethod {
         }
       }
 
+      let currency = 'EUR';
+      let currencyRate = '1';
+      if ( !!item.SalesInvoiceAmount[0].$ ) {
+        currency = item.SalesInvoiceAmount[0].$.iso4217currencycode;
+        currencyRate = item.SalesInvoiceAmount[0].$.currencyrate;
+      }
+
       const invoice = {
         netvisorKey: item.SalesInvoiceNetvisorKey[0],
-        SalesInvoiceNumber: item.SalesInvoiceNumber[0],
+        salesInvoiceNumber: item.SalesInvoiceNumber[0],
         invoiceDate: item.SalesInvoiceDate[0],
         invoiceAmount: item.SalesInvoiceAmount[0],
+        currency: currency,
+        currencyRate: currencyRate,
         seller: item.SellerIdentifier[0],
         invoiceStatus: item.InvoiceStatus[0],
         customerKey: item.InvoicingCustomerNetvisorKey[0],
@@ -133,6 +144,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
         customerPostnumber: item.InvoicingCustomerPostnumber[0],
         customerTown: item.InvoicingCustomerTown[0],
         customerCountry: item.InvoicingCustomerCountryCode[0],
+        deliveryCountry: item.DeliveryAddressCountryCode[0],
         invoiceLines: invoiceRows
       }
       salesInvoiceList.push(invoice);
