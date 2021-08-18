@@ -1,6 +1,6 @@
 {
   "name": "netvisor-api-client",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Third party Netvisor API client.",
   "main": "dist/index.js",
   "scripts": {

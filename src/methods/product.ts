@@ -85,11 +85,11 @@ export class NetvisorProductMethod extends NetvisorMethod {
 
   /**
    * Get product list from Netvisor
-   * @param productCode to narrow search with product code
+   * @param params to narrow search with keyword or netvisor key
    */
-   async getProducts(productCode?: string) : Promise<any> {
+   async getProducts(params?: any) : Promise<any> {
 
-    const productsRaw = await this._client.get('productlist.nv', {keyword: productCode});
+    const productsRaw = await this._client.get('productlist.nv', params);
 
     var parser = new xml2js.Parser();
 
