@@ -75,12 +75,14 @@ export class NetvisorProductMethod extends NetvisorMethod {
   /**
    * Save one product as product object
    * @param dataset as IProductDataSet
+   * @param params as parameters with {method: add}
+   * if editing product {method: add/edit, id: netvisorkey}
    */
-   async saveProductByDataSet(dataset: IProductDataSet, method: string, key?: string ) {
+   async saveProductByDataSet(dataset: IProductDataSet, params: any ) {
 
     const xml = js2xmlparser.parse('Root', dataset);
-    
-    return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>",""), {method: method, id: key});
+
+    return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>",""), params);
   }
 
   /**
