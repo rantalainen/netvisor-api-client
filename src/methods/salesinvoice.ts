@@ -7,9 +7,9 @@ export interface ISalesInvoice {
   salesInvoice: {
     salesInvoiceNumber: number,
     salesInvoiceDate: { '@': {format: string}, '#': string },
-    salesInvoiceEventDate: { '@': {format: string}, '#': string },
+    salesInvoiceEventDate?: { '@': {format: string}, '#': string },
     salesInvoiceDueDate: { '@': {format: string}, '#': string },
-    salesInvoiceReferenceNumber: string,
+    salesInvoiceReferenceNumber?: string,
     salesInvoiceAmount: string,
     invoiceType: string,
     salesInvoiceStatus: { '@': {type: string}, '#': string },
@@ -22,6 +22,7 @@ export interface ISalesInvoice {
     invoiceLines: {
       invoiceLine: Array<ISalesInvoiceProductLine>
     }
+    [key: string]: any
   }
 };
 
@@ -29,9 +30,10 @@ export interface ISalesInvoiceProductLine {
   salesInvoiceProductLine: {
     productIdentifier: { '@': {type: string}, '#': string },
     productName: string,
-    productunitPrice: { '@': {type: string}, '#': number },
-    productVatPercentage: { '@': {vatcode: string}, '#': number },
-    salesInvoiceProductLineQuantity: number
+    productunitPrice?: { '@': {type: string}, '#': number },
+    productVatPercentage?: { '@': {vatcode: string}, '#': number },
+    salesInvoiceProductLineQuantity?: number
+    [key: string]: any
   }
 }
 
@@ -80,6 +82,11 @@ export class NetvisorSalesMethod extends NetvisorMethod {
         }
       });
     });
+
+    // salesList returns undefined if no sales in search criteria
+    if ( !salesList ) { 
+      return []
+    }
 
     const salesInvoiceKeys = [];
     for (const item of salesList) {
