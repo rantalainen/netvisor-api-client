@@ -139,7 +139,7 @@ export class NetvisorApiClient {
       await this._checkRequestStatus(request.body);
 
       return request.body;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(e);
     }
   }
@@ -158,7 +158,7 @@ export class NetvisorApiClient {
       await this._checkRequestStatus(request.body);
 
       return request.body;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(e);
     }
   }

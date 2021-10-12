@@ -1,5 +1,5 @@
-import { NetvisorApiClient } from "..";
-import { NetvisorMethod } from "./_method";
+import { NetvisorApiClient } from '..';
+import { NetvisorMethod } from './_method';
 import * as xml2js from 'xml2js';
 const js2xmlparser = require('js2xmlparser');
 
@@ -52,7 +52,6 @@ export class NetvisorSalesMethod extends NetvisorMethod {
    async saveInvoiceByDataSet(dataset: ISalesInvoice) {
 
     const xml = js2xmlparser.parse('Root', dataset);
-    console.log(xml)
     
     return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>",""));
   }
@@ -93,10 +92,9 @@ export class NetvisorSalesMethod extends NetvisorMethod {
       salesInvoiceKeys.push(item.NetvisorKey[0]);
     }
 
-    let salesInvoicesRaw = await this._client.get('getsalesinvoice.nv', {netvisorkeylist: salesInvoiceKeys.join(',')});
-    if (params.listtype == 'preinvoice') {
-      salesInvoicesRaw = await this._client.get('getorder.nv', {netvisorkeylist: salesInvoiceKeys.join(',')});
-    }
+    const resource = params.listtype == 'preinvoice' ? 'getorder.nv' : 'getsalesinvoice.nv'
+
+    const salesInvoicesRaw = await this._client.get(resource, {netvisorkeylist: salesInvoiceKeys.join(',')});
 
     var parser = new xml2js.Parser();
 
@@ -114,7 +112,6 @@ export class NetvisorSalesMethod extends NetvisorMethod {
         }
       });
     });
-    
 
     const salesInvoiceList = [];
     for (const item of salesInvoices) {

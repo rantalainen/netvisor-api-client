@@ -1,6 +1,6 @@
-import { NetvisorApiClient } from "..";
+import { NetvisorApiClient } from '..';
 import fs from 'fs';
-import { NetvisorMethod } from "./_method";
+import { NetvisorMethod } from './_method';
 import { DOMParser } from 'xmldom';
 const js2xmlparser = require('js2xmlparser');
 

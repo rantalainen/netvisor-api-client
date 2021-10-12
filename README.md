@@ -128,3 +128,4 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath, true);
 0.0.7 Added method getSales in salesinvoice
 0.0.8 Improvements to salesinvoice and products
 0.0.11 Fix undefined error (getSales) if zero results are found
+0.0.12 Minor fix in fetching orders
