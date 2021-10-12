@@ -103,7 +103,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
         if (error) return reject(error);
 
         const status: any = xmlResult.Root.ResponseStatus[0].Status;
-        const json: any =  xmlResult.Root.SalesInvoices[0].SalesInvoice;
+        const json = salesInvoiceKeys.length > 1 ? xmlResult.Root.SalesInvoices[0].SalesInvoice : xmlResult.Root.SalesInvoice;
 
         if (status[0] === 'OK') {
           resolve(json);
