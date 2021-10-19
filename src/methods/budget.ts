@@ -1,7 +1,6 @@
 import { NetvisorApiClient } from '..';
 import fs from 'fs';
 import { NetvisorMethod } from './_method';
-import { DOMParser } from 'xmldom';
 const js2xmlparser = require('js2xmlparser');
 
 export interface IAccountingBudgetDataSet {
@@ -41,58 +40,35 @@ export class NetvisorBudgetMethod extends NetvisorMethod {
   }
 
   /**
-   * Save one months budget / account to Netvisor
+   * Save one months budget / account to Netvisor (with dimensions)
    * @param dataset as IAccountingBudgetDataSet as budget object
    */
-  async saveBudgetByDataSet(dataset: IAccountingBudgetDataSet) {
+  async saveAccountingBudgetByDataSet(dataset: IAccountingBudgetDataSet) {
 
     const xml = js2xmlparser.parse('Root', dataset);
     
     return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>",""));
   }
 
+  /**
+   * Save one months budget / account to Netvisor (without dimensions)
+   * @param dataset as budget object
+   */
+   async saveAccountBudgetByDataSet(dataset: any) {
+
+    const xml = js2xmlparser.parse('Root', dataset);
+    
+    return await this._client.post('accountingbudgetaccountbudget.nv', xml.replace("<?xml version='1.0'?>",""));
+  }
+
 
   /**
-   * Save one months budget / file to Netvisor
+   * Save one months budget / file to Netvisor (with dimensions)
    * @param filePath
-   * @param checkDimensions true/false to produce errors if diemnsions are not found
    */
-  async saveBudgetByXmlFilePath(filePath: string, checkDimensions?: boolean, encoding: BufferEncoding = 'latin1') {
-    
-    // Get dimensionlist from Netvisor
-    const dimensionListNv = await this._client.get('dimensionlist.nv');
-    //Create a new DOMParser object.
-    const domParser = new DOMParser();
-    
-    //Parse the XML string into an XMLDocument object
-    var xmlDocument = domParser.parseFromString(dimensionListNv);
-
-    // Get dimensions elements from xmlDocument
-    const parsedDimensions = xmlDocument.getElementsByTagName('Name');
-    
-    const nvDimensions = [];
-    
-    for (const item of Array.from(parsedDimensions)) {
-      nvDimensions.push(item?.firstChild?.nodeValue);
-    }
-    
+  async saveAccountingBudgetByXmlFilePath(filePath: string, encoding: BufferEncoding = 'latin1') {
     
     const fileContents = fs.readFileSync(filePath, { encoding });
-    
-    //Parse the XML string into an XMLDocument object
-    var xmlDocument = domParser.parseFromString(fileContents);
-
-    // Get dimensions elements from xmlDocument
-    const dimensions = xmlDocument.getElementsByTagName('DimensionItem');
-
-    // Loop budget dimensions and compare to Netvisor dimensions
-    for (const item of Array.from(dimensions)) {
-      const dimensionValue = item?.firstChild?.nodeValue;
-
-      if (!nvDimensions.includes(dimensionValue) && checkDimensions) {
-        throw new Error (`Dimension value ${dimensionValue} is not found from Netvisor`);
-      }  
-    }
 
     return await this._client.post(this._endpointUri, fileContents);
   }

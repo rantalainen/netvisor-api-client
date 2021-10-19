@@ -111,8 +111,6 @@ await nvApiClient.budget.saveBudgetByDataSet(data);
 
 // Save budget from xml
 await nvApiClient.budget.saveBudgetByXmlFilePath(filePath);
-// Add errors for missing dimensions
-await nvApiClient.budget.saveBudgetByXmlFilePath(filePath, true);
 
 // More methods coming
 ```
@@ -120,12 +118,10 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath, true);
 ## Changelog
 
 0.0.1 Under development
-0.0.2 Under development
 0.0.3 Added method saveInvoiceByDataSet in salesinvoice
 0.0.4 Added methods: inventory in products and purchaseinvoice
-0.0.5 Type fix
-0.0.6 Type fix
 0.0.7 Added method getSales in salesinvoice
 0.0.8 Improvements to salesinvoice and products
 0.0.11 Fix undefined error (getSales) if zero results are found
 0.0.12-13 Minor fix in fetching orders
+0.0.14 Budgeting improvements + added methods: getBudgetAccountList and getDimensions in accounting
