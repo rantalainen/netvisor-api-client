@@ -8,9 +8,9 @@ export interface ISalesInvoice {
     salesInvoiceNumber: number,
     salesInvoiceDate: { '@': {format: string}, '#': string },
     salesInvoiceEventDate?: { '@': {format: string}, '#': string },
-    salesInvoiceDueDate: { '@': {format: string}, '#': string },
+    salesInvoiceDueDate?: { '@': {format: string}, '#': string },
     salesInvoiceReferenceNumber?: string,
-    salesInvoiceAmount: string,
+    salesInvoiceAmount?: string,
     invoiceType: string,
     salesInvoiceStatus: { '@': {type: string}, '#': string },
     invoicingCustomeridentifier: { '@': {type: string}, '#': string },
@@ -27,13 +27,16 @@ export interface ISalesInvoice {
 };
 
 export interface ISalesInvoiceProductLine {
-  salesInvoiceProductLine: {
+  salesInvoiceProductLine?: {
     productIdentifier: { '@': {type: string}, '#': string },
     productName: string,
     productunitPrice?: { '@': {type: string}, '#': number },
     productVatPercentage?: { '@': {vatcode: string}, '#': number },
     salesInvoiceProductLineQuantity?: number
     [key: string]: any
+  },
+  salesinvoicecommentline?: {
+    comment: string;
   }
 }
 
@@ -52,7 +55,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
    async saveInvoiceByDataSet(dataset: ISalesInvoice) {
 
     const xml = js2xmlparser.parse('Root', dataset);
-    
+
     return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>",""));
   }
 
