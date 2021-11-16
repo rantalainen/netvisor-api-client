@@ -1,5 +1,6 @@
 import got, { Got, GotReturn } from 'got';
 import { NetvisorAccountingMethod } from './methods/accounting';
+import { NetvisorCustomerMethod } from './methods/customers';
 import { NetvisorPaymentMethod } from './methods/payments';
 import { NetvisorSalesMethod } from './methods/salesinvoice';
 import { NetvisorBudgetMethod } from './methods/budget';
@@ -43,11 +44,12 @@ export class NetvisorApiClient {
   options: INetvisorApiClientOptions;
 
   readonly accounting: NetvisorAccountingMethod;
-  readonly payments: NetvisorPaymentMethod;
-  readonly sales: NetvisorSalesMethod;
   readonly budget: NetvisorBudgetMethod;
+  readonly customers: NetvisorCustomerMethod;
+  readonly payments: NetvisorPaymentMethod;
   readonly product: NetvisorProductMethod;
   readonly purchase: NetvisorPurchaseInvoiceMethod;
+  readonly sales: NetvisorSalesMethod;
 
   constructor(options: INetvisorApiClientOptions) {
 
@@ -82,11 +84,12 @@ export class NetvisorApiClient {
     }
 
     this.accounting = new NetvisorAccountingMethod(this);
-    this.payments = new NetvisorPaymentMethod(this);
-    this.sales = new NetvisorSalesMethod(this);
     this.budget = new NetvisorBudgetMethod(this);
+    this.customers = new NetvisorCustomerMethod(this);
+    this.payments = new NetvisorPaymentMethod(this);
     this.product = new NetvisorProductMethod(this);
     this.purchase = new NetvisorPurchaseInvoiceMethod(this);
+    this.sales = new NetvisorSalesMethod(this);
 
     this.options = options;
   }
