@@ -126,3 +126,4 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath);
 0.0.12-13 Minor fix in fetching orders
 0.0.14 Budgeting improvements + added methods: getBudgetAccountList and getDimensions in accounting
 0.0.16 Added customer methods
+0.0.17 Added check if no products are found in getProducts

@@ -110,6 +110,11 @@ export class NetvisorProductMethod extends NetvisorMethod {
       });
     });
 
+    // productList returns undefined if no products in search criteria
+    if ( !productList ) { 
+      return [];
+    }
+
     const products = [];
     for (const item of productList) {
       const product = {

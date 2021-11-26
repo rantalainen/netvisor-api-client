@@ -147,7 +147,7 @@ export class NetvisorApiClient {
     }
   }
 
-  async get(endpointUri: string, params?: any) : Promise<string> {   
+  async get(endpointUri: string, params?: any) : Promise<string> {
     const url = this._generateUrl(endpointUri);
 
     const headers = this._generateHeaders(url, params);
