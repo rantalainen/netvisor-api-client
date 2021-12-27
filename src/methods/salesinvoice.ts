@@ -5,46 +5,45 @@ const js2xmlparser = require('js2xmlparser');
 
 export interface ISalesInvoice {
   salesInvoice: {
-    salesInvoiceNumber: number,
-    salesInvoiceDate: { '@': {format: string}, '#': string },
-    salesInvoiceEventDate?: { '@': {format: string}, '#': string },
-    salesInvoiceDueDate?: { '@': {format: string}, '#': string },
-    salesInvoiceReferenceNumber?: string,
-    salesInvoiceAmount?: string,
-    invoiceType: string,
-    salesInvoiceStatus: { '@': {type: string}, '#': string },
-    invoicingCustomeridentifier: { '@': {type: string}, '#': string },
-    invoicingCustomerName: string,
-    invoicingCustomerAddressLine: string,
-    invoicingCustomerPostNumber: string,
-    invoicingCustomerTown: string,
-    invoicingCustomerCountryCode: { '@': {type: string}, '#': string },
+    salesInvoiceNumber: number;
+    salesInvoiceDate: { '@': { format: string }; '#': string };
+    salesInvoiceEventDate?: { '@': { format: string }; '#': string };
+    salesInvoiceDueDate?: { '@': { format: string }; '#': string };
+    salesInvoiceReferenceNumber?: string;
+    salesInvoiceAmount?: string;
+    invoiceType: string;
+    salesInvoiceStatus: { '@': { type: string }; '#': string };
+    invoicingCustomeridentifier: { '@': { type: string }; '#': string };
+    invoicingCustomerName: string;
+    invoicingCustomerAddressLine: string;
+    invoicingCustomerPostNumber: string;
+    invoicingCustomerTown: string;
+    invoicingCustomerCountryCode: { '@': { type: string }; '#': string };
     invoiceLines: {
-      invoiceLine: Array<ISalesInvoiceProductLine>
-    }
-    [key: string]: any
-  }
-};
+      invoiceLine: Array<ISalesInvoiceProductLine>;
+    };
+    [key: string]: any;
+  };
+}
 
 export interface ISalesInvoiceProductLine {
   salesInvoiceProductLine?: {
-    productIdentifier: { '@': {type: string}, '#': string },
-    productName: string,
-    productunitPrice?: { '@': {type: string}, '#': number },
-    productVatPercentage?: { '@': {vatcode: string}, '#': number },
-    salesInvoiceProductLineQuantity?: number
-    [key: string]: any
-  },
+    productIdentifier: { '@': { type: string }; '#': string };
+    productName: string;
+    productunitPrice?: { '@': { type: string }; '#': number };
+    productVatPercentage?: { '@': { vatcode: string }; '#': number };
+    salesInvoiceProductLineQuantity?: number;
+    [key: string]: any;
+  };
   salesinvoicecommentline?: {
     comment: string;
-  }
+  };
 }
-
 
 export class NetvisorSalesMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
     super(client);
-    
+
     this._endpointUri = 'salesinvoice.nv';
   }
 
@@ -52,11 +51,10 @@ export class NetvisorSalesMethod extends NetvisorMethod {
    * Save one invoice as a invoice object
    * @param dataset as ISalesInvoice
    */
-   async saveInvoiceByDataSet(dataset: ISalesInvoice) {
-
+  async saveInvoiceByDataSet(dataset: ISalesInvoice) {
     const xml = js2xmlparser.parse('Root', dataset);
 
-    return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>",""));
+    return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>", ''));
   }
 
   /**
@@ -64,8 +62,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
    * @param params use { listtype: '' } for invoices
    * and { listtype: 'preinvoice' } for orders
    */
-  async getSales( params: any ) {
-
+  async getSales(params: any) {
     const salesRaw = await this._client.get('salesinvoicelist.nv', params);
 
     var parser = new xml2js.Parser();
@@ -86,8 +83,8 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     });
 
     // salesList returns undefined if no sales in search criteria
-    if ( !salesList ) { 
-      return []
+    if (!salesList) {
+      return [];
     }
 
     const salesInvoiceKeys = [];
@@ -95,9 +92,10 @@ export class NetvisorSalesMethod extends NetvisorMethod {
       salesInvoiceKeys.push(item.NetvisorKey[0]);
     }
 
-    const resource = params.listtype == 'preinvoice' ? 'getorder.nv' : 'getsalesinvoice.nv'
+    const resource = params.listtype == 'preinvoice' ? 'getorder.nv' : 'getsalesinvoice.nv';
 
-    const salesInvoicesRaw = await this._client.get(resource, {netvisorkeylist: salesInvoiceKeys.join(',')});
+    const salesInvoicesRaw = await this._client.get(resource, { netvisorkeylist: salesInvoiceKeys.join(',') });
+    console.log(salesInvoicesRaw);
 
     var parser = new xml2js.Parser();
 
@@ -118,7 +116,6 @@ export class NetvisorSalesMethod extends NetvisorMethod {
 
     const salesInvoiceList = [];
     for (const item of salesInvoices) {
-
       const invoiceRows = item.InvoiceLines[0].InvoiceLine[0].SalesInvoiceProductLine;
 
       for (const row of invoiceRows) {
@@ -131,7 +128,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
 
       let currency = 'EUR';
       let currencyRate = '1';
-      if ( !!item.SalesInvoiceAmount[0].$ ) {
+      if (!!item.SalesInvoiceAmount[0].$) {
         currency = item.SalesInvoiceAmount[0].$.iso4217currencycode;
         currencyRate = item.SalesInvoiceAmount[0].$.currencyrate;
       }
@@ -153,11 +150,10 @@ export class NetvisorSalesMethod extends NetvisorMethod {
         customerCountry: item.InvoicingCustomerCountryCode[0],
         deliveryCountry: item.DeliveryAddressCountryCode[0],
         invoiceLines: invoiceRows
-      }
+      };
       salesInvoiceList.push(invoice);
     }
 
     return salesInvoiceList;
   }
-
 }

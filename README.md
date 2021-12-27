@@ -1,7 +1,8 @@
 # netvisor-api-client
+
 Third party Netvisor API client.
 
-:warning: This tool is in early stages and is subject to change. 
+:warning: This tool is in early stages and is subject to change.
 
 ## Installation
 
@@ -27,12 +28,12 @@ import { NetvisorApiClient } from 'netvisor-api-client';
 
 ### Setup client
 
-* `integrationName` Name for integration that is visible in Netvisor UI (self defined)
-* `customerId` consult Netvisor (Header: X-Netvisor-Authentication-CustomerId)
-* `customerKey` consult Netvisor
-* `partnerId` consult Netvisor (Header: X-Netvisor-Authentication-PartnerId)
-* `partnerKey` consult Netvisor
-* `organizationId` Oganization id for company
+- `integrationName` Name for integration that is visible in Netvisor UI (self defined)
+- `customerId` consult Netvisor (Header: X-Netvisor-Authentication-CustomerId)
+- `customerKey` consult Netvisor
+- `partnerId` consult Netvisor (Header: X-Netvisor-Authentication-PartnerId)
+- `partnerKey` consult Netvisor
+- `organizationId` Oganization id for company
 
 ```javascript
 const nvApiClient = new NetvisorApiClient({
@@ -43,7 +44,6 @@ const nvApiClient = new NetvisorApiClient({
   partnerKey: '',
   organizationId: '1234567-8'
 });
-
 ```
 
 ## Methods (examples)
@@ -95,8 +95,8 @@ const data = {
             DimensionName: 'Projects',
             DimensionItem: 'Project X'
           }
-        }, 
-        { 
+        },
+        {
           CombinationSum: -500,
           Dimension: {
             DimensionName: 'Projects',
@@ -123,7 +123,4 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath);
 0.0.7 Added method getSales in salesinvoice
 0.0.8 Improvements to salesinvoice and products
 0.0.11 Fix undefined error (getSales) if zero results are found
-0.0.12-13 Minor fix in fetching orders
-0.0.14 Budgeting improvements + added methods: getBudgetAccountList and getDimensions in accounting
-0.0.16 Added customer methods
-0.0.17 Added check if no products are found in getProducts
+0.0.12-0.0.18 Minor fixes and new methods

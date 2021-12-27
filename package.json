@@ -1,6 +1,9 @@
 {
-  "name": "netvisor-api-client",
-  "version": "0.0.17",
+  "name": "@rantalainen/netvisor-api-client",
+  "version": "0.0.18",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Third party Netvisor API client.",
   "main": "dist/index.js",
   "scripts": {
