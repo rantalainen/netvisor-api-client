@@ -1,7 +1,7 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod } from './_method';
 import * as xml2js from 'xml2js';
-const js2xmlparser = require('js2xmlparser');
+import * as js2xmlparser from 'js2xmlparser';
 
 export interface ISalesInvoice {
   salesInvoice: {

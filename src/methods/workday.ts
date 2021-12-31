@@ -1,7 +1,6 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod } from './_method';
-import * as xml2js from 'xml2js';
-const js2xmlparser = require('js2xmlparser');
+import * as js2xmlparser from 'js2xmlparser';
 
 type WorkdayMethod = 'replace' | 'increment';
 type EmployeeIdType = 'number' | 'personalidentificationnumber';
@@ -18,18 +17,18 @@ export interface IWorkday {
     employeeidentifier: { '@': { type: EmployeeIdType; defaultdimensionhandlingtype: DimensionHandling }; '#': string };
     workdayhour?: {
       hours: number;
-      collectorratio: { '@': { type: 'number' }; '#': number };
+      collectorratio: { '@': { type: string }; '#': number };
       acceptancestatus: AcceptanceStatus;
-      description?: string;
+      description: string;
       dimension?: Dimensions;
     };
     workdaytime?: {
       starttimeofday: 'HH:MM';
       endtimeofday: 'HH:MM';
-      breaktime?: { '@': { type: 'minutes' }; '#': number };
-      collectorratio?: { '@': { type: 'number' }; '#': number };
+      breaktime?: { '@': { type: string }; '#': number };
+      collectorratio?: { '@': { type: string }; '#': number };
       acceptancestatus: AcceptanceStatus;
-      description?: string;
+      description: string;
       dimension?: Dimensions;
     };
   };

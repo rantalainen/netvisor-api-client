@@ -1,7 +1,7 @@
-import { NetvisorApiClient } from "..";
-import { NetvisorMethod } from "./_method";
+import { NetvisorApiClient } from '..';
+import { NetvisorMethod } from './_method';
 import * as xml2js from 'xml2js';
-const js2xmlparser = require('js2xmlparser');
+import * as js2xmlparser from 'js2xmlparser';
 
 export interface IProductDataSet {
   Product: {
@@ -10,31 +10,32 @@ export interface IProductDataSet {
       productgroup: string;
       name: string;
       unitprice: {
-        '@': {type: string}, '#': number
+        '@': { type: string };
+        '#': number;
       };
       unit: string;
       isactive: number;
       issalesproduct: number;
       inventoryenabled: number;
-    }, 
+    };
     productbookkeepingdetails: {
       defaultvatpercentage: number;
-    }
-  }
-};
+    };
+  };
+}
 
 export interface IProductList {
-  NetvisorKey: [ string ];
-  ProductCode: [ string ];
-  Name: [ string ];
-  ProductGroup: [ string ];
-  UnitPrice: [ string ];
-  UnitGrossPrice: [ string ];
-  ProductGroupID: [ string ];
-  ProductGroupDescription: [ string ];
-  Uri: [ string ];
-  param? : any
-};
+  NetvisorKey: [string];
+  ProductCode: [string];
+  Name: [string];
+  ProductGroup: [string];
+  UnitPrice: [string];
+  UnitGrossPrice: [string];
+  ProductGroupID: [string];
+  ProductGroupDescription: [string];
+  Uri: [string];
+  param?: any;
+}
 
 export interface IInventory {
   warehouseevent: {
@@ -42,13 +43,13 @@ export interface IInventory {
     reference: any;
     warehouseeventlines: {
       warehouseeventline: Array<IWarehouseEvent>;
-    }
-  }
+    };
+  };
 }
 
 export interface IWarehouseEvent {
-  eventtype: { '@': {type: string}, '#': string };
-  product: { '@': {type: string}, '#': any };
+  eventtype: { '@': { type: string }; '#': string };
+  product: { '@': { type: string }; '#': any };
   inventoryplace?: string;
   description: string;
   quantity: number;
@@ -58,12 +59,12 @@ export interface IWarehouseEvent {
 }
 
 export interface IInventoryList {
-  NetvisorKey: [ string ];
-  Code: [ string ];
-  TotalAmount: [ string ];
-  Name: [ string ];
-  param? : any
-};
+  NetvisorKey: [string];
+  Code: [string];
+  TotalAmount: [string];
+  Name: [string];
+  param?: any;
+}
 
 export class NetvisorProductMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
@@ -78,19 +79,17 @@ export class NetvisorProductMethod extends NetvisorMethod {
    * @param params as parameters with {method: add}
    * if editing product {method: add/edit, id: netvisorkey}
    */
-   async saveProductByDataSet(dataset: IProductDataSet, params: any ) {
-
+  async saveProductByDataSet(dataset: IProductDataSet, params: any) {
     const xml = js2xmlparser.parse('Root', dataset);
 
-    return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>",""), params);
+    return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>", ''), params);
   }
 
   /**
    * Get product list from Netvisor
    * @param params to narrow search with keyword or netvisor key
    */
-   async getProducts(params?: any) : Promise<any> {
-
+  async getProducts(params?: any): Promise<any> {
     const productsRaw = await this._client.get('productlist.nv', params);
 
     var parser = new xml2js.Parser();
@@ -111,7 +110,7 @@ export class NetvisorProductMethod extends NetvisorMethod {
     });
 
     // productList returns undefined if no products in search criteria
-    if ( !productList ) { 
+    if (!productList) {
       return [];
     }
 
@@ -122,13 +121,12 @@ export class NetvisorProductMethod extends NetvisorMethod {
         productCode: item.ProductCode[0],
         name: item.Name[0],
         group: item.ProductGroupDescription[0]
-      }
+      };
       products.push(product);
     }
 
     return products;
   }
-
 
   async getInventory() {
     const inventoryRaw = await this._client.get('inventorybywarehouse.nv');
@@ -157,7 +155,7 @@ export class NetvisorProductMethod extends NetvisorMethod {
         productCode: item.Code[0],
         name: item.Name[0],
         totalAmount: item.TotalAmount[0]
-      }
+      };
       inventory.push(product);
     }
 
@@ -168,20 +166,17 @@ export class NetvisorProductMethod extends NetvisorMethod {
    * Save inventory using inventory dataset
    * @param dataset as IInventory
    */
-   async saveInventoryByDataSet(dataset: IInventory) {
-
+  async saveInventoryByDataSet(dataset: IInventory) {
     const xml = js2xmlparser.parse('Root', dataset);
-    
-    return await this._client.post('warehouseevent.nv', xml.replace("<?xml version='1.0'?>",""));
+
+    return await this._client.post('warehouseevent.nv', xml.replace("<?xml version='1.0'?>", ''));
   }
 
   /**
    * Save inventory with xml
    * @param fileContents xml data in string
    */
-   async saveInventoryByXmlData(fileContents: string) : Promise<any> {
-    
+  async saveInventoryByXmlData(fileContents: string): Promise<any> {
     return await this._client.post('warehouseevent.nv', fileContents);
   }
-
 }

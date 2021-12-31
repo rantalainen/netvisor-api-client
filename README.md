@@ -112,15 +112,15 @@ await nvApiClient.budget.saveBudgetByDataSet(data);
 // Save budget from xml
 await nvApiClient.budget.saveBudgetByXmlFilePath(filePath);
 
-// More methods coming
 ```
 
 ## Changelog
 
 0.0.1 Under development
-0.0.3 Added method saveInvoiceByDataSet in salesinvoice
-0.0.4 Added methods: inventory in products and purchaseinvoice
-0.0.7 Added method getSales in salesinvoice
+0.0.3 Added saveInvoiceByDataSet in salesinvoice
+0.0.4 Added purchaseinvoice and inventory in product
+0.0.7 Added getSales in salesinvoice
 0.0.8 Improvements to salesinvoice and products
 0.0.11 Fix undefined error (getSales) if zero results are found
-0.0.12-0.0.18 Minor fixes and new methods
+0.0.12-0.0.18 Minor fixes
+0.0.19 Added workday
