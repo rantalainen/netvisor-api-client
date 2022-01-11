@@ -19,7 +19,7 @@ export class NetvisorMethod {
    * @param fileContents xml data in string
    */
   async saveByXmlData(fileContents: string): Promise<any> {
-    return await this._client.post(this._endpointUri, fileContents);
+    return await this._client.post(this._endpointUri, fileContents, { method: 'add' });
   }
 
   /**

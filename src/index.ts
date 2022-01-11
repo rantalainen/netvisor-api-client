@@ -7,6 +7,7 @@ import { NetvisorBudgetMethod } from './methods/budget';
 import { NetvisorProductMethod } from './methods/product';
 import { NetvisorPurchaseInvoiceMethod } from './methods/purchaseinvoice';
 import { NetvisorWorkdayMethod } from './methods/workday';
+import { NetvisorEmployeeMethod } from './methods/employee';
 import moment from 'moment';
 import crypto from 'crypto';
 import * as xml2js from 'xml2js';
@@ -51,6 +52,7 @@ export class NetvisorApiClient {
   readonly purchase: NetvisorPurchaseInvoiceMethod;
   readonly sales: NetvisorSalesMethod;
   readonly workday: NetvisorWorkdayMethod;
+  readonly employee: NetvisorEmployeeMethod;
 
   constructor(options: INetvisorApiClientOptions) {
     // Set default connect URI
@@ -91,6 +93,7 @@ export class NetvisorApiClient {
     this.purchase = new NetvisorPurchaseInvoiceMethod(this);
     this.sales = new NetvisorSalesMethod(this);
     this.workday = new NetvisorWorkdayMethod(this);
+    this.employee = new NetvisorEmployeeMethod(this);
 
     this.options = options;
   }

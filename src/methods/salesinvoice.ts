@@ -95,7 +95,6 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     const resource = params.listtype == 'preinvoice' ? 'getorder.nv' : 'getsalesinvoice.nv';
 
     const salesInvoicesRaw = await this._client.get(resource, { netvisorkeylist: salesInvoiceKeys.join(',') });
-    console.log(salesInvoicesRaw);
 
     var parser = new xml2js.Parser();
 
