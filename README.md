@@ -124,4 +124,4 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath);
 0.0.11 Fix undefined error (getSales) if zero results are found
 0.0.12-0.0.18 Minor fixes
 0.0.19 Added workday
-0.0.20 Added employee
+0.1.0 Employee method with post employee and get getemployeesalaryparameters

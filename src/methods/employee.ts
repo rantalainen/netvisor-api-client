@@ -25,7 +25,7 @@ type SettlementPoint = { type: string; name: string };
 
 export interface IEmployee {
   employee: {
-    employeebaseinformation?: {
+    employeebaseinformation: {
       foreignemployeeidentification?: {
         identifier: { '@': { type: string }; '#': string };
         issuingcountry: { '@': { type: string }; '#': string };
@@ -33,21 +33,21 @@ export interface IEmployee {
         dateofbirth: string;
       };
       employeeidentifier?: string;
-      firstname?: string;
-      lastname?: string;
-      phonenumber?: string;
-      email?: string;
+      firstname: string;
+      lastname: string;
+      phonenumber: string;
+      email: string;
       [key: string]: any;
     };
-    employeepayrollinformation?: {
-      streetaddress?: string;
-      postnumber?: string;
-      city?: string;
+    employeepayrollinformation: {
+      streetaddress: string;
+      postnumber: string;
+      city: string;
       country?: string;
       nationality?: string;
       language?: string;
       employeenumber?: string;
-      payrollrulegroupname?: string;
+      payrollrulegroupname: string;
       bankaccountnumber?: string;
       bankidentificationcode?: string;
       accountingaccountnumber?: string;
@@ -87,5 +87,14 @@ export class NetvisorEmployeeMethod extends NetvisorMethod {
     const xml = js2xmlparser.parse('Root', dataset);
 
     return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>", ''), params);
+  }
+
+  /**
+   * Fetch employee salary parameters as xml
+   * @param employeeId as social security no or employee number
+   * @param identifiertype optional, defaults as 'pin' for social security no, use 'number' for employee number
+   */
+  async getEmployeeSalaryParameters(employeeId: string, identifiertype = 'pin') {
+    return await this._client.get('getemployeesalaryparameters.nv', { identifiertype, identifier: employeeId });
   }
 }
