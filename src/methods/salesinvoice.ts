@@ -115,7 +115,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
 
     const salesInvoiceList = [];
     for (const item of salesInvoices) {
-      const invoiceRows = item.InvoiceLines[0].InvoiceLine[0].SalesInvoiceProductLine;
+      const invoiceRows = !item.InvoiceLines ? [] : item.InvoiceLines[0].InvoiceLine[0].SalesInvoiceProductLine;
 
       for (const row of invoiceRows) {
         for (const [key, value] of Object.entries(row)) {

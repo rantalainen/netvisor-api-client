@@ -125,3 +125,4 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath);
 0.0.12-0.0.18 Minor fixes
 0.0.19 Added workday
 0.1.0 Employee method with post employee and get getemployeesalaryparameters
+0.1.1 Fix error in getSales if invoicelines are empty
