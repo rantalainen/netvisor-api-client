@@ -93,7 +93,8 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
         netvisorKey: item.Netvisorkey[0],
         name: item.Name[0],
         code: item.Code[0],
-        externalidentifier: item.OrganisationIdentifier[0]
+        externalidentifier: item.OrganisationIdentifier[0],
+        customerGroupName: item.CustomerGroupName[0]
       };
       customers.push(customer);
     }
