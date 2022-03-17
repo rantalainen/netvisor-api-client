@@ -128,3 +128,4 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath);
 0.1.1 Fix error in getSales if invoicelines are empty
 0.1.2 Reorganize employee dataset to meet Netvisor xml format requirements
 0.2.0 Added getProductByNetvisorKey
+0.3.0 Added getExtendedProducts

@@ -66,6 +66,26 @@ export interface IInventoryList {
   param?: any;
 }
 
+export interface IPriceGroup {
+  PriceGroupNetvisorKey: string;
+  PriceGroupName: string;
+  PriceGroupNetPrice: string;
+  PriceGroupGrossPrice: string;
+}
+
+export interface IExtendedProduct {
+  NetvisorKey: string;
+  ProductCode: string;
+  ProductPriceInformation: {
+    DefaultNetPrice: string;
+    DefaultGrossPrice: string;
+    DefaultVatPercent: string;
+    PriceMargin: string;
+    ProvisionPercentage: string;
+    PriceGroups: Array<IPriceGroup>;
+  };
+}
+
 export class NetvisorProductMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
     super(client);
@@ -124,6 +144,65 @@ export class NetvisorProductMethod extends NetvisorMethod {
         unitGrossPrice: item.UnitGrossPrice[0],
         group: item.ProductGroupDescription[0]
       };
+      products.push(product);
+    }
+
+    return products;
+  }
+
+  async getExtendedProducts(params?: any): Promise<IExtendedProduct[]> {
+    const productsRaw = await this._client.get('extendedproductlist.nv', params);
+
+    var parser = new xml2js.Parser();
+
+    const productList: Array<any> = await new Promise(async (resolve, reject) => {
+      parser.parseString(productsRaw, (error: string, xmlResult: any) => {
+        if (error) return reject(error);
+
+        const status: any = xmlResult.Root.ResponseStatus[0].Status;
+        const json: any = xmlResult.Root.Products[0].Product;
+
+        if (status[0] === 'OK') {
+          resolve(json);
+        } else {
+          reject(status[1]);
+        }
+      });
+    });
+
+    // productList returns undefined if no products in search criteria
+    if (!productList) {
+      return [];
+    }
+
+    const products = [];
+    for (const item of productList) {
+      const priceGroups = [];
+      if (!!item.ProductPriceInformation[0].PriceGroups[0].PriceGroup) {
+        for (const pg of item.ProductPriceInformation[0].PriceGroups[0].PriceGroup) {
+          const pgObj = {
+            PriceGroupNetvisorKey: pg.NetvisorKey[0],
+            PriceGroupName: pg.PriceGroupName[0],
+            PriceGroupNetPrice: pg.NetPrice[0],
+            PriceGroupGrossPrice: pg.GrossPrice[0]
+          };
+          priceGroups.push(pgObj);
+        }
+      }
+
+      const product: IExtendedProduct = {
+        NetvisorKey: item.NetvisorKey[0],
+        ProductCode: item.ProductCodes[0].ProductCode[0],
+        ProductPriceInformation: {
+          DefaultNetPrice: item.ProductPriceInformation[0].DefaultNetPrice[0],
+          DefaultGrossPrice: item.ProductPriceInformation[0].DefaultGrossPrice[0],
+          DefaultVatPercent: item.ProductPriceInformation[0].Vat[0].Percentage[0],
+          PriceMargin: item.ProductPriceInformation[0].PriceMargin[0],
+          ProvisionPercentage: item.ProductPriceInformation[0].ProvisionPercentage[0],
+          PriceGroups: priceGroups
+        }
+      };
+
       products.push(product);
     }
 

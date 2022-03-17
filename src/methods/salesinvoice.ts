@@ -10,7 +10,7 @@ export interface ISalesInvoice {
     salesInvoiceEventDate?: { '@': { format: string }; '#': string };
     salesInvoiceDueDate?: { '@': { format: string }; '#': string };
     salesInvoiceReferenceNumber?: string;
-    salesInvoiceAmount?: string;
+    salesInvoiceAmount?: string | { '@': { iso4217currencycode: string }; '#': string };
     invoiceType: string;
     salesInvoiceStatus: { '@': { type: string }; '#': string };
     invoicingCustomeridentifier: { '@': { type: string }; '#': string };
@@ -30,9 +30,9 @@ export interface ISalesInvoiceProductLine {
   salesInvoiceProductLine?: {
     productIdentifier: { '@': { type: string }; '#': string };
     productName: string;
-    productunitPrice?: { '@': { type: string }; '#': number };
-    productVatPercentage?: { '@': { vatcode: string }; '#': number };
-    salesInvoiceProductLineQuantity?: number;
+    productunitPrice?: { '@': { type: string }; '#': number | string };
+    productVatPercentage?: { '@': { vatcode: string }; '#': number | string };
+    salesInvoiceProductLineQuantity?: number | string;
     [key: string]: any;
   };
   salesinvoicecommentline?: {
