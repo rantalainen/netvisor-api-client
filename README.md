@@ -129,3 +129,4 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath);
 0.1.2 Reorganize employee dataset to meet Netvisor xml format requirements
 0.2.0 Added getProductByNetvisorKey
 0.3.0 Added getExtendedProducts
+0.4.0 Added getCustomerByNetvisorKey
