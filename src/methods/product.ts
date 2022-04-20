@@ -84,6 +84,12 @@ export interface IExtendedProduct {
     ProvisionPercentage: string;
     PriceGroups: Array<IPriceGroup>;
   };
+  ProductAccountInformation?: {
+    DefaultDomesticAccountNumber: string;
+    DefaultEuAccountNumber: string;
+    DefaultOutsideEUAccountNumber: string;
+    DefaultInventoryAccountNumber: string;
+  };
 }
 
 export class NetvisorProductMethod extends NetvisorMethod {
@@ -202,7 +208,14 @@ export class NetvisorProductMethod extends NetvisorMethod {
           PriceGroups: priceGroups
         }
       };
-
+      if (item.ProductAccountInformation) {
+        product.ProductAccountInformation = {
+          DefaultDomesticAccountNumber: item.ProductAccountInformation[0].DefaultDomesticAccountNumber[0],
+          DefaultEuAccountNumber: item.ProductAccountInformation[0].DefaultEuAccountNumber[0],
+          DefaultOutsideEUAccountNumber: item.ProductAccountInformation[0].DefaultOutsideEUAccountNumber[0],
+          DefaultInventoryAccountNumber: item.ProductAccountInformation[0].DefaultInventoryAccountNumber[0]
+        };
+      }
       products.push(product);
     }
 
