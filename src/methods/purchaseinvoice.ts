@@ -27,7 +27,7 @@ export interface IPurchaseInvoice {
     readyforaccounting?: string;
     primaryvendormatchtype: string;
     purchaseinvoicelines: {
-      purchaseinvoiceline: [IPurchaseInvoiceLine];
+      purchaseinvoiceline: IPurchaseInvoiceLine[];
     };
   };
 }
