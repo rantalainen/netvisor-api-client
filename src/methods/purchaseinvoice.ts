@@ -17,14 +17,14 @@ export interface IPurchaseInvoice {
     vendorpostnumber: string;
     vendorcity: string;
     vendorcountry: string;
-    amount: number;
-    accountnumber: string;
-    organizationidentifier: string;
+    amount?: number;
+    accountnumber?: string;
+    organizationidentifier?: string;
     bankreferencenumber: string;
     ourreference?: string;
     yourreference?: string;
     currencycode: string;
-    readyforaccounting: string;
+    readyforaccounting?: string;
     primaryvendormatchtype: string;
     purchaseinvoicelines: {
       purchaseinvoiceline: [IPurchaseInvoiceLine];
@@ -33,16 +33,14 @@ export interface IPurchaseInvoice {
 }
 
 export interface IPurchaseInvoiceLine {
-  purchaseinvoiceline: {
-    productcode: any;
-    productname: string;
-    deliveredamount: number;
-    unitprice: number;
-    vatpercent: number;
-    linesum: { '@': { type: string }; '#': number };
-    description: string;
-    accountingsuggestion: number;
-  };
+  productcode: any;
+  productname: string;
+  deliveredamount: number;
+  unitprice: number;
+  vatpercent: number;
+  linesum: { '@': { type: string }; '#': number };
+  description?: string;
+  accountingsuggestion?: number;
 }
 
 export class NetvisorPurchaseInvoiceMethod extends NetvisorMethod {

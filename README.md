@@ -130,3 +130,4 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath);
 0.2.0 Added getProductByNetvisorKey
 0.3.0 Added getExtendedProducts
 0.4.0 Added getCustomerByNetvisorKey
+0.5.0 Updated purchaseinvoice types
