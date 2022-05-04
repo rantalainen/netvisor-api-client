@@ -112,6 +112,9 @@ await nvApiClient.budget.saveBudgetByDataSet(data);
 // Save budget from xml
 await nvApiClient.budget.saveBudgetByXmlFilePath(filePath);
 
+// Get raw xml data (example with sales invoice but works with any get resource)
+await nvApiClient.sales.getXmlData('getsalesinvoice.nv', { netvisorkey: '123', pdfimage: 'nopdf', showcommentlines: '1' })
+
 ```
 
 ## Changelog
@@ -131,3 +134,4 @@ await nvApiClient.budget.saveBudgetByXmlFilePath(filePath);
 0.3.0 Added getExtendedProducts
 0.4.0 Added getCustomerByNetvisorKey
 0.5.0 Updated purchaseinvoice types
+0.6.0 Added getXmlData

@@ -23,6 +23,16 @@ export class NetvisorMethod {
   }
 
   /**
+   * Get the raw xml response from Netvisor with given resource.
+   * If none of the other methods work for your needs or you need the raw xml, use this.
+   * @param resource Integration resource endpoint, e.g. 'getsalesinvoice.nv' or 'getpurchaseinvoice.nv'
+   * @param params Parameters supported by the given resource endpoint. Check the supported parameters from Netvisor documentation.
+   */
+  async getXmlData(resource: string, params?: {}): Promise<string> {
+    return await this._client.get(resource, params);
+  }
+
+  /**
    * Save xml batch to Netvisor (e.g. invoice, voucher)
    * @param filePath path to xml file
    */

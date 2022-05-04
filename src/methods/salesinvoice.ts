@@ -29,7 +29,7 @@ export interface ISalesInvoice {
 export interface ISalesInvoiceProductLine {
   salesInvoiceProductLine?: {
     productIdentifier: { '@': { type: string }; '#': string };
-    productName?: string;
+    productName: string;
     productunitPrice?: { '@': { type: string }; '#': number | string };
     productVatPercentage?: { '@': { vatcode: string }; '#': number | string };
     salesInvoiceProductLineQuantity?: number | string;
