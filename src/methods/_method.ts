@@ -17,9 +17,10 @@ export class NetvisorMethod {
   /**
    * Save xml batch to Netvisor (e.g. invoice, voucher)
    * @param fileContents xml data in string
+   * @param options method for adding or editing data, plus other possible options
    */
-  async saveByXmlData(fileContents: string): Promise<any> {
-    return await this._client.post(this._endpointUri, fileContents, { method: 'add' });
+  async saveByXmlData(fileContents: string, options?: { method: 'add' }): Promise<any> {
+    return await this._client.post(this._endpointUri, fileContents, options);
   }
 
   /**
