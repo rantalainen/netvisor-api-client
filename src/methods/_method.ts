@@ -19,7 +19,8 @@ export class NetvisorMethod {
    * @param fileContents xml data in string
    * @param options method for adding or editing data, plus other possible options
    */
-  async saveByXmlData(fileContents: string, options?: { method: 'add' }): Promise<any> {
+  async saveByXmlData(fileContents: string, options?: {}): Promise<any> {
+    if (!options) options = { method: 'add' };
     return await this._client.post(this._endpointUri, fileContents, options);
   }
 
