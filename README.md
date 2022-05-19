@@ -137,3 +137,4 @@ await nvApiClient.sales.getXmlData('getsalesinvoice.nv', { netvisorkey: '123', p
 0.6.0 Added getXmlData
 0.6.1 Added ability to change method when using saveByXmlData
 0.6.2 Hotfix to parameter default value
+0.6.3 Added delivery data to get sales

@@ -147,6 +147,10 @@ export class NetvisorSalesMethod extends NetvisorMethod {
         customerPostnumber: item.InvoicingCustomerPostnumber[0],
         customerTown: item.InvoicingCustomerTown[0],
         customerCountry: item.InvoicingCustomerCountryCode[0],
+        deliveryAddressName: item.DeliveryAddressName[0],
+        deliveryAddressLine: item.DeliveryAddressLine[0],
+        deliveryAddressPostnumber: item.DeliveryAddressPostnumber[0],
+        deliveryAddressTown: item.DeliveryAddressTown[0],
         deliveryCountry: item.DeliveryAddressCountryCode[0],
         invoiceLines: invoiceRows
       };
