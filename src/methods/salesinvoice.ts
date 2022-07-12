@@ -159,11 +159,12 @@ export class NetvisorSalesMethod extends NetvisorMethod {
 
       const documents = !item.Documents ? '' : item.Documents[0];
       for (const [key, value] of Object.entries(documents)) {
+        console.log(documents);
         if (key === 'SalesInvoice') {
-          invoice['invoiceNumber'] = documents[0].InvoiceNumber[0];
+          invoice['invoiceNumber'] = documents.SalesInvoice[0].InvoiceNumber[0];
         }
         if (key === 'SalesOrder') {
-          invoice['orderNumber'] = documents[0].OrderNumber[0];
+          invoice['orderNumber'] = documents.SalesOrder[0].OrderNumber[0];
         }
       }
 
