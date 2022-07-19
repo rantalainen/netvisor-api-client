@@ -139,3 +139,4 @@ await nvApiClient.sales.getXmlData('getsalesinvoice.nv', { netvisorkey: '123', p
 0.6.2 Hotfix to parameter default value
 0.6.3 Added delivery data to get sales
 0.6.5 Added order - invoice link to get sales
+0.6.6 Split salesinvoices fetch into smaller pieces to allow fetching large amount of invoices

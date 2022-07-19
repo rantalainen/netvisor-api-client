@@ -92,28 +92,42 @@ export class NetvisorSalesMethod extends NetvisorMethod {
       salesInvoiceKeys.push(item.NetvisorKey[0]);
     }
 
+    // If salesList contains more than 100 -> must split salesinvoices fetch
+    const limit = 100;
+    let offset = 0;
+    const salesInvoices = [];
+
     const resource = params.listtype == 'preinvoice' ? 'getorder.nv' : 'getsalesinvoice.nv';
-    params['netvisorkeylist'] = salesInvoiceKeys.join(',');
 
-    const salesInvoicesRaw = await this._client.get(resource, params);
+    do {
+      const newArr = salesInvoiceKeys.slice(offset, limit + offset);
+      params['netvisorkeylist'] = newArr.join(',');
 
-    var parser = new xml2js.Parser();
+      const salesInvoicesRaw = await this._client.get(resource, params);
 
-    const salesInvoices: Array<any> = await new Promise(async (resolve, reject) => {
-      parser.parseString(salesInvoicesRaw, (error: string, xmlResult: any) => {
-        if (error) return reject(error);
+      var parser = new xml2js.Parser();
 
-        const status: any = xmlResult.Root.ResponseStatus[0].Status;
-        const json = salesInvoiceKeys.length > 1 ? xmlResult.Root.SalesInvoices[0].SalesInvoice : xmlResult.Root.SalesInvoice;
+      const salesInvoicesPart: Array<any> = await new Promise(async (resolve, reject) => {
+        parser.parseString(salesInvoicesRaw, (error: string, xmlResult: any) => {
+          if (error) return reject(error);
 
-        if (status[0] === 'OK') {
-          resolve(json);
-        } else {
-          reject(status[1]);
-        }
+          const status: any = xmlResult.Root.ResponseStatus[0].Status;
+          const json = salesInvoiceKeys.length > 1 ? xmlResult.Root.SalesInvoices[0].SalesInvoice : xmlResult.Root.SalesInvoice;
+
+          if (status[0] === 'OK') {
+            resolve(json);
+          } else {
+            reject(status[1]);
+          }
+        });
       });
-    });
 
+      salesInvoices.push(...salesInvoicesPart);
+
+      offset = offset + limit;
+    } while (offset < salesInvoiceKeys.length);
+
+    // Format invoicedata as simple JSON
     const salesInvoiceList = [];
     for (const item of salesInvoices) {
       const invoiceRows = !item.InvoiceLines ? [] : item.InvoiceLines[0].InvoiceLine[0].SalesInvoiceProductLine;
@@ -159,7 +173,6 @@ export class NetvisorSalesMethod extends NetvisorMethod {
 
       const documents = !item.Documents ? '' : item.Documents[0];
       for (const [key, value] of Object.entries(documents)) {
-        console.log(documents);
         if (key === 'SalesInvoice') {
           invoice['invoiceNumber'] = documents.SalesInvoice[0].InvoiceNumber[0];
         }
