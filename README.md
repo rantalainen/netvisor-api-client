@@ -141,3 +141,4 @@ await nvApiClient.sales.getXmlData('getsalesinvoice.nv', { netvisorkey: '123', p
 0.6.5 Added order - invoice link to get sales
 0.6.6 Split salesinvoices fetch into smaller pieces to allow fetching large amount of invoices
 0.6.7 Add more details to getSales
+0.7.0 Add tripexpense method

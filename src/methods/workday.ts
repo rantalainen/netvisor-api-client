@@ -23,8 +23,8 @@ export interface IWorkday {
       dimension?: Dimensions;
     };
     workdaytime?: {
-      starttimeofday: 'HH:MM';
-      endtimeofday: 'HH:MM';
+      starttimeofday: string;
+      endtimeofday: string;
       breaktime?: { '@': { type: string }; '#': number };
       collectorratio?: { '@': { type: string }; '#': number };
       acceptancestatus: AcceptanceStatus;
