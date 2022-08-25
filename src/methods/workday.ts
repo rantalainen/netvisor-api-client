@@ -34,6 +34,16 @@ export interface IWorkday {
   };
 }
 
+export interface IPayrollPeriodRecord {
+  date: { '@': { format: string }; '#': string };
+  employeeidentifier: { '@': { type: EmployeeIdType }; '#': string };
+  payrollratioline: {
+    amount: number;
+    payrollratio: { '@': { type: string }; '#': number };
+    dimension?: Dimensions | Dimensions[];
+  };
+}
+
 export class NetvisorWorkdayMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
     super(client);
@@ -49,5 +59,15 @@ export class NetvisorWorkdayMethod extends NetvisorMethod {
     const xml = js2xmlparser.parse('Root', dataset);
 
     return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>", ''));
+  }
+
+  /**
+   * Save payroll period record
+   * @param dataset as IPayrollPeriodRecord
+   */
+  async savePayrollPeriodRecordByDataSet(dataset: IPayrollPeriodRecord) {
+    const xml = js2xmlparser.parse('Root', { payrollperiodcollector: dataset });
+
+    return await this._client.post('payrollperiodcollector.nv', xml.replace("<?xml version='1.0'?>", ''));
   }
 }
