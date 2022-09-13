@@ -143,3 +143,4 @@ await nvApiClient.sales.getXmlData('getsalesinvoice.nv', { netvisorkey: '123', p
 0.6.7 Add more details to getSales
 0.7.0 Add tripexpense method
 0.8.0 Add savePayrollPeriodRecordByDataSet in workday method
+0.9.0 Add vendors method

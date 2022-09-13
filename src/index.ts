@@ -4,6 +4,7 @@ import { NetvisorCustomerMethod } from './methods/customers';
 import { NetvisorPaymentMethod } from './methods/payments';
 import { NetvisorSalesMethod } from './methods/salesinvoice';
 import { NetvisorBudgetMethod } from './methods/budget';
+import { NetvisorVendorMethod } from './methods/vendors';
 import { NetvisorProductMethod } from './methods/product';
 import { NetvisorPurchaseInvoiceMethod } from './methods/purchaseinvoice';
 import { NetvisorWorkdayMethod } from './methods/workday';
@@ -55,6 +56,7 @@ export class NetvisorApiClient {
   readonly workday: NetvisorWorkdayMethod;
   readonly employee: NetvisorEmployeeMethod;
   readonly tripexpense: NetvisorTripexpenseMethod;
+  readonly vendors: NetvisorVendorMethod;
 
   constructor(options: INetvisorApiClientOptions) {
     // Set default connect URI
@@ -97,6 +99,7 @@ export class NetvisorApiClient {
     this.workday = new NetvisorWorkdayMethod(this);
     this.employee = new NetvisorEmployeeMethod(this);
     this.tripexpense = new NetvisorTripexpenseMethod(this);
+    this.vendors = new NetvisorVendorMethod(this);
 
     this.options = options;
   }
