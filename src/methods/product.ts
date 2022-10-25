@@ -92,6 +92,29 @@ export interface IExtendedProduct {
   };
 }
 
+export interface IProduct {
+  ProductBaseInformation: {
+    NetvisorKey: string;
+    ProductCode: string;
+    Name: string;
+    UnitPrice: string;
+    UnitGrossPrice: string;
+    [key: string]: any;
+  };
+  ProductBookKeepingDetails: {
+    DefaultVatPercent: string;
+    DefaultDomesticAccountNumber: string;
+    DefaultEuAccountNumber: string;
+    DefaultOutsideEUAccountNumber: string;
+  };
+  ProductInventoryDetails?: {
+    InventoryAmount: string;
+    InventoryMidPrice: string;
+    InventoryValue: string;
+    [key: string]: any;
+  };
+}
+
 export class NetvisorProductMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
     super(client);
@@ -222,17 +245,22 @@ export class NetvisorProductMethod extends NetvisorMethod {
     return products;
   }
 
-  async getProductByNetvisorKey(netvisorKey: string) {
-    const productRaw = await this._client.get('getproduct.nv', { id: netvisorKey });
+  /**
+   * Get one or upto 400 product details
+   * @param netvisorKey as comma delimited string to fetch more than one product -> e.g. '1' or '1,2,3, ...' for product list
+   */
+  async getProductByNetvisorKey(netvisorKey: string): Promise<IProduct | IProduct[]> {
+    // idlist	1,2,3 -> Returns product details from all products, max. 400 ID
+    const productRaw = await this._client.get('getproduct.nv', { idlist: netvisorKey.replace(/\s+/g, '') });
 
     var parser = new xml2js.Parser();
 
-    const product: any = await new Promise(async (resolve, reject) => {
+    const products: any = await new Promise(async (resolve, reject) => {
       parser.parseString(productRaw, (error: string, xmlResult: any) => {
         if (error) return reject(error);
 
         const status: any = xmlResult.Root.ResponseStatus[0].Status;
-        const json: any = xmlResult.Root.Product[0];
+        const json: any = xmlResult.Root.Products ? xmlResult.Root.Products[0] : xmlResult.Root;
 
         if (status[0] === 'OK') {
           resolve(json);
@@ -242,43 +270,50 @@ export class NetvisorProductMethod extends NetvisorMethod {
       });
     });
 
-    // Clean product object by removing arrays from key values
-    const productOut = {
-      ProductBaseInformation: {
-        NetvisorKey: product.ProductBaseInformation[0].NetvisorKey[0],
-        ProductCode: product.ProductBaseInformation[0].ProductCode[0],
-        ProductGroup: product.ProductBaseInformation[0].ProductGroup[0],
-        Name: product.ProductBaseInformation[0].Name[0],
-        Description: product.ProductBaseInformation[0].Description[0],
-        UnitPrice: product.ProductBaseInformation[0].UnitPrice[0],
-        UnitGrossPrice: product.ProductBaseInformation[0].UnitGrossPrice[0],
-        Unit: product.ProductBaseInformation[0].Unit[0],
-        UnitWeight: product.ProductBaseInformation[0].UnitWeight[0],
-        KaukevaProductCode: product.ProductBaseInformation[0].KaukevaProductCode[0],
-        PurchasePrice: product.ProductBaseInformation[0].PurchasePrice[0],
-        TariffHeading: product.ProductBaseInformation[0].TariffHeading[0],
-        ComissionPercentage: product.ProductBaseInformation[0].ComissionPercentage[0],
-        IsActive: product.ProductBaseInformation[0].IsActive[0],
-        IsSalesProduct: product.ProductBaseInformation[0].IsSalesProduct[0],
-        IsStorageProduct: product.ProductBaseInformation[0].IsStorageProduct[0],
-        CountryOfOrigin: product.ProductBaseInformation[0].CountryOfOrigin[0]
-      },
-      ProductBookKeepingDetails: {
-        DefaultVatPercent: product.ProductBookKeepingDetails[0].DefaultVatPercent[0],
-        DefaultDomesticAccountNumber: product.ProductBookKeepingDetails[0].DefaultDomesticAccountNumber[0],
-        DefaultEuAccountNumber: product.ProductBookKeepingDetails[0].DefaultEuAccountNumber[0],
-        DefaultOutsideEUAccountNumber: product.ProductBookKeepingDetails[0].DefaultOutsideEUAccountNumber[0]
-      },
-      ProductInventoryDetails: {
-        InventoryAmount: product.ProductInventoryDetails[0].InventoryAmount[0],
-        InventoryMidPrice: product.ProductInventoryDetails[0].InventoryMidPrice[0],
-        InventoryValue: product.ProductInventoryDetails[0].InventoryValue[0],
-        InventoryReservedAmount: product.ProductInventoryDetails[0].InventoryReservedAmount[0],
-        InventoryOrderedAmount: product.ProductInventoryDetails[0].InventoryOrderedAmount[0],
-        InventoryAccountNumber: product.ProductInventoryDetails[0].InventoryAccountNumber[0]
-      }
-    };
+    const productOut: IProduct[] = [];
+    for (const product of products.Product) {
+      // Clean product object by removing arrays from key values
+      productOut.push({
+        ProductBaseInformation: {
+          NetvisorKey: product.ProductBaseInformation[0].NetvisorKey[0],
+          ProductCode: product.ProductBaseInformation[0].ProductCode[0],
+          ProductGroup: product.ProductBaseInformation[0].ProductGroup[0],
+          Name: product.ProductBaseInformation[0].Name[0],
+          Description: product.ProductBaseInformation[0].Description[0],
+          UnitPrice: product.ProductBaseInformation[0].UnitPrice[0],
+          UnitGrossPrice: product.ProductBaseInformation[0].UnitGrossPrice[0],
+          Unit: product.ProductBaseInformation[0].Unit[0],
+          UnitWeight: product.ProductBaseInformation[0].UnitWeight[0],
+          KaukevaProductCode: product.ProductBaseInformation[0].KaukevaProductCode[0],
+          PurchasePrice: product.ProductBaseInformation[0].PurchasePrice[0],
+          TariffHeading: product.ProductBaseInformation[0].TariffHeading[0],
+          ComissionPercentage: product.ProductBaseInformation[0].ComissionPercentage[0],
+          IsActive: product.ProductBaseInformation[0].IsActive[0],
+          IsSalesProduct: product.ProductBaseInformation[0].IsSalesProduct[0],
+          IsStorageProduct: product.ProductBaseInformation[0].IsStorageProduct[0],
+          CountryOfOrigin: product.ProductBaseInformation[0].CountryOfOrigin[0]
+        },
+        ProductBookKeepingDetails: {
+          DefaultVatPercent: product.ProductBookKeepingDetails[0].DefaultVatPercent[0],
+          DefaultDomesticAccountNumber: product.ProductBookKeepingDetails[0].DefaultDomesticAccountNumber[0],
+          DefaultEuAccountNumber: product.ProductBookKeepingDetails[0].DefaultEuAccountNumber[0],
+          DefaultOutsideEUAccountNumber: product.ProductBookKeepingDetails[0].DefaultOutsideEUAccountNumber[0]
+        },
+        ProductInventoryDetails: {
+          InventoryAmount: product.ProductInventoryDetails[0].InventoryAmount[0],
+          InventoryMidPrice: product.ProductInventoryDetails[0].InventoryMidPrice[0],
+          InventoryValue: product.ProductInventoryDetails[0].InventoryValue[0],
+          InventoryReservedAmount: product.ProductInventoryDetails[0].InventoryReservedAmount[0],
+          InventoryOrderedAmount: product.ProductInventoryDetails[0].InventoryOrderedAmount[0],
+          InventoryAccountNumber: product.ProductInventoryDetails[0].InventoryAccountNumber[0]
+        }
+      });
+    }
 
+    // Return object if requested only one product
+    if (productOut.length === 1) {
+      return productOut[0];
+    }
     return productOut;
   }
 

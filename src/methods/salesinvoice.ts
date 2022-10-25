@@ -14,11 +14,11 @@ export interface ISalesInvoice {
     invoiceType: string;
     salesInvoiceStatus: { '@': { type: string }; '#': string };
     invoicingCustomeridentifier: { '@': { type: string }; '#': string };
-    invoicingCustomerName: string;
-    invoicingCustomerAddressLine: string;
-    invoicingCustomerPostNumber: string;
-    invoicingCustomerTown: string;
-    invoicingCustomerCountryCode: { '@': { type: string }; '#': string };
+    invoicingCustomerName?: string;
+    invoicingCustomerAddressLine?: string;
+    invoicingCustomerPostNumber?: string;
+    invoicingCustomerTown?: string;
+    invoicingCustomerCountryCode?: { '@': { type: string }; '#': string };
     invoiceLines: {
       invoiceLine: Array<ISalesInvoiceProductLine>;
     };
