@@ -25,6 +25,8 @@ export interface INetvisorApiClientOptions {
 
   language?: string;
   baseUri?: string;
+  /** Request timeout in milliseconds, defaults to 120000 (120 secs) */
+  timeout?: number;
 }
 
 export interface INetvisorRequestHeaders {
@@ -61,6 +63,9 @@ export class NetvisorApiClient {
   constructor(options: INetvisorApiClientOptions) {
     // Set default connect URI
     options.baseUri = options.baseUri || 'https://integration.netvisor.fi';
+
+    // Set default timeout
+    options.timeout = options.timeout || 120000;
 
     // Set default language FI
     options.language = options.language || 'FI';
@@ -150,7 +155,10 @@ export class NetvisorApiClient {
     const request: any = await got.post(url, {
       body,
       headers,
-      searchParams: params
+      searchParams: params,
+      timeout: {
+        request: this.options.timeout
+      }
     });
 
     try {
@@ -169,7 +177,10 @@ export class NetvisorApiClient {
 
     const request: any = await got(url, {
       headers,
-      searchParams: params
+      searchParams: params,
+      timeout: {
+        request: this.options.timeout
+      }
     });
 
     try {
