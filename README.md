@@ -119,30 +119,30 @@ await nvApiClient.sales.getXmlData('getsalesinvoice.nv', { netvisorkey: '123', p
 
 ## Changelog
 
-0.0.1 Under development
-0.0.3 Added saveInvoiceByDataSet in salesinvoice
-0.0.4 Added purchaseinvoice and inventory in product
-0.0.7 Added getSales in salesinvoice
-0.0.8 Improvements to salesinvoice and products
-0.0.11 Fix undefined error (getSales) if zero results are found
-0.0.12-0.0.18 Minor fixes
-0.0.19 Added workday
-0.1.0 Employee method with post employee and get getemployeesalaryparameters
-0.1.1 Fix error in getSales if invoicelines are empty
-0.1.2 Reorganize employee dataset to meet Netvisor xml format requirements
-0.2.0 Added getProductByNetvisorKey
-0.3.0 Added getExtendedProducts
-0.4.0 Added getCustomerByNetvisorKey
-0.5.0 Updated purchaseinvoice types
-0.6.0 Added getXmlData
-0.6.1 Added ability to change method when using saveByXmlData
-0.6.2 Hotfix to parameter default value
-0.6.3 Added delivery data to get sales
-0.6.5 Added order - invoice link to get sales
-0.6.6 Split salesinvoices fetch into smaller pieces to allow fetching large amount of invoices
-0.6.7 Add more details to getSales
-0.7.0 Add tripexpense method
-0.8.0 Add savePayrollPeriodRecordByDataSet in workday method
-0.9.0 Add vendors method
-0.10.0 Allow getting multiple products with getProductWithNetvisorkey
-0.11.0 Implemented timeout option
+- 0.0.1 Under development
+- 0.0.3 Added saveInvoiceByDataSet in salesinvoice
+- 0.0.4 Added purchaseinvoice and inventory in product
+- 0.0.7 Added getSales in salesinvoice
+- 0.0.8 Improvements to salesinvoice and products
+- 0.0.11 Fix undefined error (getSales) if zero results are found
+- 0.0.12-0.0.18 Minor fixes
+- 0.0.19 Added workday
+- 0.1.0 Employee method with post employee and get getemployeesalaryparameters
+- 0.1.1 Fix error in getSales if invoicelines are empty
+- 0.1.2 Reorganize employee dataset to meet Netvisor xml format requirements
+- 0.2.0 Added getProductByNetvisorKey
+- 0.3.0 Added getExtendedProducts
+- 0.4.0 Added getCustomerByNetvisorKey
+- 0.5.0 Updated purchaseinvoice types
+- 0.6.0 Added getXmlData
+- 0.6.1 Added ability to change method when using saveByXmlData
+- 0.6.2 Hotfix to parameter default value
+- 0.6.3 Added delivery data to get sales
+- 0.6.5 Added order - invoice link to get sales
+- 0.6.6 Split salesinvoices fetch into smaller pieces to allow fetching large amount of invoices
+- 0.6.7 Add more details to getSales
+- 0.7.0 Add tripexpense method
+- 0.8.0 Add savePayrollPeriodRecordByDataSet in workday method
+- 0.9.0 Add vendors method
+- 0.10.0 Allow getting multiple products with getProductWithNetvisorkey
+- 0.11.0 Implemented timeout option
