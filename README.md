@@ -6,10 +6,10 @@ Third party Netvisor API client.
 
 ## Installation
 
-Install from npm (not available yet):
+Install from npm:
 
 ```
-npm install netvisor-api-client
+npm install @rantalainen/netvisor-api-client
 ```
 
 ## Setup
@@ -17,13 +17,13 @@ npm install netvisor-api-client
 ### Import to NodeJS project
 
 ```javascript
-const NetvisorApiClient = require('netvisor-api-client').NetvisorApiClient;
+const { NetvisorApiClient } = require('@rantalainen/netvisor-api-client');
 ```
 
 ### Import to TypeScript project
 
 ```javascript
-import { NetvisorApiClient } from 'netvisor-api-client';
+import { NetvisorApiClient } from '@rantalainen/netvisor-api-client';
 ```
 
 ### Setup client
