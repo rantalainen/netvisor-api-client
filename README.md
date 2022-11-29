@@ -146,3 +146,4 @@ await nvApiClient.sales.getXmlData('getsalesinvoice.nv', { netvisorkey: '123', p
 - 0.9.0 Add vendors method
 - 0.10.0 Allow getting multiple products with getProductWithNetvisorkey
 - 0.11.0 Implemented timeout option
+- 0.12.0 Add voucher by dataset
