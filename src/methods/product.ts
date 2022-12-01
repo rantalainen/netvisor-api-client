@@ -223,7 +223,7 @@ export class NetvisorProductMethod extends NetvisorMethod {
         NetvisorKey: item.NetvisorKey[0],
         ProductCode: item.ProductCodes[0].ProductCode[0],
         ProductPriceInformation: {
-          DefaultNetPrice: item.ProductPriceInformation[0].DefaultNetPrice[0],
+          DefaultNetPrice: item.ProductPriceInformation[0].DefaultNetPrice[0]['_'],
           DefaultGrossPrice: item.ProductPriceInformation[0].DefaultGrossPrice[0],
           DefaultVatPercent: item.ProductPriceInformation[0].Vat[0].Percentage[0],
           PriceMargin: item.ProductPriceInformation[0].PriceMargin[0],

@@ -1,6 +1,6 @@
 {
   "name": "@rantalainen/netvisor-api-client",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "publishConfig": {
     "access": "public"
   },

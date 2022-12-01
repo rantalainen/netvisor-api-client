@@ -147,3 +147,4 @@ await nvApiClient.sales.getXmlData('getsalesinvoice.nv', { netvisorkey: '123', p
 - 0.10.0 Allow getting multiple products with getProductWithNetvisorkey
 - 0.11.0 Implemented timeout option
 - 0.12.0 Add voucher by dataset
+- 0.12.1 Fixed getting ProductPriceInformation.DefaultNetPrice for function getExtendedProducts() to reflect changes Netvisor made to the response
