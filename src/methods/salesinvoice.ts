@@ -3,6 +3,30 @@ import { NetvisorMethod } from './_method';
 import * as xml2js from 'xml2js';
 import * as js2xmlparser from 'js2xmlparser';
 
+export interface ISalesPayment {
+  salespayment: {
+    sum: { '@': { currency: string }; '#': string };
+    paymentdate: string;
+    targetidentifier: { '@': { type: string; targettype: string }; '#': string };
+    sourcename: string;
+    paymentmethod: { '@': { type: string }; '#': string };
+    salespaymentvoucherlines?: { voucherline: IVoucherLine[] };
+  };
+}
+
+export interface IVoucherLine {
+  linesum: { '@': { type: string }; '#': string };
+  description?: string;
+  accountnumber: string;
+  vatpercent: { '@': { vatcode: string }; '#': number | string };
+  dimension?: IDimension[];
+}
+
+interface IDimension {
+  dimensionname: string;
+  dimensionitem: string;
+}
+
 export interface ISalesInvoice {
   salesInvoice: {
     salesInvoiceNumber?: number;
@@ -195,5 +219,17 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     }
 
     return salesInvoiceList;
+  }
+
+  /**
+   * Save one salespayment as a payment object
+   * @param dataset as ISalesPayment
+   */
+  async saveSalesPaymentByDataSet(dataset: ISalesPayment) {
+    const xml = js2xmlparser.parse('Root', dataset);
+
+    console.log(xml);
+
+    return await this._client.post('salespayment.nv', xml.replace("<?xml version='1.0'?>", ''));
   }
 }
