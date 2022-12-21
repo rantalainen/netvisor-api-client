@@ -228,8 +228,6 @@ export class NetvisorSalesMethod extends NetvisorMethod {
   async saveSalesPaymentByDataSet(dataset: ISalesPayment) {
     const xml = js2xmlparser.parse('Root', dataset);
 
-    console.log(xml);
-
     return await this._client.post('salespayment.nv', xml.replace("<?xml version='1.0'?>", ''));
   }
 }
