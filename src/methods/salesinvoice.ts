@@ -2,67 +2,7 @@ import { NetvisorApiClient } from '..';
 import { NetvisorMethod } from './_method';
 import * as xml2js from 'xml2js';
 import * as js2xmlparser from 'js2xmlparser';
-
-export interface ISalesPayment {
-  salespayment: {
-    sum: { '@': { currency: string }; '#': string };
-    paymentdate: string;
-    targetidentifier: { '@': { type: string; targettype: string }; '#': string };
-    sourcename: string;
-    paymentmethod: { '@': { type: string }; '#': string };
-    salespaymentvoucherlines?: { voucherline: IVoucherLine[] };
-  };
-}
-
-export interface IVoucherLine {
-  linesum: { '@': { type: string }; '#': string };
-  description?: string;
-  accountnumber: string;
-  vatpercent: { '@': { vatcode: string }; '#': number | string };
-  dimension?: IDimension[];
-}
-
-interface IDimension {
-  dimensionname: string;
-  dimensionitem: string;
-}
-
-export interface ISalesInvoice {
-  salesInvoice: {
-    salesInvoiceNumber?: number;
-    salesInvoiceDate: { '@': { format: string }; '#': string };
-    salesInvoiceEventDate?: { '@': { format: string }; '#': string };
-    salesInvoiceDueDate?: { '@': { format: string }; '#': string };
-    salesInvoiceReferenceNumber?: string;
-    salesInvoiceAmount?: string | { '@': { iso4217currencycode: string }; '#': string };
-    invoiceType: string;
-    salesInvoiceStatus: { '@': { type: string }; '#': string };
-    invoicingCustomeridentifier: { '@': { type: string }; '#': string };
-    invoicingCustomerName?: string;
-    invoicingCustomerAddressLine?: string;
-    invoicingCustomerPostNumber?: string;
-    invoicingCustomerTown?: string;
-    invoicingCustomerCountryCode?: { '@': { type: string }; '#': string };
-    invoiceLines: {
-      invoiceLine: Array<ISalesInvoiceProductLine>;
-    };
-    [key: string]: any;
-  };
-}
-
-export interface ISalesInvoiceProductLine {
-  salesInvoiceProductLine?: {
-    productIdentifier: { '@': { type: string }; '#': string };
-    productName: string;
-    productunitPrice?: { '@': { type: string }; '#': number | string };
-    productVatPercentage?: { '@': { vatcode: string }; '#': number | string };
-    salesInvoiceProductLineQuantity?: number | string;
-    [key: string]: any;
-  };
-  salesinvoicecommentline?: {
-    comment: string;
-  };
-}
+import { ISalesInvoice, ISalesPayment } from '../intefaces/salesinvoice';
 
 export class NetvisorSalesMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
@@ -116,6 +56,10 @@ export class NetvisorSalesMethod extends NetvisorMethod {
       salesInvoiceKeys.push(item.NetvisorKey[0]);
     }
 
+    return await this.getSalesInvoicesByNetvisorKeyList(salesInvoiceKeys, params);
+  }
+
+  async getSalesInvoicesByNetvisorKeyList(netvisorKeys: string[] | number[], params: any) {
     // If salesList contains more than 100 -> must split salesinvoices fetch
     const limit = 100;
     let offset = 0;
@@ -124,7 +68,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     const resource = params.listtype == 'preinvoice' ? 'getorder.nv' : 'getsalesinvoice.nv';
 
     do {
-      const newArr = salesInvoiceKeys.slice(offset, limit + offset);
+      const newArr = netvisorKeys.slice(offset, limit + offset);
       params['netvisorkeylist'] = newArr.join(',');
 
       const salesInvoicesRaw = await this._client.get(resource, params);
@@ -136,7 +80,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
           if (error) return reject(error);
 
           const status: any = xmlResult.Root.ResponseStatus[0].Status;
-          const json = salesInvoiceKeys.length > 1 ? xmlResult.Root.SalesInvoices[0].SalesInvoice : xmlResult.Root.SalesInvoice;
+          const json = newArr.length > 1 ? xmlResult.Root.SalesInvoices[0].SalesInvoice : xmlResult.Root.SalesInvoice;
 
           if (status[0] === 'OK') {
             resolve(json);
@@ -149,7 +93,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
       salesInvoices.push(...salesInvoicesPart);
 
       offset = offset + limit;
-    } while (offset < salesInvoiceKeys.length);
+    } while (offset < netvisorKeys.length);
 
     // Format invoicedata as simple JSON
     const salesInvoiceList = [];

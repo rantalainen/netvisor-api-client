@@ -13,6 +13,11 @@ import { NetvisorTripexpenseMethod } from './methods/tripexpense';
 import moment from 'moment';
 import crypto from 'crypto';
 import * as xml2js from 'xml2js';
+import { HttpsAgent } from 'agentkeepalive';
+import CacheableLookup from 'cacheable-lookup';
+
+const httpsAgent = new HttpsAgent();
+const cacheableLookup = new CacheableLookup();
 
 export interface INetvisorApiClientOptions {
   /** Integration name, sent as `X-Netvisor-Authentication-Sender` in requests */
@@ -27,6 +32,8 @@ export interface INetvisorApiClientOptions {
   baseUri?: string;
   /** Request timeout in milliseconds, defaults to 120000 (120 secs) */
   timeout?: number;
+
+  dnsCache?: CacheableLookup | boolean;
 }
 
 export interface INetvisorRequestHeaders {
@@ -107,6 +114,11 @@ export class NetvisorApiClient {
     this.vendors = new NetvisorVendorMethod(this);
 
     this.options = options;
+
+    // If dnsCache is true, then fallback to internal instance of cacheableLookup
+    if (this.options.dnsCache === true) {
+      this.options.dnsCache = cacheableLookup;
+    }
   }
 
   _generateHeaderMAC(url: string, headers: INetvisorRequestHeaders): string {
@@ -158,7 +170,10 @@ export class NetvisorApiClient {
       searchParams: params,
       timeout: {
         request: this.options.timeout
-      }
+      },
+
+      agent: { https: this.keepAliveAgent },
+      dnsCache: this.options.dnsCache || undefined
     });
 
     try {
@@ -180,7 +195,9 @@ export class NetvisorApiClient {
       searchParams: params,
       timeout: {
         request: this.options.timeout
-      }
+      },
+      agent: { https: this.keepAliveAgent },
+      dnsCache: this.options.dnsCache || undefined
     });
 
     try {

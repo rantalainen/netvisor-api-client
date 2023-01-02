@@ -35,6 +35,8 @@ import { NetvisorApiClient } from '@rantalainen/netvisor-api-client';
 - `partnerKey` consult Netvisor
 - `organizationId` Oganization id for company
 
+Since v1.4.0 allows using cacheable-lookup with either internal or external dns cache. Make sure you are using cacheable-lookup@5 which is compatible with got@11 that is used.
+
 ```javascript
 const nvApiClient = new NetvisorApiClient({
   integrationName: '',
@@ -43,6 +45,9 @@ const nvApiClient = new NetvisorApiClient({
   partnerId: '',
   partnerKey: '',
   organizationId: '1234567-8'
+
+  // optional - set to true if you want to use internal cache within Doks API Client
+  dnsCache: dnsCache
 });
 ```
 
@@ -149,3 +154,4 @@ await nvApiClient.sales.getXmlData('getsalesinvoice.nv', { netvisorkey: '123', p
 - 0.12.0 Add voucher by dataset
 - 0.12.1 Fixed getting ProductPriceInformation.DefaultNetPrice for function getExtendedProducts() to reflect changes Netvisor made to the response
 - 0.13.1 Add salespayment by dataset / Fix logging
+- 0.14.0 Add dns caching possibility with cacheableLookup, extend purchase method, minor fixes in getSales, group interfaces to separate folder

@@ -2,27 +2,7 @@ import { NetvisorApiClient } from '..';
 import * as xml2js from 'xml2js';
 import { NetvisorMethod } from './_method';
 import * as js2xmlparser from 'js2xmlparser';
-
-export interface INewVoucher {
-  calculationmode: string;
-  voucherdate: { '@': { format: string }; '#': string };
-  description?: string;
-  voucherclass: string;
-  voucherline: IVoucherLine[];
-}
-
-export interface IVoucherLine {
-  linesum: { '@': { type: string }; '#': string };
-  description?: string;
-  accountnumber: string;
-  vatpercent: { '@': { vatcode: string }; '#': number | string };
-  dimension?: IDimension[];
-}
-
-interface IDimension {
-  dimensionname: string;
-  dimensionitem: string;
-}
+import { INewVoucher } from '../intefaces/accounting';
 
 export class NetvisorAccountingMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {

@@ -1,36 +1,7 @@
 import { NetvisorApiClient } from '..';
 import * as xml2js from 'xml2js';
 import { NetvisorMethod } from './_method';
-
-export interface IVendor {
-  NetvisorKey: string;
-  VendorBaseInformation: {
-    Code: string;
-    Name: string;
-    Address: string;
-    PostCode: string;
-    City: string;
-    Country: string;
-    OrganizationId: string;
-    GroupName: string;
-    VendorBankAccounts: any;
-  };
-  VendorContactDetails: {
-    PhoneNumber: string;
-    Email: string;
-    FaxNumber: string;
-    ContactPersonName: string;
-    ContactPersonPhoneNumber: string;
-    ContactPersonEmail: string;
-    HomePage: string;
-    Comment: string;
-  };
-  VendorAdditionalInformation: {
-    DefaultVatPercent: string;
-    IsPartialVatReducePrivileged: string;
-    PaymentTerm: string;
-  };
-}
+import { IVendor } from '../intefaces/vendors';
 
 export class NetvisorVendorMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
