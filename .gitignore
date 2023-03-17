@@ -108,3 +108,4 @@ nodemon.json
 dist/
 testData.csv
 testData.xml
+example-files/

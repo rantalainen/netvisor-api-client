@@ -155,3 +155,4 @@ await nvApiClient.sales.getXmlData('getsalesinvoice.nv', { netvisorkey: '123', p
 - 0.12.1 Fixed getting ProductPriceInformation.DefaultNetPrice for function getExtendedProducts() to reflect changes Netvisor made to the response
 - 0.13.1 Add salespayment by dataset / Fix logging
 - 0.14.0 Add dns caching possibility with cacheableLookup, extend purchase method, minor fixes in getSales, group interfaces to separate folder
+- 0.15.0 Added GitHub Action workflow for automated npm publish
