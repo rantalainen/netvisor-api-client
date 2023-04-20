@@ -58,3 +58,14 @@ export interface ISalesInvoiceProductLine {
     comment: string;
   };
 }
+
+export interface ISalesInvoiceBatch {
+  salesinvoicebatch?: {
+    items: { item: ISalesInvoiceBatchItem[] };
+  };
+}
+
+export interface ISalesInvoiceBatchItem {
+  identifier: string | number;
+  itemdata: ISalesInvoice;
+}

@@ -2,7 +2,7 @@ import { NetvisorApiClient } from '..';
 import { NetvisorMethod } from './_method';
 import * as xml2js from 'xml2js';
 import * as js2xmlparser from 'js2xmlparser';
-import { ISalesInvoice, ISalesPayment } from '../intefaces/salesinvoice';
+import { ISalesInvoice, ISalesPayment, ISalesInvoiceBatch } from '../intefaces/salesinvoice';
 
 export class NetvisorSalesMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
@@ -157,6 +157,13 @@ export class NetvisorSalesMethod extends NetvisorMethod {
         if (key === 'SalesOrder') {
           invoice['orderNumber'] = documents.SalesOrder[0].OrderNumber[0];
         }
+
+        // if (key === 'SalesInvoice') {
+        //   invoice['SalesInvoice'] = documents.SalesInvoice;
+        // }
+        // if (key === 'SalesOrder') {
+        //   invoice['SalesOrder'] = documents.SalesOrder;
+        // }
       }
 
       salesInvoiceList.push(invoice);
@@ -173,5 +180,36 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     const xml = js2xmlparser.parse('Root', dataset);
 
     return await this._client.post('salespayment.nv', xml.replace("<?xml version='1.0'?>", ''));
+  }
+
+  /**
+   * Save invoice batch (max 500 invoices)
+   * @param dataset as array of invoices ISalesInvoice[]
+   */
+  async saveInvoiceBatchByDataSet(dataset: ISalesInvoice[]) {
+    if (dataset.length > 500) {
+      throw new Error(`Allowed max 500 invoices per batch (${dataset.length})`);
+    }
+
+    let identifier = 1;
+    const invoicesAsBatchItems = [];
+
+    for (const invoice of dataset) {
+      invoicesAsBatchItems.push({
+        identifier,
+        itemdata: invoice
+      });
+
+      identifier++;
+    }
+
+    const batch: ISalesInvoiceBatch = {
+      salesinvoicebatch: {
+        items: { item: invoicesAsBatchItems }
+      }
+    };
+    const xml = js2xmlparser.parse('Root', batch);
+
+    return await this._client.post('salesinvoicebatch.nv', xml.replace("<?xml version='1.0'?>", ''));
   }
 }
