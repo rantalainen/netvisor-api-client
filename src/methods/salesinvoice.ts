@@ -2,13 +2,104 @@ import { NetvisorApiClient } from '..';
 import { NetvisorMethod } from './_method';
 import * as xml2js from 'xml2js';
 import * as js2xmlparser from 'js2xmlparser';
-import { ISalesInvoice, ISalesPayment, ISalesInvoiceBatch } from '../intefaces/salesinvoice';
+import { SalesInvoiceListParameters, SalesInvoiceListItem, GetSalesInvoiceParameters, SalesInvoice } from '../intefaces/salesinvoice';
+
+function parseXml(xml: string) {
+  const xmlParser = new xml2js.Parser({ attrkey: 'attr', charkey: 'value', explicitArray: false, normalizeTags: true });
+  let xmlObject;
+  xmlParser.parseString(xml, (error: any, result: any) => {
+    const responseStatus = result?.root?.responsestatus?.status;
+    if (responseStatus === 'OK') {
+      xmlObject = result.root;
+      delete xmlObject.responsestatus;
+    }
+  });
+  return xmlObject;
+}
+
+function forceArray<T>(item: Array<T> | T): Array<T> {
+  return !Array.isArray(item) ? [item] : item;
+}
 
 export class NetvisorSalesMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
     super(client);
 
     this._endpointUri = 'salesinvoice.nv';
+  }
+
+  /**
+   * Get sales invoice list. Max 500 items per request.
+   * @returns {SalesInvoiceListItem[]} If no sales invoices were retrieved, salesInvoice array will be empty.
+   */
+  async salesInvoiceList(params?: SalesInvoiceListParameters): Promise<SalesInvoiceListItem[]> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('salesinvoicelist.nv', params);
+
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+    // Create the return object template
+    const salesInvoiceList: SalesInvoiceListItem[] = [];
+    // Add items to return object
+    if (xmlObject) {
+      forceArray(xmlObject.salesinvoicelist.salesinvoice).forEach((salesInvoice: any) => {
+        // Create template object with mandatory properties
+        const salesInvoiceTemplate: SalesInvoiceListItem = {
+          netvisorKey: salesInvoice.netvisorkey,
+          invoiceNumber: salesInvoice.invoicenumber,
+          invoiceDate: salesInvoice.invoicedate,
+          invoiceStatus: salesInvoice.invoicestatus,
+          customerCode: salesInvoice.customercode,
+          customerName: salesInvoice.customername,
+          referenceNumber: salesInvoice.referencenumber,
+          invoiceSum: parseFloat(salesInvoice.invoicesum.replace(',', '.')),
+          openSum: parseFloat(salesInvoice.opensum.replace(',', '.')),
+          uri: salesInvoice.Uri
+        };
+        // Convert isInCollection attribute to number
+        salesInvoiceTemplate.invoiceStatus.attr.isInCollection = parseInt(salesInvoice.invoicestatus.attr.isincollection);
+        // Add additional properties if they exist
+        if (salesInvoice.additionalinformation) {
+          // Copy the additional information as is
+          salesInvoiceTemplate.additionalInformation = salesInvoice.additionalinformation;
+          // Convert invoice currency sum to number if it exists
+          if (salesInvoice.additionalinformation.invoicecurrencysum && salesInvoiceTemplate.additionalInformation?.invoiceCurrencySum) {
+            salesInvoiceTemplate.additionalInformation.invoiceCurrencySum.value = parseFloat(
+              salesInvoice.additionalinformation.invoicecurrencysum.value.replace(',', '.')
+            );
+          }
+          // Convert open currency sum to number if it exists
+          if (salesInvoice.additionalinformation.opencurrencysum && salesInvoiceTemplate.additionalInformation?.invoiceCurrencySum) {
+            salesInvoiceTemplate.additionalInformation.invoiceCurrencySum.value = parseFloat(
+              salesInvoice.additionalinformation.opencurrencysum.value.replace(',', '.')
+            );
+          }
+        }
+
+        salesInvoiceList.push(salesInvoiceTemplate);
+      });
+    }
+    return salesInvoiceList;
+  }
+
+  /**
+   * Get a single sales invoice with netvisor key
+   * @params netvisorkey
+   */
+  async getSalesInvoice(params: GetSalesInvoiceParameters): Promise<SalesInvoice> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('getsalesinvoice.nv', params);
+
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+
+    // Create the return object template
+    let salesInvoice: SalesInvoice;
+
+    if (xmlObject) {
+      salesInvoice = {};
+    }
+    return salesInvoice;
   }
 
   /**
