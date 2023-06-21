@@ -2,7 +2,7 @@ import { NetvisorApiClient } from '..';
 import { NetvisorMethod } from './_method';
 import * as xml2js from 'xml2js';
 import * as js2xmlparser from 'js2xmlparser';
-import { ICustomer, ICustomerList, INvCustomer } from '../intefaces/customers';
+import { ICustomer, ICustomerList, INvCustomer } from '../interfaces/customers';
 
 export class NetvisorCustomerMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
@@ -33,7 +33,7 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
     var parser = new xml2js.Parser();
 
     const customerList: Array<any> = await new Promise(async (resolve, reject) => {
-      parser.parseString(customersRaw, (error: string, xmlResult: any) => {
+      parser.parseString(customersRaw, (error, xmlResult) => {
         if (error) return reject(error);
 
         const status: any = xmlResult.Root.ResponseStatus[0].Status;
@@ -77,7 +77,7 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
     var parser = new xml2js.Parser();
 
     const _customer: any = await new Promise(async (resolve, reject) => {
-      parser.parseString(customerRaw, (error: string, xmlResult: any) => {
+      parser.parseString(customerRaw, (error, xmlResult) => {
         if (error) return reject(error);
 
         const status: any = xmlResult.Root.ResponseStatus[0].Status;
