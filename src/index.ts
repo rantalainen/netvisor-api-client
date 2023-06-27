@@ -1,14 +1,13 @@
 import got, { Got, GotReturn } from 'got';
 import { NetvisorCustomerMethod } from './methods/customers';
 import { NetvisorPaymentMethod } from './methods/payments';
-import { NetvisorSalesMethod } from './methods/salesinvoice';
+import { NetvisorSalesMethod } from './methods/salesinvoices';
+import { NetvisorDimensionMethod } from './methods/dimensions';
 import moment from 'moment';
 import crypto from 'crypto';
 import * as xml2js from 'xml2js';
-import { HttpsAgent } from 'agentkeepalive';
 import CacheableLookup from 'cacheable-lookup';
 
-const httpsAgent = new HttpsAgent();
 const cacheableLookup = new CacheableLookup();
 
 export interface NetvisorApiClientOptions {
@@ -50,6 +49,7 @@ export class NetvisorApiClient {
   readonly customers: NetvisorCustomerMethod;
   readonly payments: NetvisorPaymentMethod;
   readonly sales: NetvisorSalesMethod;
+  readonly dimensions: NetvisorDimensionMethod;
 
   constructor(options: NetvisorApiClientOptions) {
     // Set default connect URI
@@ -88,6 +88,7 @@ export class NetvisorApiClient {
     this.customers = new NetvisorCustomerMethod(this);
     this.payments = new NetvisorPaymentMethod(this);
     this.sales = new NetvisorSalesMethod(this);
+    this.dimensions = new NetvisorDimensionMethod(this);
 
     this.options = options;
 

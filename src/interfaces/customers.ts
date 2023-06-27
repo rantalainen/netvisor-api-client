@@ -1,70 +1,279 @@
-export interface ICustomerList {
-  netvisorKey: string;
+/*
+ * RESOURCE
+ * customerlist.nv
+ */
+
+export interface CustomerListParameters {
+  /**
+   * Suodattaa listaa annetulla keywordillä. Palauttaa listalle ne asiakkaat, joilta löytyy keyword.
+   * Osumaa etsitään kentistä Nimi, Asiakasnumero, Y-tunnus, CoNimi. Jos keyword parametri on annettu, changedsince jätetään huomioimatta.
+   */
+  keyword?: string;
+  /** Suodattaa asiakkuudet, joissa muutoksia annetun päivämäärän jälkeen. Päivämäärä muodossa YYYY-MM-DDTHH:mm:ss */
+  changedSince?: string;
+  /**
+   * Pilkkueroteltu lista asiakaskoodeja, jonka mukaan suodattaa palautettavat asiakkaat. Lista saa sisältää enintään 100 alfanumeerista asiakaskoodia.
+   * Huom! Keyword-parametrin voi antaa customercodelist-parametrin kanssa. Tällöin resurssi palauttaa ne asiakkaat, joilla on listalta löytyvä asiakaskoodi
+   * JA keyword jossain keywordin etsimässä kentässä.
+   */
+  customerCodeList?: string;
+}
+
+export interface CustomerListItem {
+  netvisorKey: number;
   name: string;
   code: string;
-  externalidentifier: string;
-  param?: any;
+  organisationIdentifier: string;
+  customerGroupID: number | null;
+  customerGroupName: string;
+  uri: string;
 }
 
-export interface ICustomer {
-  customer: {
-    customerbaseinformation: {
-      internalidentifier: string;
-      externalidentifier?: string;
-      name: string;
-      streetaddress: string;
-      city: string;
-      postnumber: string;
-      country: {
-        '@': { type: string };
-        '#': string;
-      };
-      emailinvoicingaddress?: string;
+/*
+ * RESOURCE
+ * getcustomer.nv
+ */
 
-      param?: any;
-    };
-
-    customerfinvoicedetails?: {
-      finvoiceaddress: string;
-      finvoiceroutercode: string;
-    };
-
-    param?: any;
-  };
+export interface GetCustomerParameters {
+  /** Haettavan asiakkaan NetvisorKey eli ID */
+  id?: number;
+  /** Palauttaa yhdessä pyynnössä täydet tiedot kaikista halutuista asiakkaista, max. 500 ID:tä */
+  idList?: string;
+  /** Palauttaa tiedot asiakkaan myyntisaamisten kiertoajoista */
+  replyOption?: 1;
 }
 
-export interface INvCustomer {
+export interface GetCustomer {
   customerBaseInformation: {
-    NetvisorKey?: string;
-    InternalIdentifier?: string;
-    ExternalIdentifier?: string;
-    OrganizationUnitNumber?: string;
-    Name?: string;
-    NameExtension?: string;
-    StreetAddress?: string;
-    AdditionalStreetAddress?: string;
-    City?: string;
-    PostNumber?: string;
-    Country?: string;
-    Email?: string;
-    EmailInvoicingAddress?: string;
-    IsActive?: string;
-
-    [param: string]: any;
+    netvisorKey: number;
+    internalIdentifier: string;
+    externalIdentifier: string;
+    organizationUnitNumber?: number;
+    customerGroupNetvisorKey?: string;
+    customerGroupName?: string;
+    name: string;
+    nameExtension: string;
+    streetAddress: string;
+    additionalStreetAddress: string;
+    city: string;
+    postNumber: string;
+    country?: {
+      value: string;
+      attr: { type: 'ISO-3166' };
+    };
+    phoneNumber: string;
+    faxNumber: string;
+    email: string;
+    emailInvoicingAddress: string;
+    homePageUri: string;
+    isActive: number;
+    isPrivateCustomer: number;
   };
-
   customerFinvoiceDetails: {
-    FinvoiceAddress?: string;
-    FinvoiceRouterCode?: string;
+    finvoiceAddress: string;
+    finvoiceRouterCode: string;
   };
-
+  customerDeliveryDetails: {
+    deliveryName: string;
+    deliveryStreetAddress: string;
+    deliveryCity: string;
+    deliveryPostNumber: string;
+    deliveryCountry?: {
+      value: string;
+      attr: { type: 'ISO-3166' };
+    };
+  };
+  customerContactDetails: {
+    contactPerson: string;
+    contactPersonEmail: string;
+    contactPersonPhone: string;
+  };
+  customerContactPersons?: {
+    customerContactPerson: {
+      contactPersonID: number;
+      contactPersonFirstName: string;
+      contactPersonLastName: string;
+      contactPersonPhoneNumber: string;
+      contactPersonEmail: string;
+      contactPersonOfficeNetvisorKey: number;
+    };
+  };
+  customerOfficeDetails?: {
+    officeNetvisorKey: number;
+    officeName: string;
+    officePhoneNumber: string;
+    officeTelefaxNumber: string;
+    officeIdentifier: string;
+    officeContactAddress: {
+      streetAddress?: string;
+      postNumber?: string;
+      city?: string;
+      country?: string;
+    };
+    officeVisitAddress: {
+      streetAddress?: string;
+      postNumber?: string;
+      city?: string;
+      country?: string;
+    };
+    officeFinvoiceDetails: {
+      finvoiceAddress?: string;
+      finvoiceRouterCode?: string;
+    };
+  }[];
   customerAdditionalInformation: {
-    Comment?: string;
-    PriceGroup?: string;
-    InvoicingLanguage?: string;
-
-    [param: string]: any;
+    comment: string;
+    customerAgreementIdentifier: string;
+    referenceNumber: string;
+    useCreditorReferenceNumber: number;
+    yourDefaultReference: string;
+    defaultTextBeforeInvoiceLines: string;
+    defaultTextAfterInvoiceLines: string;
+    defaultPaymentTerm: {
+      value: string;
+      attr: { netvisorkey: string };
+    };
+    taxHandlingType: string;
+    balanceLimit: number;
+    defaultSalesPerson?: string;
+    discountPercentage?: number;
+    priceGroup?: string;
+    factoringAccount?: {
+      value: string;
+      attr: { netvisorkey: string };
+    };
+    invoicingLanguage?: {
+      value: string;
+      attr: { type: 'ISO-3166' };
+    };
+    euStandardFinvoice: number;
+    customerDimensions?: {
+      dimension: {
+        dimensionName: {
+          value: string;
+          attr: { netvisorkey: string };
+        };
+        dimensionItem: {
+          value: string;
+          attr: { netvisorkey: string };
+        };
+      }[];
+    };
+    additionalInformation?: {
+      receivablesManagement: {
+        turnoverDays: string;
+        turnoverDeviation: string;
+      };
+    };
   };
+}
 
-  [param: string]: any;
+/*
+ * RESOURCE
+ * customer.nv
+ */
+
+export interface CustomerParameters {
+  method: 'add' | 'edit';
+  id?: number;
+}
+
+export interface Customer {
+  customerBaseInformation: {
+    /** Use attribute 'automatic' if you want Netvisor to use next free customer number */
+    internalIdentifier?:
+      | string
+      | {
+          attr?: { type: 'automatic' };
+        };
+    externalIdentifier?: string;
+    organizationUnitNumber?: number;
+    name?: string;
+    nameExtension?: string;
+    streetAddress?: string;
+    additionalAddressLine?: string;
+    city?: string;
+    postNumber?: string;
+    country?: {
+      value: string;
+      attr: { type: 'ISO-3166' };
+    };
+    customerGroupName?: string;
+    phoneNumber?: string;
+    faxNumber?: string;
+    email?: string;
+    homepageUri?: string;
+    isActive?: 0 | 1;
+    isPrivateCustomer?: 0 | 1;
+    emailInvoicingAddress?: string;
+  };
+  customerFinvoiceDetails?: {
+    finvoiceAddress: string;
+    finvoiceRouterCode: string;
+  };
+  customerDeliveryDetails?: {
+    deliveryName?: string;
+    deliveryStreetAddress?: string;
+    deliveryCity?: string;
+    deliveryPostNumber?: string;
+    deliveryCountry?: {
+      value: string;
+      attr: { type: 'ISO-3166' };
+    };
+  };
+  customerContactDetails?: {
+    contactName?: string;
+    contactPerson?: string;
+    contactPersonEmail?: string;
+    contactPersonPhone?: string;
+  };
+  customerAdditionalInformation?: {
+    comment?: string;
+    customerAgreementIdentifier?: string;
+    customerReferenceNumber?: string;
+    invoicingLanguage?: {
+      value: string;
+      attr: { type: 'ISO-3166' };
+    };
+    /** 1 = Lasku + tilisiirto; 2 = Lasku */
+    invoicePrintChannelFormat?: {
+      value: 1 | 2;
+      attr: { type: 'netvisor' };
+    };
+    yourDefaultReference?: string;
+    defaultTextBeforeInvoiceLines?: string;
+    defaultTextAfterInvoiceLines?: string;
+    defaultPaymentTerm?: {
+      value: string;
+      attr: { type: 'netvisor' | 'customer' };
+    };
+    defaultSecondName?: {
+      value: string;
+      attr: { type: 'netvisor' | 'customer' };
+    };
+    paymentInterest?: number;
+    balanceLimit?: number;
+    receivablesManagementAutomationRule?: {
+      value: string;
+      attr: { type: 'netvisor' | 'customer' };
+    };
+    factoringAccount?: {
+      value: string;
+      attr: { type: 'netvisor' | 'customer' };
+    };
+    taxHandlingType?: 'countrygroup' | 'forcedomestic' | 'notaxhandling' | 'domesticconstructionservice';
+    euStandardFinvoice?: 0 | 1;
+    defaultSalesPerson?: {
+      salesPersonId?: {
+        value: string;
+        attr: { type: 'netvisor' };
+      };
+    };
+  };
+  customerDimensionDetails?: {
+    dimension: {
+      dimensionName: string;
+      dimensionItem: string;
+    }[];
+  };
 }

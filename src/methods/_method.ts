@@ -1,5 +1,6 @@
 import { NetvisorApiClient } from '..';
 import fs from 'fs';
+import * as xml2js from 'xml2js';
 
 type BufferEncoding = 'ascii' | 'utf8' | 'utf-8' | 'utf16le' | 'ucs2' | 'ucs-2' | 'base64' | 'latin1' | 'binary' | 'hex';
 
@@ -43,4 +44,35 @@ export class NetvisorMethod {
 
     return await this._client.post(this._endpointUri, fileContents);
   }
+}
+
+// Other functions to share among methods
+
+export function parseXml(xml: string) {
+  const xmlParser = new xml2js.Parser({
+    attrkey: 'attr',
+    charkey: 'value',
+    explicitArray: false,
+    normalizeTags: true,
+    attrNameProcessors: [(name) => name.toLowerCase()]
+  });
+  let xmlObject;
+  xmlParser.parseString(xml, (error: any, result: any) => {
+    const responseStatus = result?.root?.responsestatus?.status;
+    if (responseStatus === 'OK') {
+      xmlObject = result.root;
+      delete xmlObject.responsestatus;
+    }
+  });
+  return xmlObject;
+}
+
+export function buildXml(obj: Object): string {
+  const xmlBuilder = new xml2js.Builder({ attrkey: 'attr', charkey: 'value', headless: true });
+  const xmlString: string = xmlBuilder.buildObject(obj);
+  return xmlString;
+}
+
+export function forceArray<T>(item: Array<T> | T): Array<T> {
+  return !Array.isArray(item) ? [item] : item;
 }

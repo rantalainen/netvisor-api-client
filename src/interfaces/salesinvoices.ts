@@ -83,7 +83,7 @@ export interface SalesInvoiceListParameters {
 }
 
 export interface SalesInvoiceListItem {
-  netvisorKey: string;
+  netvisorKey: number;
   invoiceNumber: string;
   invoiceDate: {
     value: string;
@@ -99,18 +99,16 @@ export interface SalesInvoiceListItem {
   invoiceSum: number;
   openSum: number;
   uri: string;
-  additionalInformation?: SalesInvoiceListItemAdditionalInformation;
-}
-
-export interface SalesInvoiceListItemAdditionalInformation {
-  privateComment?: string;
-  invoiceCurrencySum?: {
-    value: number;
-    attr: { currencycode: string; type: 'ISO-4217' };
-  };
-  openCurrencySum?: {
-    value: number;
-    attr: { currencycode: string; type: 'ISO-4217' };
+  additionalInformation?: {
+    privateComment?: string;
+    invoiceCurrencySum?: {
+      value: number;
+      attr: { currencycode: string; type: 'ISO-4217' };
+    };
+    openCurrencySum?: {
+      value: number;
+      attr: { currencycode: string; type: 'ISO-4217' };
+    };
   };
 }
 
@@ -146,7 +144,7 @@ export interface GetSalesInvoiceSalesInvoice {
     attr: { format: 'ansi' };
   };
   salesInvoiceEventDate: {
-    value: string;
+    value?: string;
     attr: { format: 'ansi' };
   };
   salesInvoiceValueDate: {
@@ -234,18 +232,16 @@ export interface GetSalesInvoiceSalesInvoice {
   invoiceLines: {
     invoiceLine: {
       salesInvoiceProductLine?: GetSalesInvoiceSalesInvoiceProductLine[];
-      salesInvoiceCommentLine?: SalesInvoiceCommentLine[];
+      salesInvoiceCommentLine?: GetSalesInvoiceSalesInvoiceCommentLine[];
     };
   };
-  salesInvoiceAttachments?: {
-    salesInvoiceAttachment: GetSalesInvoiceAttachment[];
-  };
+  salesInvoiceAttachments?: GetSalesInvoiceAttachment[];
   documents?: {
     salesOrder: {
       netvisorKey: number;
       orderNumber: number;
-    }[];
-  };
+    };
+  }[];
 }
 
 export interface GetSalesInvoiceSalesInvoiceProductLine {
@@ -279,7 +275,7 @@ export interface GetSalesInvoiceSalesInvoiceProductLine {
   provisionPercentage: number;
 }
 
-export interface SalesInvoiceCommentLine {
+export interface GetSalesInvoiceSalesInvoiceCommentLine {
   comment: string;
 }
 
@@ -289,10 +285,12 @@ interface SalesInvoiceDimension {
 }
 
 interface GetSalesInvoiceAttachment {
-  mimeType: string;
-  attachmentDescription: string;
-  fileName: string;
-  documentData: string;
+  salesInvoiceAttachment: {
+    mimeType: string;
+    attachmentDescription: string;
+    fileName: string;
+    documentData: string;
+  };
 }
 
 /*
@@ -348,14 +346,16 @@ export interface SalesInvoice {
   };
   salesInvoiceReferenceNumber?: string;
   /** If given, this amount will be used and total sum will NOT be calculated from product lines */
-  salesInvoiceAmount: {
-    value: number;
-    attr: {
-      iso4217CurrencyCode?: string;
-      currencyRate?: string;
-      priceType?: 'netvisor' | 'customer';
-    };
-  };
+  salesInvoiceAmount:
+    | {
+        value: number;
+        attr: {
+          iso4217CurrencyCode?: string;
+          currencyRate?: string;
+          priceType?: 'netvisor' | 'customer';
+        };
+      }
+    | '';
   sellerIdentifier?: {
     value: string;
     attr: { type: 'netvisor' | 'customer' };
@@ -444,99 +444,102 @@ export interface SalesInvoice {
   /** Only positive values and 0 allowed */
   collectionCost?: number;
   isThirdPartySales?: 0 | 1;
-  invoicelines: {
-    invoiceLine: {
-      salesInvoiceProductLine?: SalesInvoiceProductLine[];
-      salesInvoiceCommentLine?: SalesInvoiceCommentLine[];
-      salesInvoiceSubLine?: SalesInvoiceSubLine[];
-    };
+  invoiceLines: {
+    /** Sales invoice lines will be in the same order as they are in the array */
+    invoiceLine: (SalesInvoiceProductLine | SalesInvoiceCommentLine | SalesInvoiceSubLine)[];
   };
-  invoiceVoucherLines?: {
-    voucherLine: SalesInvoiceVoucherLine[];
-  };
+  invoiceVoucherLines?: SalesInvoiceVoucherLine[];
   accuralRule?: SalesInvoiceAccrualRule;
-  salesInvoiceAttachments: {
-    salesInvoiceAttachment: SalesInvoiceAttachment[];
-  };
-  customTags: {
-    tag: Tag[];
-  };
+  salesInvoiceAttachments: SalesInvoiceAttachment[];
+  customTags: Tag[];
 }
 
 export interface SalesInvoiceProductLine {
-  productIdentifier: {
-    value: string;
-    attr: { type: 'customer' | 'netvisor' | 'primaryeancode' | 'secondaryeancode' };
+  salesInvoiceProductLine: {
+    productIdentifier: {
+      value: string;
+      attr: { type: 'customer' | 'netvisor' | 'primaryeancode' | 'secondaryeancode' };
+    };
+    /** If left empty, Netvisor's product name will be used */
+    productName: string;
+    productUnitPrice: {
+      value: number;
+      attr: { type: 'net' | 'gross' };
+    };
+    productUnitPurchasePrice?: {
+      value: number;
+      attr: { type: 'net' };
+    };
+    productVatPercentage: {
+      value: number;
+      attr: { vatcode: VatCode };
+    };
+    salesInvoiceProductLineQuantity: number;
+    /** Give either just a number value OR only the attribute without number value (then customer's own discount percent is used) */
+    salesInvoiceProductLineDiscountPercentage?:
+      | {
+          attr: { type: 'netvisor' };
+        }
+      | number;
+    salesInvoiceProductLineFreetext?: string;
+    /** If used, remember to give salesInvoiceProductLineSum as well or else these values will NOT be used */
+    salesInvoiceProductLineVatSum?: number;
+    /** If used, remember to give salesInvoiceProductLineVatSum as well or else these values will NOT be used */
+    salesInvoiceProductLineSum?: number;
+    salesInvoiceProductLineInventoryId?: number;
+    accountingAccountSuggestion?: number;
+    dimension?: SalesInvoiceDimension[];
+    provisionPercentage?: number;
+    accrualrule?: SalesInvoiceAccrualRule;
+    productUnitName?: string;
+    deliveryDate?: {
+      value: string;
+      attr: { format: 'ansi' };
+    };
+    orderNumber?: string;
+    proposedAccount?: {
+      value: number;
+      attr: { type: 'customer' };
+    };
+    accountDimensionText?: string;
   };
-  productName?: string;
-  productUnitPrice: {
-    value: number;
-    attr: { type: 'net' | 'gross' };
+}
+
+export interface SalesInvoiceCommentLine {
+  salesInvoiceCommentLine: {
+    comment: string;
   };
-  productUnitPriceAttr: { type: string };
-  productUnitPurchasePrice?: {
-    value: number;
-    attr: { type: 'net' };
-  };
-  productVatPercentage: {
-    value: number;
-    attr: { vatcode: VatCode };
-  };
-  salesInvoiceProductLineQuantity: number;
-  /** Give either just a number value OR only the attribute without number value (then customer's own discount percent is used) */
-  salesInvoiceProductLineDiscountPercentage?:
-    | {
-        attr: { type: 'netvisor' };
-      }
-    | number;
-  salesInvoiceProductLineFreetext?: string;
-  /** If used, remember to give salesInvoiceProductLineSum as well or else these values will NOT be used */
-  salesInvoiceProductLineVatSum?: number;
-  /** If used, remember to give salesInvoiceProductLineVatSum as well or else these values will NOT be used */
-  salesInvoiceProductLineSum?: number;
-  salesInvoiceProductLineInventoryId?: number;
-  accountingAccountSuggestion?: number;
-  dimension?: SalesInvoiceDimension[];
-  provisionPercentage?: number;
-  accrualrule?: SalesInvoiceAccrualRule;
-  productUnitName?: string;
-  deliveryDate?: {
-    value: string;
-    attr: { format: 'ansi' };
-  };
-  orderNumber?: string;
-  proposedAccount?: {
-    value: number;
-    attr: { type: 'customer' };
-  };
-  accountDimensionText?: string;
 }
 
 export interface SalesInvoiceSubLine {
-  sublineArticleIdentifier?: string;
-  sublineArticleName: string;
-  sublineDescription?: string;
-  sublineUnitCode?: string;
-  sublineUnitPrice?: number;
-  sublineDeliveredQuantity?: number;
-  sublineDiscountPercent?: number;
-  sublineVatPercent?: number;
-  sublineSum?: number;
-  sublineVatSum?: number;
+  salesInvoiceSubLine: {
+    sublineArticleIdentifier?: string;
+    sublineArticleName: string;
+    sublineDescription?: string;
+    sublineUnitCode?: string;
+    sublineUnitPrice?: number;
+    sublineDeliveredQuantity?: number;
+    sublineDiscountPercent?: number;
+    sublineVatPercent?: number;
+    sublineSum?: number;
+    sublineVatSum?: number;
+  };
 }
 
 export interface SalesInvoiceVoucherLine {
-  lineSum: {
-    value: number;
-    attr: { type: 'net' | 'gross' };
+  voucherLine: {
+    lineSum: {
+      value: number;
+      attr: { type: 'net' | 'gross' };
+    };
+    description?: string;
+    accountNumber: string;
+    vatPercent: {
+      value: number;
+      attr: { vatcode: VatCode };
+    };
+    dimension?: SalesInvoiceDimension[];
   };
-  description?: string;
-  accountNumber: string;
-  vatPercent: {
-    value: number;
-    attr: { vatcode: VatCode };
-  };
-  dimension?: SalesInvoiceDimension[];
 }
 
 export interface SalesInvoiceAccrualRule {
@@ -548,21 +551,25 @@ export interface SalesInvoiceAccrualRule {
 }
 
 export interface SalesInvoiceAttachment {
-  mimeType: string;
-  attachmentDescription: string;
-  fileName: string;
-  documentData: {
-    value: string;
-    attr: { type: 'finvoice' | 'pdf' };
+  salesInvoiceAttachment: {
+    mimeType: string;
+    attachmentDescription: string;
+    fileName: string;
+    documentData: {
+      value: string;
+      attr: { type: 'finvoice' | 'pdf' };
+    };
+    /** Do not give this property if documenData type is 'finvoice' */
+    printbydefault?: 0 | 1;
   };
-  /** Do not give this property if documenData type is 'finvoice' */
-  printbydefault?: 0 | 1;
 }
 
 export interface Tag {
-  tagName: string;
-  tagValue: {
-    value: string;
-    attr: { type: 'float' | 'date' | 'text' | 'enum' };
+  tag: {
+    tagName: string;
+    tagValue: {
+      value: string;
+      attr: { type: 'float' | 'date' | 'text' | 'enum' };
+    };
   };
 }
