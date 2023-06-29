@@ -235,7 +235,9 @@ export interface GetSalesInvoiceSalesInvoice {
       salesInvoiceCommentLine?: GetSalesInvoiceSalesInvoiceCommentLine[];
     };
   };
-  salesInvoiceAttachments?: GetSalesInvoiceAttachment[];
+  salesInvoiceAttachments?: {
+    salesInvoiceAttachment: GetSalesInvoiceAttachment[];
+  };
   documents?: {
     salesOrder: {
       netvisorKey: number;
@@ -269,8 +271,8 @@ export interface GetSalesInvoiceSalesInvoiceProductLine {
   salesInvoiceProductLineSum: number;
   salesInvoiceProductLineInventoryID?: number;
   salesInvoiceProductLineInventoryName?: string;
-  accountingAccountSuggestion: number;
-  accountingAccountSuggestionAccountNumber: number;
+  accountingAccountSuggestion: number | null;
+  accountingAccountSuggestionAccountNumber: number | null;
   dimension?: SalesInvoiceDimension[];
   provisionPercentage: number;
 }
@@ -285,12 +287,10 @@ interface SalesInvoiceDimension {
 }
 
 interface GetSalesInvoiceAttachment {
-  salesInvoiceAttachment: {
-    mimeType: string;
-    attachmentDescription: string;
-    fileName: string;
-    documentData: string;
-  };
+  mimeType: string;
+  attachmentDescription: string;
+  fileName: string;
+  documentData: string;
 }
 
 /*
@@ -445,13 +445,13 @@ export interface SalesInvoice {
   collectionCost?: number;
   isThirdPartySales?: 0 | 1;
   invoiceLines: {
-    /** Sales invoice lines will be in the same order as they are in the array */
+    /** Sales invoice lines will be in the same order as they are in the array. At least one item must be given to invoiceLine array. */
     invoiceLine: (SalesInvoiceProductLine | SalesInvoiceCommentLine | SalesInvoiceSubLine)[];
   };
   invoiceVoucherLines?: SalesInvoiceVoucherLine[];
   accuralRule?: SalesInvoiceAccrualRule;
-  salesInvoiceAttachments: SalesInvoiceAttachment[];
-  customTags: Tag[];
+  salesInvoiceAttachments?: SalesInvoiceAttachment[];
+  customTags?: Tag[];
 }
 
 export interface SalesInvoiceProductLine {

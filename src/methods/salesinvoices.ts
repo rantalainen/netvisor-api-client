@@ -109,7 +109,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
       salesInvoiceAgreementIdentifier: xmlSalesInvoice.salesinvoiceagreementidentifier,
       invoicingCustomerCode: xmlSalesInvoice.invoicingcustomercode,
       invoicingCustomerName: xmlSalesInvoice.invoicingcustomername,
-      invoicingCustomerNameExtension: xmlSalesInvoice.invoicingcustomernamextension,
+      invoicingCustomerNameExtension: xmlSalesInvoice.invoicingcustomernameextension,
       invoicingCustomerNetvisorKey: xmlSalesInvoice.invoicingcustomernetvisorkey,
       invoicingCustomerOrganizationIdentifier: xmlSalesInvoice.invoicingcustomerorganizationidentifier,
       invoicingCustomerAddressline: xmlSalesInvoice.invoicingcustomeraddressline,
@@ -168,15 +168,13 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     if (xmlSalesInvoice.creditedinvoicenetvisorkey)
       salesInvoice.creditedInvoiceNetvisorKey = parseInt(xmlSalesInvoice.creditedinvoicenetvisorkey);
     if (xmlSalesInvoice.salesinvoiceattachments) {
-      salesInvoice.salesInvoiceAttachments = [];
+      salesInvoice.salesInvoiceAttachments = { salesInvoiceAttachment: [] };
       forceArray(xmlSalesInvoice.salesinvoiceattachments.salesinvoiceattachment).forEach((attch: any) => {
-        salesInvoice.salesInvoiceAttachments?.push({
-          salesInvoiceAttachment: {
-            mimeType: attch.mimetype,
-            attachmentDescription: attch.attachmentdescription,
-            fileName: attch.filename,
-            documentData: attch.documentdata
-          }
+        salesInvoice.salesInvoiceAttachments?.salesInvoiceAttachment.push({
+          mimeType: attch.mimetype,
+          attachmentDescription: attch.attachmentdescription,
+          fileName: attch.filename,
+          documentData: attch.documentdata
         });
       });
     }
@@ -214,8 +212,8 @@ export class NetvisorSalesMethod extends NetvisorMethod {
           salesInvoiceProductLineFreeText: xmlProductLine.salesinvoiceproductlinefreetext,
           salesInvoiceProductLineVatSum: parseFloat(xmlProductLine.salesinvoiceproductlinevatsum.replace(',', '.')),
           salesInvoiceProductLineSum: parseFloat(xmlProductLine.salesinvoiceproductlinesum.replace(',', '.')),
-          accountingAccountSuggestion: parseInt(xmlProductLine.accountingaccountsuggestion),
-          accountingAccountSuggestionAccountNumber: parseInt(xmlProductLine.accountingaccountsuggestionaccountnumber),
+          accountingAccountSuggestion: parseInt(xmlProductLine.accountingaccountsuggestion) || null,
+          accountingAccountSuggestionAccountNumber: parseInt(xmlProductLine.accountingaccountsuggestionaccountnumber) || null,
           provisionPercentage: parseFloat(xmlProductLine.provisionpercentage.replace(',', '.'))
         };
         // Add optional properties if they exist in the original xml invoice line
@@ -257,8 +255,10 @@ export class NetvisorSalesMethod extends NetvisorMethod {
   /**
    * Create an invoice or sales order to Netvisor
    * @example await salesInvoice(salesInvoice, { method: 'add' })
+   * @returns the added sales invoice's netvisor key
    */
-  async salesInvoice(salesInvoice: SalesInvoice, params: SalesInvoiceParameters) {
-    return await this._client.post('salesinvoice.nv', buildXml({ root: { salesInvoice: salesInvoice } }), params);
+  async salesInvoice(salesInvoice: SalesInvoice, params: SalesInvoiceParameters): Promise<string> {
+    const response = await this._client.post('salesinvoice.nv', buildXml({ root: { salesInvoice: salesInvoice } }), params);
+    return parseXml(response).replies.inserteddataidentifier;
   }
 }

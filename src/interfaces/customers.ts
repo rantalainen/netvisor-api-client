@@ -134,7 +134,7 @@ export interface GetCustomer {
       attr: { netvisorkey: string };
     };
     taxHandlingType: string;
-    balanceLimit: number;
+    balanceLimit: number | null;
     defaultSalesPerson?: string;
     discountPercentage?: number;
     priceGroup?: string;
