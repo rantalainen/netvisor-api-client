@@ -104,8 +104,10 @@ dist
 .tern-port
 
 test.js
+src/test.ts
 nodemon.json
 dist/
 testData.csv
 testData.xml
 example-files/
+test-output/

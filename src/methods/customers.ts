@@ -1,153 +1,240 @@
 import { NetvisorApiClient } from '..';
-import { NetvisorMethod } from './_method';
-import * as xml2js from 'xml2js';
-import * as js2xmlparser from 'js2xmlparser';
-import { ICustomer, ICustomerList, INvCustomer } from '../intefaces/customers';
+import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
+import {
+  CustomerListParameters,
+  CustomerListItem,
+  GetCustomerParameters,
+  GetCustomer,
+  CustomerParameters,
+  Customer
+} from '../interfaces/customers';
 
 export class NetvisorCustomerMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
     super(client);
-
-    this._endpointUri = 'customer.nv';
   }
 
   /**
-   * Save one customer as customer object
-   * @param dataset as ICustomer
-   * @param params as parameters with {method: add}
-   * if editing customer {method: add/edit, id: netvisorkey}
+   * Get customer list from Netvisor
+   * @example await customerList({ keyword: 'Oy', customerCodeList: '123,124,560,999' })
+   * @returns {CustomerListItem[]} If no customers were retrieved, empty array will be returned.
    */
-  async saveCustomerByDataSet(dataset: ICustomer, params: any) {
-    const xml = js2xmlparser.parse('Root', dataset);
-
-    return await this._client.post(this._endpointUri, xml.replace("<?xml version='1.0'?>", ''), params);
-  }
-
-  /**
-   * Get customers from Netvisor
-   * @param params to narrow search with keyword or netvisor key
-   */
-  async getCustomers(params?: any): Promise<ICustomerList[]> {
-    const customersRaw = await this._client.get('customerlist.nv', params);
-
-    var parser = new xml2js.Parser();
-
-    const customerList: Array<any> = await new Promise(async (resolve, reject) => {
-      parser.parseString(customersRaw, (error: string, xmlResult: any) => {
-        if (error) return reject(error);
-
-        const status: any = xmlResult.Root.ResponseStatus[0].Status;
-
-        const json: any = xmlResult.Root.Customerlist[0].Customer;
-
-        if (status[0] === 'OK') {
-          resolve(json);
-        } else {
-          reject(status[1]);
-        }
+  async customerList(params?: CustomerListParameters): Promise<CustomerListItem[]> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('customerlist.nv', params);
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+    // Create the return array
+    const customerList: CustomerListItem[] = [];
+    // Add items to return array
+    if (xmlObject.customerlist.customer) {
+      forceArray(xmlObject.customerlist.customer).forEach((xmlCustomer) => {
+        // Push the list items to array
+        customerList.push({
+          netvisorKey: parseInt(xmlCustomer.netvisorkey),
+          name: xmlCustomer.name,
+          code: xmlCustomer.code,
+          organisationIdentifier: xmlCustomer.organisationidentifier,
+          customerGroupID: parseInt(xmlCustomer.customergroupid) || null,
+          customerGroupName: xmlCustomer.customergroupname,
+          uri: xmlCustomer.uri
+        });
       });
-    });
-
-    // customerList returns undefined if no customers in search criteria
-    if (!customerList) {
-      return [];
     }
+    return customerList;
+  }
 
-    const customers = [];
-    for (const item of customerList) {
-      const customer = {
-        netvisorKey: item.Netvisorkey[0],
-        name: item.Name[0],
-        code: item.Code[0],
-        externalidentifier: item.OrganisationIdentifier[0],
-        customerGroupName: item.CustomerGroupName[0]
+  /**
+   * Get customer(s) from Netvisor.
+   * @example await getCustomer({ idList: '1,2,3' })
+   * @returns {GetCustomer[]} Returns array even when getting only a single customer.
+   */
+  async getCustomer(params: GetCustomerParameters): Promise<GetCustomer[]> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('getcustomer.nv', params);
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+    // Create the return array
+    const customers: GetCustomer[] = [];
+    // Create array from the xml result
+    let xmlCustomers: any[] = [];
+    if (xmlObject.customers) {
+      if (xmlObject.customers.customer) {
+        // If there were multiple customers in the result
+        xmlCustomers = forceArray(xmlObject.customers.customer);
+      }
+    } else {
+      if (xmlObject.customer) {
+        // If there were a single customer in the result
+        xmlCustomers = forceArray(xmlObject.customer);
+      }
+    }
+    // Add customers to return array
+    xmlCustomers.forEach((xmlCustomer) => {
+      // Create template object with mandatory properties
+      const customer: GetCustomer = {
+        customerBaseInformation: {
+          netvisorKey: parseInt(xmlCustomer.customerbaseinformation.netvisorkey),
+          internalIdentifier: xmlCustomer.customerbaseinformation.internalidentifier,
+          externalIdentifier: xmlCustomer.customerbaseinformation.externalidentifier,
+          name: xmlCustomer.customerbaseinformation.name,
+          nameExtension: xmlCustomer.customerbaseinformation.nameextension,
+          streetAddress: xmlCustomer.customerbaseinformation.streetaddress,
+          additionalStreetAddress: xmlCustomer.customerbaseinformation.additionalstreetaddress,
+          city: xmlCustomer.customerbaseinformation.city,
+          postNumber: xmlCustomer.customerbaseinformation.postnumber,
+          phoneNumber: xmlCustomer.customerbaseinformation.phonenumber,
+          faxNumber: xmlCustomer.customerbaseinformation.faxnumber,
+          email: xmlCustomer.customerbaseinformation.email,
+          emailInvoicingAddress: xmlCustomer.customerbaseinformation.emailinvoicingaddress,
+          homePageUri: xmlCustomer.customerbaseinformation.homepageuri,
+          isActive: parseInt(xmlCustomer.customerbaseinformation.isactive),
+          isPrivateCustomer: parseInt(xmlCustomer.customerbaseinformation.isprivatecustomer)
+        },
+        customerFinvoiceDetails: {
+          finvoiceAddress: xmlCustomer.customerfinvoicedetails.finvoiceaddress,
+          finvoiceRouterCode: xmlCustomer.customerfinvoicedetails.finvoiceroutercode
+        },
+        customerDeliveryDetails: {
+          deliveryName: xmlCustomer.customerdeliverydetails.deliveryname,
+          deliveryStreetAddress: xmlCustomer.customerdeliverydetails.deliverystreetaddress,
+          deliveryCity: xmlCustomer.customerdeliverydetails.deliverycity,
+          deliveryPostNumber: xmlCustomer.customerdeliverydetails.deliverypostnumber
+        },
+        customerContactDetails: {
+          contactPerson: xmlCustomer.customercontactdetails.contactperson,
+          contactPersonEmail: xmlCustomer.customercontactdetails.contactpersonemail,
+          contactPersonPhone: xmlCustomer.customercontactdetails.contactpersonphone
+        },
+        customerAdditionalInformation: {
+          comment: xmlCustomer.customeradditionalinformation.comment,
+          customerAgreementIdentifier: xmlCustomer.customeradditionalinformation.customeragreementidentifier,
+          referenceNumber: xmlCustomer.customeradditionalinformation.referencenumber,
+          useCreditorReferenceNumber: parseInt(xmlCustomer.customeradditionalinformation.usecreditorreferencenumber),
+          yourDefaultReference: xmlCustomer.customeradditionalinformation.yourdefaultreference,
+          defaultTextBeforeInvoiceLines: xmlCustomer.customeradditionalinformation.defaulttextbeforeinvoicelines,
+          defaultTextAfterInvoiceLines: xmlCustomer.customeradditionalinformation.defaulttextafterinvoicelines,
+          defaultPaymentTerm: xmlCustomer.customeradditionalinformation.defaultpaymentterm,
+          taxHandlingType: xmlCustomer.customeradditionalinformation.taxhandlingtype,
+          balanceLimit: parseFloat(xmlCustomer.customeradditionalinformation.balancelimit.replace(',', '.')) || null,
+          euStandardFinvoice: parseInt(xmlCustomer.customeradditionalinformation.eustandardfinvoice) || 0
+        }
       };
-      customers.push(customer);
-    }
+      // Add base information's optional properties if they exist
+      if (xmlCustomer.customerbaseinformation.organizationunitnumber) {
+        customer.customerBaseInformation.organizationUnitNumber = parseInt(xmlCustomer.customerbaseinformation.organizationunitnumber);
+      }
+      if (xmlCustomer.customerbaseinformation.customergroupnetvisorkey) {
+        customer.customerBaseInformation.customerGroupNetvisorKey = xmlCustomer.customerbaseinformation.customergroupnetvisorkey;
+      }
+      if (xmlCustomer.customerbaseinformation.customergroupname) {
+        customer.customerBaseInformation.customerGroupName = xmlCustomer.customerbaseinformation.customergroupname;
+      }
+      if (xmlCustomer.customerbaseinformation.country) {
+        customer.customerBaseInformation.country = xmlCustomer.customerbaseinformation.country;
+      }
+      if (xmlCustomer.customerdeliverydetails.deliverycountry) {
+        customer.customerDeliveryDetails.deliveryCountry = xmlCustomer.customerdeliverydetails.deliverycountry;
+      }
+      // Add customer contact person if it exists
+      if (xmlCustomer.customercontactpersons) {
+        customer.customerContactPersons = {
+          customerContactPerson: {
+            contactPersonID: parseInt(xmlCustomer.customercontactpersons.customercontactperson.contactpersonid),
+            contactPersonFirstName: xmlCustomer.customercontactpersons.customercontactperson.contactpersonfirstname,
+            contactPersonLastName: xmlCustomer.customercontactpersons.customercontactperson.contactpersonlastname,
+            contactPersonPhoneNumber: xmlCustomer.customercontactpersons.customercontactperson.contactpersonphonenumber,
+            contactPersonEmail: xmlCustomer.customercontactpersons.customercontactperson.contactpersonemail,
+            contactPersonOfficeNetvisorKey: parseInt(
+              xmlCustomer.customercontactpersons.customercontactperson.contactpersonofficenetvisorkey
+            )
+          }
+        };
+      }
+      // Add customer offices if there is any
+      if (xmlCustomer.customerofficedetails) {
+        customer.customerOfficeDetails = [];
+        forceArray(xmlCustomer.customerofficedetails).forEach((xmlOfficeDetails) => {
+          const customerOfficeDetail = {
+            officeNetvisorKey: parseInt(xmlOfficeDetails.officenetvisorkey),
+            officeName: xmlOfficeDetails.officename,
+            officePhoneNumber: xmlOfficeDetails.officephonenumber,
+            officeTelefaxNumber: xmlOfficeDetails.officetelefaxnumber,
+            officeIdentifier: xmlOfficeDetails.officeidentifier,
+            officeContactAddress: {
+              streetAddress: xmlOfficeDetails.officecontactaddress.streetaddress || undefined,
+              postNumber: xmlOfficeDetails.officecontactaddress.postnumber || undefined,
+              city: xmlOfficeDetails.officecontactaddress.city || undefined,
+              country: xmlOfficeDetails.officecontactaddress.country || undefined
+            },
+            officeVisitAddress: {
+              streetAddress: xmlOfficeDetails.officevisitaddress.streetaddress || undefined,
+              postNumber: xmlOfficeDetails.officevisitaddress.postnumber || undefined,
+              city: xmlOfficeDetails.officevisitaddress.city || undefined,
+              country: xmlOfficeDetails.officevisitaddress.country || undefined
+            },
+            officeFinvoiceDetails: {
+              finvoiceAddress: xmlOfficeDetails.officefinvoicedetails.finvoiceaddress || undefined,
+              finvoiceRouterCode: xmlOfficeDetails.officefinvoicedetails.finvoiceroutercode || undefined
+            }
+          };
+          customer.customerOfficeDetails?.push(customerOfficeDetail);
+        });
+      }
+      // Add additional information's optional properties if they exist
+      if (xmlCustomer.customeradditionalinformation.defaultsalesperson) {
+        customer.customerAdditionalInformation.defaultSalesPerson = xmlCustomer.customeradditionalinformation.defaultsalesperson;
+      }
+      if (xmlCustomer.customeradditionalinformation.discountpercentage) {
+        customer.customerAdditionalInformation.discountPercentage = parseFloat(
+          xmlCustomer.customeradditionalinformation.discountpercentage.replace(',', '.')
+        );
+      }
+      if (xmlCustomer.customeradditionalinformation.pricegroup) {
+        customer.customerAdditionalInformation.priceGroup = xmlCustomer.customeradditionalinformation.pricegroup;
+      }
+      if (xmlCustomer.customeradditionalinformation.factoringaccount) {
+        customer.customerAdditionalInformation.factoringAccount = xmlCustomer.customeradditionalinformation.factoringaccount;
+      }
+      if (xmlCustomer.customeradditionalinformation.invoicinglanguage) {
+        customer.customerAdditionalInformation.invoicingLanguage = xmlCustomer.customeradditionalinformation.invoicinglanguage;
+      }
+      if (xmlCustomer.customeradditionalinformation.customerdimensions) {
+        customer.customerAdditionalInformation.customerDimensions = { dimension: [] };
+        forceArray(xmlCustomer.customeradditionalinformation.customerdimensions.dimension).forEach((xmlDimension) => {
+          customer.customerAdditionalInformation.customerDimensions?.dimension.push({
+            dimensionName: {
+              value: xmlDimension.dimensionname.value,
+              attr: { netvisorkey: xmlDimension.dimensionname.attr.netvisorkey }
+            },
+            dimensionItem: {
+              value: xmlDimension.dimensionitem.value,
+              attr: { netvisorkey: xmlDimension.dimensionitem.attr.netvisorkey }
+            }
+          });
+        });
+      }
+      if (xmlCustomer.customeradditionalinformation.additionalinformation) {
+        customer.customerAdditionalInformation.additionalInformation = {
+          receivablesManagement: {
+            turnoverDays: xmlCustomer.customeradditionalinformation.additionalinformation.receivablesmanagement.turnoverdays,
+            turnoverDeviation: xmlCustomer.customeradditionalinformation.additionalinformation.receivablesmanagement.turnoverdeviation
+          }
+        };
+      }
 
+      customers.push(customer);
+    });
     return customers;
   }
 
   /**
-   * Get customer from Netvisor using netvisorKey
+   * Create an invoice or sales order to Netvisor
+   * @example await customer(customer, { method: 'add' })
+   * @returns the added customer's netvisor key
    */
-  async getCustomerByNetvisorKey(netvisorKey: string): Promise<INvCustomer> {
-    const customerRaw = await this._client.get('getcustomer.nv', { id: netvisorKey });
-
-    var parser = new xml2js.Parser();
-
-    const _customer: any = await new Promise(async (resolve, reject) => {
-      parser.parseString(customerRaw, (error: string, xmlResult: any) => {
-        if (error) return reject(error);
-
-        const status: any = xmlResult.Root.ResponseStatus[0].Status;
-        const json: any = xmlResult.Root.Customer[0];
-
-        if (status[0] === 'OK') {
-          resolve(json);
-        } else {
-          reject(status[1]);
-        }
-      });
-    });
-
-    const customerBaseInformation: any = {};
-    for (const [key, value] of Object.entries(_customer.CustomerBaseInformation[0])) {
-      const newValue: any = value;
-      if (typeof newValue[0] === 'object') {
-        customerBaseInformation[key] = newValue[0]['_'];
-      } else {
-        customerBaseInformation[key] = newValue[0];
-      }
-    }
-
-    const customerFinvoiceDetails: any = {};
-    for (const [key, value] of Object.entries(_customer.CustomerFinvoiceDetails[0])) {
-      const newValue: any = value;
-      customerFinvoiceDetails[key] = newValue[0];
-    }
-
-    const customerDeliveryDetails: any = {};
-    for (const [key, value] of Object.entries(_customer.CustomerDeliveryDetails[0])) {
-      const newValue: any = value;
-      if (typeof newValue[0] === 'object') {
-        customerDeliveryDetails[key] = newValue[0]['_'];
-      } else {
-        customerDeliveryDetails[key] = newValue[0];
-      }
-    }
-
-    const customerContactDetails: any = {};
-    for (const [key, value] of Object.entries(_customer.CustomerContactDetails[0])) {
-      const newValue: any = value;
-      customerContactDetails[key] = newValue[0];
-    }
-
-    const customerContactPersons: any = {};
-    for (const [key, value] of Object.entries(_customer.CustomerContactPersons[0])) {
-      const newValue: any = value;
-      customerContactPersons[key] = newValue[0];
-    }
-
-    const customerAdditionalInformation: any = {};
-    for (const [key, value] of Object.entries(_customer.CustomerAdditionalInformation[0])) {
-      const newValue: any = value;
-      if (typeof newValue[0] === 'object') {
-        customerAdditionalInformation[key] = newValue[0]['_'];
-      } else {
-        customerAdditionalInformation[key] = newValue[0];
-      }
-    }
-
-    const customer = {
-      customerBaseInformation,
-      customerFinvoiceDetails,
-      customerDeliveryDetails,
-      customerContactDetails,
-      customerContactPersons,
-      customerAdditionalInformation
-    };
-
-    return customer;
+  async customer(customer: Customer, params: CustomerParameters): Promise<string> {
+    const response = await this._client.post('customer.nv', buildXml({ root: { customer: customer } }), params);
+    return parseXml(response).replies.inserteddataidentifier;
   }
 }

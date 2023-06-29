@@ -1,25 +1,16 @@
 import got, { Got, GotReturn } from 'got';
-import { NetvisorAccountingMethod } from './methods/accounting';
 import { NetvisorCustomerMethod } from './methods/customers';
 import { NetvisorPaymentMethod } from './methods/payments';
-import { NetvisorSalesMethod } from './methods/salesinvoice';
-import { NetvisorBudgetMethod } from './methods/budget';
-import { NetvisorVendorMethod } from './methods/vendors';
-import { NetvisorProductMethod } from './methods/product';
-import { NetvisorPurchaseInvoiceMethod } from './methods/purchaseinvoice';
-import { NetvisorWorkdayMethod } from './methods/workday';
-import { NetvisorEmployeeMethod } from './methods/employee';
-import { NetvisorTripexpenseMethod } from './methods/tripexpense';
+import { NetvisorSalesMethod } from './methods/salesinvoices';
+import { NetvisorDimensionMethod } from './methods/dimensions';
 import moment from 'moment';
 import crypto from 'crypto';
 import * as xml2js from 'xml2js';
-import { HttpsAgent } from 'agentkeepalive';
 import CacheableLookup from 'cacheable-lookup';
 
-const httpsAgent = new HttpsAgent();
 const cacheableLookup = new CacheableLookup();
 
-export interface INetvisorApiClientOptions {
+export interface NetvisorApiClientOptions {
   /** Integration name, sent as `X-Netvisor-Authentication-Sender` in requests */
   integrationName: string;
   customerId: string;
@@ -36,7 +27,7 @@ export interface INetvisorApiClientOptions {
   dnsCache?: CacheableLookup | boolean;
 }
 
-export interface INetvisorRequestHeaders {
+export interface NetvisorRequestHeaders {
   [key: string]: any;
 
   'X-Netvisor-Authentication-Sender': string;
@@ -53,21 +44,14 @@ export interface INetvisorRequestHeaders {
 
 export class NetvisorApiClient {
   [propName: string]: any;
-  options: INetvisorApiClientOptions;
+  options: NetvisorApiClientOptions;
 
-  readonly accounting: NetvisorAccountingMethod;
-  readonly budget: NetvisorBudgetMethod;
   readonly customers: NetvisorCustomerMethod;
   readonly payments: NetvisorPaymentMethod;
-  readonly product: NetvisorProductMethod;
-  readonly purchase: NetvisorPurchaseInvoiceMethod;
   readonly sales: NetvisorSalesMethod;
-  readonly workday: NetvisorWorkdayMethod;
-  readonly employee: NetvisorEmployeeMethod;
-  readonly tripexpense: NetvisorTripexpenseMethod;
-  readonly vendors: NetvisorVendorMethod;
+  readonly dimensions: NetvisorDimensionMethod;
 
-  constructor(options: INetvisorApiClientOptions) {
+  constructor(options: NetvisorApiClientOptions) {
     // Set default connect URI
     options.baseUri = options.baseUri || 'https://integration.netvisor.fi';
 
@@ -101,17 +85,10 @@ export class NetvisorApiClient {
       throw new Error('Missing options.organizationId');
     }
 
-    this.accounting = new NetvisorAccountingMethod(this);
-    this.budget = new NetvisorBudgetMethod(this);
     this.customers = new NetvisorCustomerMethod(this);
     this.payments = new NetvisorPaymentMethod(this);
-    this.product = new NetvisorProductMethod(this);
-    this.purchase = new NetvisorPurchaseInvoiceMethod(this);
     this.sales = new NetvisorSalesMethod(this);
-    this.workday = new NetvisorWorkdayMethod(this);
-    this.employee = new NetvisorEmployeeMethod(this);
-    this.tripexpense = new NetvisorTripexpenseMethod(this);
-    this.vendors = new NetvisorVendorMethod(this);
+    this.dimensions = new NetvisorDimensionMethod(this);
 
     this.options = options;
 
@@ -121,7 +98,7 @@ export class NetvisorApiClient {
     }
   }
 
-  _generateHeaderMAC(url: string, headers: INetvisorRequestHeaders): string {
+  _generateHeaderMAC(url: string, headers: NetvisorRequestHeaders): string {
     return crypto
       .createHash('sha256')
       .update(
@@ -130,8 +107,8 @@ export class NetvisorApiClient {
       .digest('hex');
   }
 
-  _generateHeaders(url: string, params?: any): INetvisorRequestHeaders {
-    const headers: INetvisorRequestHeaders = {
+  _generateHeaders(url: string, params?: any): NetvisorRequestHeaders {
+    const headers: NetvisorRequestHeaders = {
       'X-Netvisor-Authentication-Sender': this.options.integrationName,
       'X-Netvisor-Authentication-CustomerId': this.options.customerId,
       'X-Netvisor-Authentication-PartnerId': this.options.partnerId,
@@ -213,7 +190,7 @@ export class NetvisorApiClient {
     const xmlParser = new xml2js.Parser();
 
     return new Promise(async (resolve, reject) => {
-      xmlParser.parseString(request, (error: string, xmlResult: any) => {
+      xmlParser.parseString(request, (error, xmlResult) => {
         if (error) return reject(error);
 
         const status: any = xmlResult.Root.ResponseStatus[0].Status;
