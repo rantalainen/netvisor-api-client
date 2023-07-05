@@ -43,8 +43,10 @@ export class NetvisorSalesMethod extends NetvisorMethod {
           openSum: parseFloat(xmlSalesInvoice.opensum.replace(',', '.')),
           uri: xmlSalesInvoice.uri
         };
-        // Convert isincollection attribute to number
-        salesInvoiceListItem.invoiceStatus.attr.isincollection = parseInt(xmlSalesInvoice.invoicestatus.attr.isincollection);
+        // Convert isincollection attribute to number if there is any attributes
+        if (xmlSalesInvoice.invoicestatus.attr) {
+          salesInvoiceListItem.invoiceStatus.attr.isincollection = parseInt(xmlSalesInvoice.invoicestatus.attr.isincollection);
+        }
         // Add optional properties if they exist
         if (xmlSalesInvoice.additionalinformation) {
           // Copy the additional information to the salesInvoiceListItem
