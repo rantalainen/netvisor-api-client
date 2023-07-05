@@ -81,7 +81,32 @@ export class NetvisorSalesMethod extends NetvisorMethod {
   async getSalesInvoice(params: GetSalesInvoiceParameters): Promise<GetSalesInvoiceSalesInvoice> {
     // Get the raw xml response from Netvisor
     const responseXml = await this._client.get('getsalesinvoice.nv', params);
+    return this.parseSalesInvoiceOrSalesOrder(responseXml);
+  }
 
+  /**
+   * Get a single sales order with Netvisor key
+   * If the sales order includes both product and comment lines, the original order between those two different types of lines is lost.
+   * The product lines are in correct order between each other. Also, the comment lines are in order between each other.
+   * @example await getSalesOrder({ netvisorKey: 123})
+   */
+  async getSalesOrder(params: GetSalesInvoiceParameters): Promise<GetSalesInvoiceSalesInvoice> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('getorder.nv', params);
+    return this.parseSalesInvoiceOrSalesOrder(responseXml);
+  }
+
+  /**
+   * Create an invoice or sales order to Netvisor
+   * @example await salesInvoice(salesInvoice, { method: 'add' })
+   * @returns the added sales invoice's netvisor key
+   */
+  async salesInvoice(salesInvoice: SalesInvoice, params: SalesInvoiceParameters): Promise<string> {
+    const response = await this._client.post('salesinvoice.nv', buildXml({ root: { salesInvoice: salesInvoice } }), params);
+    return parseXml(response).replies.inserteddataidentifier;
+  }
+
+  private async parseSalesInvoiceOrSalesOrder(responseXml: string): Promise<GetSalesInvoiceSalesInvoice> {
     // Parse the xml to js object
     const xmlObject: any = parseXml(responseXml);
     const xmlSalesInvoice: any = xmlObject.salesinvoice;
@@ -250,15 +275,5 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     }
 
     return salesInvoice;
-  }
-
-  /**
-   * Create an invoice or sales order to Netvisor
-   * @example await salesInvoice(salesInvoice, { method: 'add' })
-   * @returns the added sales invoice's netvisor key
-   */
-  async salesInvoice(salesInvoice: SalesInvoice, params: SalesInvoiceParameters): Promise<string> {
-    const response = await this._client.post('salesinvoice.nv', buildXml({ root: { salesInvoice: salesInvoice } }), params);
-    return parseXml(response).replies.inserteddataidentifier;
   }
 }
