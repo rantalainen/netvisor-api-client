@@ -1,6 +1,12 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
-import { DimensionListParameters, DimensionListItem } from '../interfaces/dimensions';
+import {
+  DimensionListParameters,
+  DimensionListItem,
+  DimensionItemParameters,
+  DimensionItem,
+  DimensionDeleteParameters
+} from '../interfaces/dimensions';
 
 export class NetvisorDimensionMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
@@ -50,5 +56,23 @@ export class NetvisorDimensionMethod extends NetvisorMethod {
       });
     }
     return dimensionList;
+  }
+
+  /**
+   * Adds new dimension item to Netvisor
+   * @example await dimensionItem(dimensionItem, { method: 'add' })
+   */
+  async dimensionItem(dimensionItem: DimensionItem, params: DimensionItemParameters): Promise<void> {
+    await this._client.post('dimensionitem.nv', buildXml({ root: { dimensionitem: dimensionItem } }), params);
+    return;
+  }
+
+  /**
+   * Hides existing dimension item in Netvisor
+   * @example await dimensionDelete({ dimensionName: 'Kustannuspaikka', dimensionSubName: 'KP1' })
+   */
+  async dimensionDelete(params: DimensionDeleteParameters): Promise<void> {
+    await this._client.post('dimensiondelete.nv', undefined, params);
+    return;
   }
 }

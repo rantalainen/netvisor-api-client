@@ -3,6 +3,8 @@ import { NetvisorCustomerMethod } from './methods/customers';
 import { NetvisorPaymentMethod } from './methods/payments';
 import { NetvisorSalesMethod } from './methods/salesinvoices';
 import { NetvisorDimensionMethod } from './methods/dimensions';
+import { NetvisorAccountingMethod } from './methods/accounting';
+import { NetvisorProductsMethod } from './methods/products';
 import moment from 'moment';
 import crypto from 'crypto';
 import * as xml2js from 'xml2js';
@@ -50,6 +52,8 @@ export class NetvisorApiClient {
   readonly payments: NetvisorPaymentMethod;
   readonly sales: NetvisorSalesMethod;
   readonly dimensions: NetvisorDimensionMethod;
+  readonly accounting: NetvisorAccountingMethod;
+  readonly products: NetvisorProductsMethod;
 
   constructor(options: NetvisorApiClientOptions) {
     // Set default connect URI
@@ -61,34 +65,19 @@ export class NetvisorApiClient {
     // Set default language FI
     options.language = options.language || 'FI';
 
-    if (!options.integrationName) {
-      throw new Error('Missing options.integrationName');
-    }
-
-    if (!options.customerId) {
-      throw new Error('Missing options.customerId');
-    }
-
-    if (!options.partnerId) {
-      throw new Error('Missing options.partnerId');
-    }
-
-    if (!options.customerKey) {
-      throw new Error('Missing options.customerKey');
-    }
-
-    if (!options.partnerKey) {
-      throw new Error('Missing options.partnerKey');
-    }
-
-    if (!options.organizationId) {
-      throw new Error('Missing options.organizationId');
-    }
+    if (!options.integrationName) throw new Error('Missing options.integrationName');
+    if (!options.customerId) throw new Error('Missing options.customerId');
+    if (!options.partnerId) throw new Error('Missing options.partnerId');
+    if (!options.customerKey) throw new Error('Missing options.customerKey');
+    if (!options.partnerKey) throw new Error('Missing options.partnerKey');
+    if (!options.organizationId) throw new Error('Missing options.organizationId');
 
     this.customers = new NetvisorCustomerMethod(this);
     this.payments = new NetvisorPaymentMethod(this);
     this.sales = new NetvisorSalesMethod(this);
     this.dimensions = new NetvisorDimensionMethod(this);
+    this.accounting = new NetvisorAccountingMethod(this);
+    this.products = new NetvisorProductsMethod(this);
 
     this.options = options;
 
@@ -102,12 +91,13 @@ export class NetvisorApiClient {
     return crypto
       .createHash('sha256')
       .update(
-        `${url}&${headers['X-Netvisor-Authentication-Sender']}&${headers['X-Netvisor-Authentication-CustomerId']}&${headers['X-Netvisor-Authentication-Timestamp']}&${headers['X-Netvisor-Interface-Language']}&${headers['X-Netvisor-Organisation-ID']}&${headers['X-Netvisor-Authentication-TransactionId']}&${this.options.customerKey}&${this.options.partnerKey}`
+        `${url}&${headers['X-Netvisor-Authentication-Sender']}&${headers['X-Netvisor-Authentication-CustomerId']}&${headers['X-Netvisor-Authentication-Timestamp']}&${headers['X-Netvisor-Interface-Language']}&${headers['X-Netvisor-Organisation-ID']}&${headers['X-Netvisor-Authentication-TransactionId']}&${this.options.customerKey}&${this.options.partnerKey}`,
+        'latin1'
       )
       .digest('hex');
   }
 
-  _generateHeaders(url: string, params?: any): NetvisorRequestHeaders {
+  _generateHeaders(url: string): NetvisorRequestHeaders {
     const headers: NetvisorRequestHeaders = {
       'X-Netvisor-Authentication-Sender': this.options.integrationName,
       'X-Netvisor-Authentication-CustomerId': this.options.customerId,
@@ -120,31 +110,31 @@ export class NetvisorApiClient {
       'Content-Type': 'text/xml'
     };
 
-    if (params) {
-      const queryString = Object.keys(params)
-        .map((key) => key + '=' + params[key])
-        .join('&');
-      url = `${url}?${queryString}`;
-    }
-
     headers['X-Netvisor-Authentication-MAC'] = this._generateHeaderMAC(url, headers);
 
     return headers;
   }
 
-  _generateUrl(endpointUri: string): string {
-    return new URL(endpointUri, this.options.baseUri).href;
+  _generateUrl(endpointUri: string, searchParams: any): string {
+    if (searchParams) {
+      const queryString = Object.keys(searchParams)
+        .map((key) => key + '=' + searchParams[key])
+        .join('&');
+      return this.options.baseUri + endpointUri + '?' + queryString;
+    } else {
+      return this.options.baseUri + endpointUri;
+    }
   }
 
-  async post(endpointUri: string, body: string, params?: any): Promise<string> {
-    const url = this._generateUrl(endpointUri);
+  async post(endpointUri: string, body: string | undefined, params?: any): Promise<string> {
+    // Create url with search parameters included
+    const url = this._generateUrl(endpointUri, params);
 
-    const headers = this._generateHeaders(url, params);
+    const headers = this._generateHeaders(url);
 
     const request: any = await got.post(url, {
       body,
       headers,
-      searchParams: params,
       timeout: {
         request: this.options.timeout
       },
@@ -163,13 +153,13 @@ export class NetvisorApiClient {
   }
 
   async get(endpointUri: string, params?: any): Promise<string> {
-    const url = this._generateUrl(endpointUri);
+    // Create url with search parameters included
+    const url = this._generateUrl(endpointUri, params);
 
-    const headers = this._generateHeaders(url, params);
+    const headers = this._generateHeaders(url);
 
     const request: any = await got(url, {
       headers,
-      searchParams: params,
       timeout: {
         request: this.options.timeout
       },

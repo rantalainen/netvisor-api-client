@@ -176,7 +176,7 @@ export interface GetSalesInvoiceSalesInvoice {
   };
   invoiceVoucher?: {
     value: string;
-    attr: { netvisorKey: string };
+    attr: { netvisorkey: string };
   };
   salesInvoiceFreeTextBeforeLines: string;
   salesInvoiceFreeTextAfterLines: string;
@@ -195,7 +195,7 @@ export interface GetSalesInvoiceSalesInvoice {
   invoicingCustomerTown: string;
   invoicingCustomerCountryCode: {
     value: string;
-    attr: { 'ISO-3166': string };
+    attr: { 'iso-3166': string };
   };
   matchPartialPaymentsByDefault: string;
   deliveryAddressName: string;
@@ -219,7 +219,7 @@ export interface GetSalesInvoiceSalesInvoice {
   deliveryToCustomerWeek?: string;
   taxHandlingClause: {
     value: string;
-    attr: { netvisorKey: string };
+    attr: { netvisorkey: string };
   };
   deliveryOfficeIdentifier: string;
   contactPersonNetvisorKey?: number;
@@ -431,8 +431,11 @@ export interface SalesInvoice {
     value: '1' | '2' | 'Lasku + tilisiirto' | 'Lasku';
     attr: {
       type: 'netvisor' | 'customer';
-      secondName?: string;
     };
+  };
+  secondName?: {
+    value: string;
+    attr: { type: 'netvisor' | 'customer' };
   };
   overrideRateOfOverdue?: number;
   orderNumber?: string;
