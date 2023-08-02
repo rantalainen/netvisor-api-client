@@ -1,14 +1,13 @@
-import got, { Got, GotReturn } from 'got';
+import got from 'got';
+import crypto from 'crypto';
+import * as xml2js from 'xml2js';
+import CacheableLookup from 'cacheable-lookup';
 import { NetvisorCustomerMethod } from './methods/customers';
 import { NetvisorPaymentMethod } from './methods/payments';
 import { NetvisorSalesMethod } from './methods/salesinvoices';
 import { NetvisorDimensionMethod } from './methods/dimensions';
 import { NetvisorAccountingMethod } from './methods/accounting';
 import { NetvisorProductsMethod } from './methods/products';
-import moment from 'moment';
-import crypto from 'crypto';
-import * as xml2js from 'xml2js';
-import CacheableLookup from 'cacheable-lookup';
 import { NetvisorPurchasesMethod } from './methods/purchases';
 import { NetvisorPayrollMethod } from './methods/payroll';
 import { NetvisorWorkdayMethod } from './methods/workday';
@@ -112,7 +111,7 @@ export class NetvisorApiClient {
       'X-Netvisor-Authentication-Sender': this.options.integrationName,
       'X-Netvisor-Authentication-CustomerId': this.options.customerId,
       'X-Netvisor-Authentication-PartnerId': this.options.partnerId,
-      'X-Netvisor-Authentication-Timestamp': moment().format('YYYY-MM-DD HH:mm:ss.SSS'),
+      'X-Netvisor-Authentication-Timestamp': new Date().toISOString().replace('T', ' ').replace('Z', ''),
       'X-Netvisor-Authentication-TransactionId': crypto.randomBytes(32).toString('hex').substring(0, 16),
       'X-Netvisor-Interface-Language': this.options.language,
       'X-Netvisor-Organisation-ID': this.options.organizationId,
