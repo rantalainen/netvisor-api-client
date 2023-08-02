@@ -9,6 +9,9 @@ import moment from 'moment';
 import crypto from 'crypto';
 import * as xml2js from 'xml2js';
 import CacheableLookup from 'cacheable-lookup';
+import { NetvisorPurchasesMethod } from './methods/purchases';
+import { NetvisorPayrollMethod } from './methods/payroll';
+import { NetvisorWorkdayMethod } from './methods/workday';
 
 const cacheableLookup = new CacheableLookup();
 
@@ -54,10 +57,14 @@ export class NetvisorApiClient {
   readonly dimensions: NetvisorDimensionMethod;
   readonly accounting: NetvisorAccountingMethod;
   readonly products: NetvisorProductsMethod;
+  readonly purchases: NetvisorPurchasesMethod;
+  readonly payroll: NetvisorPayrollMethod;
+  readonly workday: NetvisorWorkdayMethod;
 
   constructor(options: NetvisorApiClientOptions) {
     // Set default connect URI
-    options.baseUri = options.baseUri || 'https://integration.netvisor.fi';
+    options.baseUri = options.baseUri || 'https://integration.netvisor.fi/';
+    if (!options.baseUri.endsWith('/')) options.baseUri += '/';
 
     // Set default timeout
     options.timeout = options.timeout || 120000;
@@ -78,6 +85,9 @@ export class NetvisorApiClient {
     this.dimensions = new NetvisorDimensionMethod(this);
     this.accounting = new NetvisorAccountingMethod(this);
     this.products = new NetvisorProductsMethod(this);
+    this.purchases = new NetvisorPurchasesMethod(this);
+    this.payroll = new NetvisorPayrollMethod(this);
+    this.workday = new NetvisorWorkdayMethod(this);
 
     this.options = options;
 

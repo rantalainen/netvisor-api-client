@@ -13,9 +13,9 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
   }
 
   /**
-   * Get dimension list from Netvisor
-   * @example await dimensionList({ showhidden: 1 })
-   * @returns {DimensionListItem[]} If no dimensions were retrieved, empty array will be returned.
+   * Get accounting ledger from Netvisor
+   * @example await accountingLedger({ startDate: '2023-07-01', endDate: '2023-07-31' })
+   * @returns {AccountingLedgerVoucher[]} If no vouchers were retrieved, empty array will be returned.
    */
   async accountingLedger(params?: AccountingLedgerParameters): Promise<AccountingLedgerVoucher[]> {
     // Get the raw xml response from Netvisor
@@ -63,7 +63,7 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
           if (xmlVoucherLine.dimension) {
             voucherLineTemplate.dimension = [];
             forceArray(xmlVoucherLine.dimension).forEach((xmlDimension) => {
-              voucherLineTemplate.dimension?.push(xmlDimension);
+              voucherLineTemplate.dimension!.push(xmlDimension);
             });
           }
           voucherTemplate.voucherLine.push(voucherLineTemplate);
@@ -75,6 +75,11 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
     return voucherList;
   }
 
+  /**
+   * Save accounting voucher to Netvisor
+   * @example await accounting(voucherObject);
+   * @returns {string} NetvisorKey of the saved voucher
+   */
   async accounting(voucher: AccountingVoucher): Promise<string> {
     const response = await this._client.post('accounting.nv', buildXml({ root: { voucher: voucher } }));
     return parseXml(response).replies.inserteddataidentifier;

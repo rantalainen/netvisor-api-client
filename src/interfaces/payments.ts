@@ -45,3 +45,42 @@ export interface SalesPaymentListItem {
     attr: { code?: string };
   };
 }
+
+/*
+ * RESOURCE
+ * payment.nv
+ */
+
+export interface Payment {
+  bankPaymentMessageType: 'FinnishReference' | 'FreeText';
+  /** Reference or message */
+  bankPaymentMessage: string;
+  recipient: {
+    organizationCode?: string;
+    name: string;
+    address?: string;
+    postcode?: string;
+    town?: string;
+    /** ISO-3166 alpha-2 format (e.g. 'FI') */
+    country?: string;
+  };
+  /** In IBAN format */
+  sourceBankAccountNumber: string;
+  destinationBankAccount: {
+    bankName: string;
+    /** BIC / SWIFT code */
+    bankBranch: string;
+    /** In IBAN format */
+    destinationBankAccountNumber: string;
+  };
+  /** YYYY-MM-DD or DD.MM.YYYY */
+  dueDate: string;
+  /** Only EUR supported */
+  amount: number;
+  paymentGroup?: {
+    paymentGroupPayment: {
+      sum: number;
+      reference: number;
+    }[];
+  };
+}

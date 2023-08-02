@@ -49,6 +49,7 @@ type VatCode =
  * RESOURCE
  * salesinvoicelist.nv
  */
+
 export interface SalesInvoiceListParameters {
   /** Ei arvoa kun haetaan myyntilaskulistaa ja 'preinvoice' kun haetaan tilauslistaa */
   listType?: '' | 'preinvoice';
@@ -116,6 +117,7 @@ export interface SalesInvoiceListItem {
  * RESOURCE
  * getsalesinvoice.nv
  */
+
 export interface GetSalesInvoiceParameters {
   /** Haettavan laskun Netvisor tunnus (Huom. ei pakollinen jos annetaan parametrille netvisorkeylist arvo; vaihtoehtoinen parametri netvisorkeylist:in kanssa) */
   netvisorKey: number;

@@ -505,3 +505,81 @@ export interface ProductProperty {
     };
   }[];
 }
+
+/*
+ * RESOURCE
+ * inventorybywarehouse.nv
+ */
+
+export interface InventoryByWarehouseParameters {
+  productId?: number;
+  productIdList?: string;
+  inventoryPlaceId?: number;
+  inventoryPlaceName?: string;
+  limitVendorId?: number;
+  changedSince?: string;
+  limitUnderAlertLimit?: 1;
+  productGroupName?: string;
+}
+
+export interface InventoryByWarehouse {
+  product: {
+    netvisorKey: number;
+    name: string;
+    code: string;
+    groupName: string;
+    productUri: string;
+    warehouse: {
+      netvisorKey: number;
+      name: string;
+      reservedAmount: number;
+      orderedAmount: number;
+      inventoryAmount: number;
+    };
+    totalReservedAmount: number;
+    totalOrderedAmount: number;
+    totalAmount: number;
+  }[];
+}
+
+/*
+ * RESOURCE
+ * warehouseevent.nv
+ */
+
+export interface WarehouseEvent {
+  description?: string;
+  reference: string;
+  deliveryMethod?: string;
+  distributer?: {
+    value: string;
+    attr: { type: 'netvisor' | 'customer' };
+  };
+  warehouseEventLines: {
+    warehouseEventLine: {
+      eventType: {
+        value: 'Hankinta' | 'Myynti' | 'Inventointi' | 'Korjaus' | 'Varastosiirto' | 'Valmistus';
+        attr: { type: 'customer' };
+      };
+      product: {
+        value: string;
+        attr: { type: 'netvisor' | 'customer' };
+      };
+      inventoryPlace?:
+        | {
+            value: number;
+            attr: { type: 'netvisor' };
+          }
+        | string;
+      description?: string;
+      quantity: number;
+      unitPrice: number;
+      valueDate: {
+        /** Format YYYY-MM-DD */
+        value: string;
+        attr: { format: 'ansi' };
+      };
+      status?: 'open' | 'handled' | 'bypassed';
+    }[];
+  };
+}
