@@ -1,6 +1,6 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod, forceArray, parseXml, buildXml } from './_method';
-import { SalesPaymentListItem, SalesPaymentListParameters } from '../interfaces/payments';
+import { Payment, SalesPaymentListItem, SalesPaymentListParameters } from '../interfaces/payments';
 
 export class NetvisorPaymentMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
@@ -46,5 +46,15 @@ export class NetvisorPaymentMethod extends NetvisorMethod {
       });
     }
     return salesPaymentsList;
+  }
+
+  /**
+   * Create a new payment in Netvisor.
+   * @example await payment(paymentData)
+   * @returns the added payment's netvisor key
+   */
+  async payment(payment: Payment): Promise<string> {
+    const response = await this._client.post('payment.nv', buildXml({ root: { payment: payment } }));
+    return parseXml(response).replies.inserteddataidentifier;
   }
 }

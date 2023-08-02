@@ -25,7 +25,9 @@ type VatCode =
  */
 
 export interface AccountingLedgerParameters {
+  /** Format yyyy-MM-DD */
   startDate: string;
+  /** Format yyyy-MM-DD */
   endDate: string;
   accountNumberStart?: number;
   accountNumberEnd?: number;

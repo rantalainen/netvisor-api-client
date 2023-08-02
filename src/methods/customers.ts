@@ -178,7 +178,7 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
               finvoiceRouterCode: xmlOfficeDetails.officefinvoicedetails.finvoiceroutercode || undefined
             }
           };
-          customer.customerOfficeDetails?.push(customerOfficeDetail);
+          customer.customerOfficeDetails!.push(customerOfficeDetail);
         });
       }
       // Add additional information's optional properties if they exist
@@ -202,7 +202,7 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
       if (xmlCustomer.customeradditionalinformation.customerdimensions) {
         customer.customerAdditionalInformation.customerDimensions = { dimension: [] };
         forceArray(xmlCustomer.customeradditionalinformation.customerdimensions.dimension).forEach((xmlDimension) => {
-          customer.customerAdditionalInformation.customerDimensions?.dimension.push({
+          customer.customerAdditionalInformation.customerDimensions!.dimension.push({
             dimensionName: {
               value: xmlDimension.dimensionname.value,
               attr: { netvisorkey: xmlDimension.dimensionname.attr.netvisorkey }
@@ -229,7 +229,7 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
   }
 
   /**
-   * Create an invoice or sales order to Netvisor
+   * Create a customer to Netvisor
    * @example await customer(customer, { method: 'add' })
    * @returns the added customer's netvisor key
    */

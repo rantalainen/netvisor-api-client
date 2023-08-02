@@ -7,7 +7,12 @@ import {
   ExtendedProductListParameters,
   ExtendedProductListItem,
   ExtendedProductList,
-  ProductProperty
+  ProductProperty,
+  ProductParameters,
+  Product,
+  InventoryByWarehouse,
+  InventoryByWarehouseParameters,
+  WarehouseEvent
 } from '../interfaces/products';
 import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
 
@@ -31,7 +36,6 @@ export class NetvisorProductsMethod extends NetvisorMethod {
     // Add items to return array
     if (xmlObject.productlist.product) {
       forceArray(xmlObject.productlist.product).forEach((xmlProductItem) => {
-        // Create a template for voucher
         productList.push({
           netvisorKey: parseInt(xmlProductItem.netvisorkey),
           productCode: xmlProductItem.productcode,
@@ -50,144 +54,163 @@ export class NetvisorProductsMethod extends NetvisorMethod {
   /**
    * Get product(s) from Netvisor
    * @example await getProduct({ id: 45 })
-   * @returns {GetProduct} If no dimensions were retrieved, empty array will be returned.
+   * @returns {GetProduct[]} Returns array even when getting only a single product.
    */
-  async getProduct(params?: GetProductParameters): Promise<GetProduct> {
+  async getProduct(params?: GetProductParameters): Promise<GetProduct[]> {
     // Get the raw xml response from Netvisor
     const responseXml = await this._client.get('getproduct.nv', params);
     // Parse the xml to js object
     const xmlObject: any = parseXml(responseXml);
-    const xmlProduct = xmlObject.product;
+    // Create the return array
+    const products: GetProduct[] = [];
+    // Create array from the xml result
+    let xmlProducts: any[] = [];
+    if (xmlObject.products) {
+      if (xmlObject.products.product) {
+        // If there were multiple products in the result
+        xmlProducts = forceArray(xmlObject.products.product);
+      }
+    } else {
+      if (xmlObject.product) {
+        // If there were a single product in the result
+        xmlProducts = forceArray(xmlObject.product);
+      }
+    }
 
-    const product: GetProduct = {
-      productBaseInformation: {
-        netvisorKey: parseInt(xmlProduct.productbaseinformation.netvisorkey),
-        productCode: xmlProduct.productbaseinformation.productcode,
-        productGroup: xmlProduct.productbaseinformation.productgroup,
-        name: xmlProduct.productbaseinformation.name,
-        description: xmlProduct.productbaseinformation.description,
-        unitPrice: {
-          value: parseFloat(xmlProduct.productbaseinformation.unitprice.value.replace(',', '.')),
-          attr: xmlProduct.productbaseinformation.unitprice.attr
-        },
-        unitGrossPrice: {
-          value: parseFloat(xmlProduct.productbaseinformation.unitgrossprice.value.replace(',', '.')),
-          attr: xmlProduct.productbaseinformation.unitgrossprice.attr
-        },
-        unit: xmlProduct.productbaseinformation.unit,
-        purchasePrice: parseFloat(xmlProduct.productbaseinformation.purchaseprice.replace(',', '.')),
-        tariffHeading: xmlProduct.productbaseinformation.tariffheading,
-        comissionPercentage: parseFloat(xmlProduct.productbaseinformation.comissionpercentage.replace(',', '.')),
-        isActive: parseInt(xmlProduct.productbaseinformation.isactive),
-        isSalesProduct: parseInt(xmlProduct.productbaseinformation.issalesproduct),
-        countryOfOrigin: {
-          value: xmlProduct.productbaseinformation.countryoforigin.value,
-          attr: xmlProduct.productbaseinformation.countryoforigin.attr
-        }
-      },
-      productBookKeepingDetails: {
-        defaultVatPercent: parseFloat(xmlProduct.productbookkeepingdetails.defaultvatpercent.replace(',', '.')),
-        defaultDomesticAccountNumber: parseInt(xmlProduct.productbookkeepingdetails.defaultdomesticaccountnumber),
-        defaultEuAccountNumber: parseInt(xmlProduct.productbookkeepingdetails.defaulteuaccountnumber),
-        defaultOutsideEuAccountNumber: parseInt(xmlProduct.productbookkeepingdetails.defaultoutsideeuaccountnumber),
-        productDimensions: {
-          dimension: []
-        }
-      },
-      productInventoryDetails: {
-        inventoryAmount: parseFloat(xmlProduct.productinventorydetails.inventoryamount.replace(',', '.')),
-        inventoryMidPrice: parseFloat(xmlProduct.productinventorydetails.inventorymidprice.replace(',', '.')),
-        inventoryValue: parseFloat(xmlProduct.productinventorydetails.inventoryvalue.replace(',', '.')),
-        inventoryReservedAmount: parseFloat(xmlProduct.productinventorydetails.inventoryreservedamount.replace(',', '.')),
-        inventoryOrderedAmount: parseFloat(xmlProduct.productinventorydetails.inventoryorderedamount.replace(',', '.')),
-        inventoryAccountNumber: parseInt(xmlProduct.productinventorydetails.inventoryaccountnumber)
-      },
-      productAdditionalInformation: {
-        productNetWeight: {
-          value: parseFloat(xmlProduct.productadditionalinformation.productnetweight.value?.replace(',', '.')) || 0,
-          attr: xmlProduct.productadditionalinformation.productnetweight.attr
-        },
-        productGrossWeight: {
-          value: parseFloat(xmlProduct.productadditionalinformation.productgrossweight.value?.replace(',', '.')) || 0,
-          attr: xmlProduct.productadditionalinformation.productgrossweight.attr
-        },
-        productPackageInformation: {
-          packageWidth: {
-            value: parseFloat(xmlProduct.productadditionalinformation.productpackageinformation.packagewidth.value?.replace(',', '.')) || 0,
-            attr: xmlProduct.productadditionalinformation.productpackageinformation.packagewidth.attr
+    xmlProducts.forEach((xmlProduct) => {
+      const product: GetProduct = {
+        productBaseInformation: {
+          netvisorKey: parseInt(xmlProduct.productbaseinformation.netvisorkey),
+          productCode: xmlProduct.productbaseinformation.productcode,
+          productGroup: xmlProduct.productbaseinformation.productgroup,
+          name: xmlProduct.productbaseinformation.name,
+          description: xmlProduct.productbaseinformation.description,
+          unitPrice: {
+            value: parseFloat(xmlProduct.productbaseinformation.unitprice.value.replace(',', '.')),
+            attr: xmlProduct.productbaseinformation.unitprice.attr
           },
-          packageHeight: {
-            value:
-              parseFloat(xmlProduct.productadditionalinformation.productpackageinformation.packageheight.value?.replace(',', '.')) || 0,
-            attr: xmlProduct.productadditionalinformation.productpackageinformation.packageheight.attr
+          unitGrossPrice: {
+            value: parseFloat(xmlProduct.productbaseinformation.unitgrossprice.value.replace(',', '.')),
+            attr: xmlProduct.productbaseinformation.unitgrossprice.attr
           },
-          packageLength: {
-            value:
-              parseFloat(xmlProduct.productadditionalinformation.productpackageinformation.packagelength.value?.replace(',', '.')) || 0,
-            attr: xmlProduct.productadditionalinformation.productpackageinformation.packagelength.attr
+          unit: xmlProduct.productbaseinformation.unit,
+          purchasePrice: parseFloat(xmlProduct.productbaseinformation.purchaseprice.replace(',', '.')),
+          tariffHeading: xmlProduct.productbaseinformation.tariffheading,
+          comissionPercentage: parseFloat(xmlProduct.productbaseinformation.comissionpercentage.replace(',', '.')),
+          isActive: parseInt(xmlProduct.productbaseinformation.isactive),
+          isSalesProduct: parseInt(xmlProduct.productbaseinformation.issalesproduct),
+          countryOfOrigin: {
+            value: xmlProduct.productbaseinformation.countryoforigin.value,
+            attr: xmlProduct.productbaseinformation.countryoforigin.attr
           }
         },
-        primaryEanCode: xmlProduct.productadditionalinformation.primaryeancode,
-        secondaryEanCode: xmlProduct.productadditionalinformation.secondaryeancode
-      }
-    };
-    // Add dimensions to product
-    if (xmlProduct.productbookkeepingdetails.productdimensions?.dimension) {
-      forceArray(xmlProduct.productbookkeepingdetails.productdimensions.dimension).forEach((xmlDimension) => {
-        product.productBookKeepingDetails.productDimensions.dimension.push(xmlDimension);
-      });
-    }
-    // Add sub product information to product if it exists
-    if (xmlProduct.subproductinformation) {
-      console.log('Subproducts detected');
-      product.subProductInformation = {
-        parents: {
-          product: []
+        productBookKeepingDetails: {
+          defaultVatPercent: parseFloat(xmlProduct.productbookkeepingdetails.defaultvatpercent.replace(',', '.')),
+          defaultDomesticAccountNumber: parseInt(xmlProduct.productbookkeepingdetails.defaultdomesticaccountnumber),
+          defaultEuAccountNumber: parseInt(xmlProduct.productbookkeepingdetails.defaulteuaccountnumber),
+          defaultOutsideEuAccountNumber: parseInt(xmlProduct.productbookkeepingdetails.defaultoutsideeuaccountnumber),
+          productDimensions: {
+            dimension: []
+          }
         },
-        children: {
-          product: []
+        productInventoryDetails: {
+          inventoryAmount: parseFloat(xmlProduct.productinventorydetails.inventoryamount.replace(',', '.')),
+          inventoryMidPrice: parseFloat(xmlProduct.productinventorydetails.inventorymidprice.replace(',', '.')),
+          inventoryValue: parseFloat(xmlProduct.productinventorydetails.inventoryvalue.replace(',', '.')),
+          inventoryReservedAmount: parseFloat(xmlProduct.productinventorydetails.inventoryreservedamount.replace(',', '.')),
+          inventoryOrderedAmount: parseFloat(xmlProduct.productinventorydetails.inventoryorderedamount.replace(',', '.')),
+          inventoryAccountNumber: parseInt(xmlProduct.productinventorydetails.inventoryaccountnumber)
+        },
+        productAdditionalInformation: {
+          productNetWeight: {
+            value: parseFloat(xmlProduct.productadditionalinformation.productnetweight.value?.replace(',', '.')) || 0,
+            attr: xmlProduct.productadditionalinformation.productnetweight.attr
+          },
+          productGrossWeight: {
+            value: parseFloat(xmlProduct.productadditionalinformation.productgrossweight.value?.replace(',', '.')) || 0,
+            attr: xmlProduct.productadditionalinformation.productgrossweight.attr
+          },
+          productPackageInformation: {
+            packageWidth: {
+              value:
+                parseFloat(xmlProduct.productadditionalinformation.productpackageinformation.packagewidth.value?.replace(',', '.')) || 0,
+              attr: xmlProduct.productadditionalinformation.productpackageinformation.packagewidth.attr
+            },
+            packageHeight: {
+              value:
+                parseFloat(xmlProduct.productadditionalinformation.productpackageinformation.packageheight.value?.replace(',', '.')) || 0,
+              attr: xmlProduct.productadditionalinformation.productpackageinformation.packageheight.attr
+            },
+            packageLength: {
+              value:
+                parseFloat(xmlProduct.productadditionalinformation.productpackageinformation.packagelength.value?.replace(',', '.')) || 0,
+              attr: xmlProduct.productadditionalinformation.productpackageinformation.packagelength.attr
+            }
+          },
+          primaryEanCode: xmlProduct.productadditionalinformation.primaryeancode,
+          secondaryEanCode: xmlProduct.productadditionalinformation.secondaryeancode
         }
       };
-      // Add parent products to product
-      if (xmlProduct.subproductinformation.parents.product) {
-        forceArray(xmlProduct.subproductinformation.parents.product).forEach((xmlParentProduct) => {
-          product.subProductInformation?.parents.product.push({
-            netvisorKey: parseInt(xmlParentProduct.netvisorkey),
-            amount: parseFloat(xmlParentProduct.amount.replace(',', '.')),
-            purchasePriceChange: parseFloat(xmlParentProduct.purchasepricechange.replace(',', '.')),
-            unitPriceChange: parseFloat(xmlParentProduct.unitpricechange.replace(',', '.'))
-          });
+      // Add dimensions to product
+      if (xmlProduct.productbookkeepingdetails.productdimensions?.dimension) {
+        forceArray(xmlProduct.productbookkeepingdetails.productdimensions.dimension).forEach((xmlDimension) => {
+          product.productBookKeepingDetails.productDimensions.dimension.push(xmlDimension);
         });
       }
-      // Add child products to product
-      if (xmlProduct.subproductinformation.children.product) {
-        forceArray(xmlProduct.subproductinformation.children.product).forEach((xmlChildProduct) => {
-          product.subProductInformation?.children.product.push({
-            netvisorKey: parseInt(xmlChildProduct.netvisorkey),
-            amount: parseFloat(xmlChildProduct.amount.replace(',', '.')),
-            purchasePriceChange: parseFloat(xmlChildProduct.purchasepricechange.replace(',', '.')),
-            unitPriceChange: parseFloat(xmlChildProduct.unitpricechange.replace(',', '.'))
+      // Add sub product information to product if it exists
+      if (xmlProduct.subproductinformation) {
+        console.log('Subproducts detected');
+        product.subProductInformation = {
+          parents: {
+            product: []
+          },
+          children: {
+            product: []
+          }
+        };
+        // Add parent products to product
+        if (xmlProduct.subproductinformation.parents.product) {
+          forceArray(xmlProduct.subproductinformation.parents.product).forEach((xmlParentProduct) => {
+            product.subProductInformation!.parents.product.push({
+              netvisorKey: parseInt(xmlParentProduct.netvisorkey),
+              amount: parseFloat(xmlParentProduct.amount.replace(',', '.')),
+              purchasePriceChange: parseFloat(xmlParentProduct.purchasepricechange.replace(',', '.')),
+              unitPriceChange: parseFloat(xmlParentProduct.unitpricechange.replace(',', '.'))
+            });
           });
-        });
+        }
+        // Add child products to product
+        if (xmlProduct.subproductinformation.children.product) {
+          forceArray(xmlProduct.subproductinformation.children.product).forEach((xmlChildProduct) => {
+            product.subProductInformation!.children.product.push({
+              netvisorKey: parseInt(xmlChildProduct.netvisorkey),
+              amount: parseFloat(xmlChildProduct.amount.replace(',', '.')),
+              purchasePriceChange: parseFloat(xmlChildProduct.purchasepricechange.replace(',', '.')),
+              unitPriceChange: parseFloat(xmlChildProduct.unitpricechange.replace(',', '.'))
+            });
+          });
+        }
       }
-    }
-    return product;
+      products.push(product);
+    });
+    return products;
   }
 
   /**
    * Create or edit a product in Netvisor. Edit will not work with extended product management.
    * @example await product(productData, { method: 'add' })
-   * @returns the added product's netvisor key
+   * @returns the added or edited product's netvisor key
    */
-  async product(product: any, params: any): Promise<string> {
+  async product(product: Product, params: ProductParameters): Promise<string> {
     const response = await this._client.post('product.nv', buildXml({ root: { product: product } }), params);
-    return parseXml(response).replies.inserteddataidentifier;
+    if (params.method === 'add') return parseXml(response).replies.inserteddataidentifier;
+    return params.id?.toString() || '';
   }
 
   /**
    * Get extended product list from Netvisor
    * @example await extendedProductList({ replyOptions: 3 })
-   * @returns {ExtendedProductList} If no products were retrieved, products array will be empty.
+   * @returns {ExtendedProductList} If no products were retrieved, products array under ExtendedProductList will be empty.
    */
   async extendedProductList(params?: ExtendedProductListParameters): Promise<ExtendedProductList> {
     // Get the raw xml response from Netvisor
@@ -266,7 +289,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
         if (xmlExtProductItem.productpriceinformation.pricegroups) {
           extProductItem.productPriceInformation.priceGroups = { group: [] };
           forceArray(xmlExtProductItem.productpriceinformation.pricegroups.group).forEach((xmlPriceGroup: any) => {
-            extProductItem.productPriceInformation.priceGroups?.group.push({
+            extProductItem.productPriceInformation.priceGroups!.group.push({
               netvisorKey: parseInt(xmlPriceGroup.netvisorkey),
               priceGroupName: xmlPriceGroup.pricegroupname,
               netPrice: parseFloat(xmlPriceGroup.netprice.replace(',', '.')),
@@ -278,7 +301,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
         if (xmlExtProductItem.productpriceinformation.customerprices) {
           extProductItem.productPriceInformation.customerPrices = { customer: [] };
           forceArray(xmlExtProductItem.productpriceinformation.customerprices.customer).forEach((xmlCustomerPrice: any) => {
-            extProductItem.productPriceInformation.customerPrices?.customer.push({
+            extProductItem.productPriceInformation.customerPrices!.customer.push({
               netvisorKey: parseInt(xmlCustomerPrice.netvisorkey),
               customerCode: parseInt(xmlCustomerPrice.customercode),
               customerName: xmlCustomerPrice.customername,
@@ -296,7 +319,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
             extProductItem.productPurchaseInformation.distirbuterPurchaseInformations = { distributer: [] };
             forceArray(xmlExtProductItem.productpurchaseinformation.distributerpurchaseinformations.distributer).forEach(
               (xmlDistributer: any) => {
-                extProductItem.productPurchaseInformation?.distirbuterPurchaseInformations?.distributer.push({
+                extProductItem.productPurchaseInformation!.distirbuterPurchaseInformations!.distributer.push({
                   netvisorKey: parseInt(xmlDistributer.netvisorkey),
                   distributerCode: parseInt(xmlDistributer.distributercode),
                   distributerName: xmlDistributer.distributername,
@@ -325,7 +348,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
           if (xmlExtProductItem.productstorageinformation.inventoryplaceshelves) {
             extProductItem.productStorageInformation.inventoryPlaceShelves = { inventoryPlaceShelve: [] };
             forceArray(xmlExtProductItem.productstorageinformation.inventoryplaceshelves.inventoryplaceshelve).forEach((xmlShelf: any) => {
-              extProductItem.productStorageInformation?.inventoryPlaceShelves?.inventoryPlaceShelve.push({
+              extProductItem.productStorageInformation!.inventoryPlaceShelves!.inventoryPlaceShelve.push({
                 inventoryPlaceNetvisorKey: parseInt(xmlShelf.inventoryplacenetvisorkey),
                 inventoryPlaceName: xmlShelf.inventoryplacename,
                 shelveNetvisorKey: parseInt(xmlShelf.shelvenetvisorkey),
@@ -376,7 +399,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
             if (xmlCriteria.translation) {
               const translations: { value: string; attr: { language: string } }[] = [];
               forceArray(xmlCriteria.translation).forEach((xmlTranslation: any) => translations.push(xmlTranslation));
-              extProductItem.productGroupingCriterias?.groupingCriteria.push({ translation: translations });
+              extProductItem.productGroupingCriterias!.groupingCriteria.push({ translation: translations });
             }
           });
         }
@@ -393,7 +416,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
         if (xmlExtProductItem.productdimensioninformation) {
           extProductItem.productDimensionInformation = { dimension: [] };
           forceArray(xmlExtProductItem.productdimensioninformation.dimension).forEach((xmlDimension: any) => {
-            extProductItem.productDimensionInformation?.dimension.push({
+            extProductItem.productDimensionInformation!.dimension.push({
               nameNetvisorKey: parseInt(xmlDimension.namenetvisorkey),
               dimensionNameName: xmlDimension.dimensionnamename,
               detailNetvisorKey: parseInt(xmlDimension.detailnetvisorkey),
@@ -405,7 +428,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
         if (xmlExtProductItem.productinformationfields) {
           extProductItem.productInformationFields = { informationField: [] };
           forceArray(xmlExtProductItem.productinformationfields.informationfield).forEach((xmlField: any) => {
-            extProductItem.productInformationFields?.informationField.push({
+            extProductItem.productInformationFields!.informationField.push({
               informationFieldName: xmlField.informationfieldname,
               informationFieldItemValue: xmlField.informationfielditemvalue
             });
@@ -416,7 +439,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
           if (xmlExtProductItem.productreferences.relatedproducts) {
             extProductItem.productReferences = { relatedProducts: { product: [] } };
             forceArray(xmlExtProductItem.productreferences.relatedproducts.product).forEach((xmlProduct: any) => {
-              extProductItem.productReferences?.relatedProducts?.product.push({
+              extProductItem.productReferences!.relatedProducts!.product.push({
                 netvisorKey: parseInt(xmlProduct.netvisorkey),
                 productCode: xmlProduct.productcode,
                 productNameTranslations: {
@@ -428,7 +451,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
           if (xmlExtProductItem.productreferences.complementaryproducts) {
             extProductItem.productReferences = { complementaryProducts: { product: [] } };
             forceArray(xmlExtProductItem.productreferences.complementaryproducts.product).forEach((xmlProduct: any) => {
-              extProductItem.productReferences?.complementaryProducts?.product.push({
+              extProductItem.productReferences!.complementaryProducts!.product.push({
                 netvisorKey: parseInt(xmlProduct.netvisorkey),
                 productCode: xmlProduct.productcode,
                 productNameTranslations: {
@@ -451,7 +474,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
             if (xmlProperty.propertyvalues) {
               property.propertyValues = [];
               xmlProperty.propertyvalues.forEach((xmlPropertyValue: any) => {
-                property.propertyValues?.push({
+                property.propertyValues!.push({
                   netvisorKey: parseInt(xmlPropertyValue.netvisorkey),
                   propertyValueTranslations: {
                     translation: forceArray(xmlPropertyValue.propertyvaluetranslations.translation)
@@ -459,7 +482,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
                 });
               });
             }
-            extProductItem.productProperties?.property.push(property);
+            extProductItem.productProperties!.property.push(property);
           });
         }
         // Sub product information
@@ -468,7 +491,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
           if (xmlExtProductItem.subproductinformation.parents) {
             extProductItem.subProductInformation.parents = { product: [] };
             forceArray(xmlExtProductItem.subproductinformation.parents.product).forEach((xmlSubProduct: any) => {
-              extProductItem.subProductInformation?.parents?.product.push({
+              extProductItem.subProductInformation!.parents!.product.push({
                 netvisorKey: parseInt(xmlSubProduct.netvisorkey),
                 amount: parseFloat(xmlSubProduct.amount.replace(',', '.')),
                 purchasePriceChange: parseFloat(xmlSubProduct.purchasepricechange.replace(',', '.')),
@@ -479,7 +502,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
           if (xmlExtProductItem.subproductinformation.children) {
             extProductItem.subProductInformation.children = { product: [] };
             forceArray(xmlExtProductItem.subproductinformation.children.product).forEach((xmlSubProduct: any) => {
-              extProductItem.subProductInformation?.children?.product.push({
+              extProductItem.subProductInformation!.children!.product.push({
                 netvisorKey: parseInt(xmlSubProduct.netvisorkey),
                 amount: parseFloat(xmlSubProduct.amount.replace(',', '.')),
                 purchasePriceChange: parseFloat(xmlSubProduct.purchasepricechange.replace(',', '.')),
@@ -492,7 +515,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
         if (xmlExtProductItem.productimages) {
           extProductItem.productImages = { image: [] };
           forceArray(xmlExtProductItem.productimages.image).forEach((xmlImage: any) => {
-            extProductItem.productImages?.image.push({
+            extProductItem.productImages!.image.push({
               netvisorKey: parseInt(xmlImage.netvisorkey),
               isDefaultImage: xmlImage.isdefaultimage === 'true' ? true : false,
               mimeType: xmlImage.mimetype,
@@ -506,7 +529,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
         if (xmlExtProductItem.productattachments) {
           extProductItem.productAttachments = { attachment: [] };
           forceArray(xmlExtProductItem.productattachments.attachment).forEach((xmlAttachment: any) => {
-            extProductItem.productAttachments?.attachment.push({
+            extProductItem.productAttachments!.attachment.push({
               netvisorKey: parseInt(xmlAttachment.netvisorkey),
               mimeType: xmlAttachment.mimetype,
               fileName: xmlAttachment.filename
@@ -519,5 +542,52 @@ export class NetvisorProductsMethod extends NetvisorMethod {
       });
     }
     return extendedProductList;
+  }
+
+  /**
+   * Get inventory by warehouse from Netvisor
+   * @example await inventoryByWarehouse({ productId: 77, inventoryPlaceId: 3 })
+   * @returns {InventoryByWarehouse} If no inventory was retrieved, product array will be empty.
+   */
+  async inventoryByWarehouse(params?: InventoryByWarehouseParameters): Promise<InventoryByWarehouse> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('inventorybywarehouse.nv', params);
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+    // Create the return object
+    const inventoryList: InventoryByWarehouse = { product: [] };
+    // Add items to return object
+    if (xmlObject.inventorybywarehouse.product) {
+      forceArray(xmlObject.inventorybywarehouse.product).forEach((xmlInventoryItem) => {
+        inventoryList.product.push({
+          netvisorKey: parseInt(xmlInventoryItem.netvisorkey),
+          name: xmlInventoryItem.name,
+          code: xmlInventoryItem.code,
+          groupName: xmlInventoryItem.groupname,
+          productUri: xmlInventoryItem.producturi,
+          warehouse: {
+            netvisorKey: parseInt(xmlInventoryItem.warehouse.netvisorkey),
+            name: xmlInventoryItem.warehouse.name,
+            reservedAmount: parseFloat(xmlInventoryItem.warehouse.reservedamount.replace(',', '.')),
+            orderedAmount: parseFloat(xmlInventoryItem.warehouse.orderedamount.replace(',', '.')),
+            inventoryAmount: parseFloat(xmlInventoryItem.warehouse.inventoryamount.replace(',', '.'))
+          },
+          totalReservedAmount: parseFloat(xmlInventoryItem.totalreservedamount.replace(',', '.')),
+          totalOrderedAmount: parseFloat(xmlInventoryItem.totalorderedamount.replace(',', '.')),
+          totalAmount: parseFloat(xmlInventoryItem.totalamount.replace(',', '.'))
+        });
+      });
+    }
+    return inventoryList;
+  }
+
+  /**
+   * Create a new warehouse event to Netvisor
+   * @example await warehouseEvent(eventData);
+   * @returns {string} The created warehouse event's netvisor key
+   */
+  async warehouseEvent(event: WarehouseEvent): Promise<string> {
+    const response = await this._client.post('warehouseevent.nv', buildXml({ root: { warehouseevent: event } }));
+    return parseXml(response).replies.inserteddataidentifier;
   }
 }
