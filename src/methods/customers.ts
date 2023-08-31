@@ -235,6 +235,7 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
    */
   async customer(customer: Customer, params: CustomerParameters): Promise<string> {
     const response = await this._client.post('customer.nv', buildXml({ root: { customer: customer } }), params);
-    return parseXml(response).replies.inserteddataidentifier;
+    if (params.method === 'add') return parseXml(response).replies.inserteddataidentifier;
+    return params.id?.toString() || '';
   }
 }

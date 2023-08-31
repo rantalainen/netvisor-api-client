@@ -107,7 +107,8 @@ export class NetvisorSalesMethod extends NetvisorMethod {
    */
   async salesInvoice(salesInvoice: SalesInvoice, params: SalesInvoiceParameters): Promise<string> {
     const response = await this._client.post('salesinvoice.nv', buildXml({ root: { salesInvoice: salesInvoice } }), params);
-    return parseXml(response).replies.inserteddataidentifier;
+    if (params.method === 'add') return parseXml(response).replies.inserteddataidentifier;
+    return params.id?.toString() || '';
   }
 
   private async parseSalesInvoiceOrSalesOrder(responseXml: string): Promise<GetSalesInvoiceSalesInvoice[]> {
