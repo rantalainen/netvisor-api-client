@@ -36,8 +36,8 @@ export interface DimensionItemParameters {
 }
 
 export interface DimensionItem {
-  name: string;
-  item: string;
+  name?: string;
+  item?: string;
   /** Mandatory when editing existing dimension item */
   oldItem?: string;
   /** Mandatory when adding new dimension item under existing dimension item */

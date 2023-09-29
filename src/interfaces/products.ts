@@ -149,12 +149,12 @@ export interface ProductParameters {
 }
 
 export interface Product {
-  productBaseInformation: {
+  productBaseInformation?: {
     productCode?: string;
-    productGroup: string;
-    name: string;
+    productGroup?: string;
+    name?: string;
     description?: string;
-    unitPrice: {
+    unitPrice?: {
       value: number;
       attr: { type: 'net' };
     };
@@ -162,8 +162,8 @@ export interface Product {
     purchasePrice?: number;
     tariffHeading?: string;
     comissionPercentage?: number;
-    isActive: 1 | 0;
-    isSalesProduct: 1 | 0;
+    isActive?: 1 | 0;
+    isSalesProduct?: 1 | 0;
     inventoryEnabled?: 1 | 0;
     /** 1 = Ei eräkäsittelyä,
      * 2 = Manuaalinen erävalinta,
@@ -189,7 +189,7 @@ export interface Product {
     inventoryAlertLimit?: number;
   };
   productBookKeepingDetails?: {
-    defaultVatPercent: number;
+    defaultVatPercent?: number;
     defaultDomesticAccountNumber?: number;
     defaultEuAccountNumber?: number;
     defaultOutsideEuAccountNumber?: number;
@@ -213,8 +213,8 @@ export interface Product {
   };
   productCustomTags?: {
     productCustomTag: {
-      tagName: string;
-      tagValue: {
+      tagName?: string;
+      tagValue?: {
         value: string;
         attr: { dataType: 'date' | 'text' | 'decimal' | 'enum' };
       };

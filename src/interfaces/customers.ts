@@ -179,7 +179,7 @@ export interface CustomerParameters {
 }
 
 export interface Customer {
-  customerBaseInformation: {
+  customerBaseInformation?: {
     /** Use attribute 'automatic' if you want Netvisor to use next free customer number */
     internalIdentifier?:
       | string
@@ -208,8 +208,8 @@ export interface Customer {
     emailInvoicingAddress?: string;
   };
   customerFinvoiceDetails?: {
-    finvoiceAddress: string;
-    finvoiceRouterCode: string;
+    finvoiceAddress?: string;
+    finvoiceRouterCode?: string;
   };
   customerDeliveryDetails?: {
     deliveryName?: string;
