@@ -57,6 +57,10 @@ All the methods will follow Visma Netvisor's integration resources. Methods are 
 
 You can reference Netvisor's integration [documentation](https://support.netvisor.fi/en/support/solutions/77000205228) for more info about certain resource/method and their properties.
 
+### Edit methods
+
+Some resources support editing with parameter `{ method: 'edit' }`. When editing some resources in Netvisor, you will only need to pass those attributes that are to be changed and not the whole object from scratch. This is why some interfaces have all the attributes set as optional. You can always refer to Netvisor's documentation to see what attributes are actually required for certain resources.
+
 ### General methods
 
 With these methods, you can call any resource you want but the result and input data will be xml string.
@@ -89,33 +93,40 @@ const xmlString = await netvisor.sales.getXmlData('getsalesinvoice.nv', { netvis
 
 ### Added methods
 
-| Class         | Method                   | Netvisor resource         | Added    |
-|---------------|--------------------------|---------------------------|----------|
-| accounting    | accountingLedger()       | accountingledger.nv       | 2.1.0    |
-| accounting    | accounting()             | accounting.nv             | 2.1.0    |
-| customers     | customerList()           | customerlist.nv           | 2.0.0    |
-| customers     | getCustomer()            | getcustomer.nv            | 2.0.0    |
-| customers     | customer()               | customer.nv               | 2.0.0    |
-| dimensions    | dimensionList()          | dimensionlist.nv          | 2.0.0    |
-| dimensions    | dimensionItem()          | dimensionitem.nv          | 2.1.0    |
-| dimensions    | dimensionDelete()        | dimensiondelete.nv        | 2.1.0    |
-| payments      | salesPaymentList()       | salespaymentlist.nv       | 2.0.0    |
-| payments      | payment()                | payment.nv                | 2.2.0    |
-| payroll       | payrollPeriodCollector() | payrollperiodcollector.nv | 2.2.0    |
-| products      | productList()            | productlist.nv            | 2.1.0    |
-| products      | getProduct()             | getproduct.nv             | 2.1.0    |
-| products      | product()                | product.nv                | 2.1.0    |
-| products      | extendedProductList()    | extendedproductlist.nv    | 2.1.0    |
-| products      | inventoryByWarehouse()   | inventorybywarehouse.nv   | 2.2.0    |
-| products      | warehouseEvent()         | warehouseevent.nv         | 2.2.0    |
-| purchases     | getVendor()              | getvendor.nv              | 2.2.0    |
-| purchases     | purchaseInvoice()        | purchaseinvoice.nv        | 2.2.0    |
-| sales         | salesInvoiceList()       | salesinvoicelist.nv       | 2.0.0    |
-| sales         | getSalesInvoice()        | getsalesinvoice.nv        | 2.0.0    |
-| sales         | getSalesOrder()          | getorder.nv               | 2.0.1    |
-| sales         | salesInvoice()           | salesinvoice.nv           | 2.0.0    |
-| workday       | tripExpense()            | tripexpense.nv            | 2.2.0    |
-| workday       | workday()                | workday.nv                | 2.2.0    |
+| Class         | Method                        | Netvisor resource              | Added    |
+|---------------|-------------------------------|--------------------------------|----------|
+| accounting    | accountingLedger()            | accountingledger.nv            | 2.1.0    |
+| accounting    | accounting()                  | accounting.nv                  | 2.1.0    |
+| customers     | customerList()                | customerlist.nv                | 2.0.0    |
+| customers     | getCustomer()                 | getcustomer.nv                 | 2.0.0    |
+| customers     | customer()                    | customer.nv                    | 2.0.0    |
+| dimensions    | dimensionList()               | dimensionlist.nv               | 2.0.0    |
+| dimensions    | dimensionItem()               | dimensionitem.nv               | 2.1.0    |
+| dimensions    | dimensionDelete()             | dimensiondelete.nv             | 2.1.0    |
+| payments      | salesPaymentList()            | salespaymentlist.nv            | 2.0.0    |
+| payments      | payment()                     | payment.nv                     | 2.2.0    |
+| payroll       | payrollPeriodCollector()      | payrollperiodcollector.nv      | 2.2.0    |
+| payroll       | getEmployees()                | getemployees.nv                | 2.3.0    |
+| payroll       | getEmployee()                 | getemployee.nv                 | 2.3.0    |
+| payroll       | getPayrollPaycheckBatchList() | getpayrollpaycheckbatchlist.nv | 2.3.0    |
+| payroll       | getPayrollPaycheckBatch()     | getpayrollpaycheckbatch.nv     | 2.3.0    |
+| products      | productList()                 | productlist.nv                 | 2.1.0    |
+| products      | getProduct()                  | getproduct.nv                  | 2.1.0    |
+| products      | product()                     | product.nv                     | 2.1.0    |
+| products      | extendedProductList()         | extendedproductlist.nv         | 2.1.0    |
+| products      | inventoryByWarehouse()        | inventorybywarehouse.nv        | 2.2.0    |
+| products      | warehouseEvent()              | warehouseevent.nv              | 2.2.0    |
+| purchases     | getVendor()                   | getvendor.nv                   | 2.2.0    |
+| purchases     | purchaseInvoice()             | purchaseinvoice.nv             | 2.2.0    |
+| purchases     | purchaseInvoiceList()         | purchaseinvoicelist.nv         | 2.3.0    |
+| purchases     | getPurchaseInvoice()          | getpurchaseinvoice.nv          | 2.3.0    |
+| purchases     | purchaseOrder()               | purchaseorder.nv               | 2.3.0    |
+| sales         | salesInvoiceList()            | salesinvoicelist.nv            | 2.0.0    |
+| sales         | getSalesInvoice()             | getsalesinvoice.nv             | 2.0.0    |
+| sales         | getSalesOrder()               | getorder.nv                    | 2.0.1    |
+| sales         | salesInvoice()                | salesinvoice.nv                | 2.0.0    |
+| workday       | tripExpense()                 | tripexpense.nv                 | 2.2.0    |
+| workday       | workday()                     | workday.nv                     | 2.2.0    |
 
 
 ## Examples
@@ -127,7 +138,7 @@ const dimensions = await netvisor.dimensions.dimensionList({ showhidden: 1 });
 // Get all the sales payments
 const payments = await netvisor.payments.salesPaymentList();
 // Add a new invoice to Netvisor
-const netvisorKey = await netvisor.sales.salesInvoice(salesInvoice, { method: 'add'});
+const netvisorKey = await netvisor.sales.salesInvoice(salesInvoice, { method: 'add' });
 // Edit sales invoice that is already in Netvisor
 await netvisor.sales.salesInvoice(editedSalesInvoice, { method: 'edit', id: 123 });
 ```

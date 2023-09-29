@@ -229,7 +229,7 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
   }
 
   /**
-   * Create a customer to Netvisor
+   * Create a customer to Netvisor. When editing an existing customer, only give the properties that are being edited.
    * @example await customer(customer, { method: 'add' })
    * @returns the added customer's netvisor key
    */

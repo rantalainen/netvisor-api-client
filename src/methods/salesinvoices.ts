@@ -101,7 +101,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
   }
 
   /**
-   * Create an invoice or sales order to Netvisor
+   * Create an invoice or sales order to Netvisor. If you are creating a new sales invoice, check required fields from Netvisor's documentation.
    * @example await salesInvoice(salesInvoice, { method: 'add' })
    * @returns the added sales invoice's netvisor key
    */
