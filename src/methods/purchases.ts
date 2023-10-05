@@ -10,7 +10,12 @@ import {
   GetPurchaseInvoiceHandlingHistoryLine,
   GetPurchaseInvoiceLine,
   PurchaseOrder,
-  PurchaseOrderParameters
+  PurchaseOrderParameters,
+  PurchaseOrderListItem,
+  GetPurchaseOrderParameters,
+  GetPurchaseOrder,
+  GetPurchaseOrderProductLine,
+  LinkedInvoiceLine
 } from '../interfaces/purchases';
 import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
 
@@ -379,6 +384,189 @@ export class NetvisorPurchasesMethod extends NetvisorMethod {
     });
 
     return purchaseInvoices;
+  }
+
+  /**
+   * Get purchase order list from Netvisor
+   * @example await purchaseOrderList({ limitBeginDate: '2023-09-01', limitOrderStatus: 'proposal' });
+   */
+  async purchaseOrderList(params?: PurchaseOrderListItem): Promise<PurchaseOrderListItem[]> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('purchaseorderlist.nv', params);
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+    // Create the return array
+    const purchaseOrderList: PurchaseOrderListItem[] = [];
+    // Add items to return array
+    if (xmlObject.purchaseorderlist?.purchaseorder) {
+      forceArray(xmlObject.purchaseorderlist.purchaseorder).forEach((xmlOrder: any) => {
+        purchaseOrderList.push({
+          netvisorKey: parseInt(xmlOrder.netvisorkey),
+          orderNumber: xmlOrder.ordernumber,
+          orderStatus: xmlOrder.orderstatus,
+          orderDate: xmlOrder.orderdate,
+          vendorName: xmlOrder.vendorname,
+          amount: parseFloat(xmlOrder.amount.replace(',', '.')),
+          uri: xmlOrder.uri
+        });
+      });
+    }
+
+    return purchaseOrderList;
+  }
+
+  /**
+   * Get purchase order(s) from Netvisor
+   * @example await getPurchaseOrder({ netvisorKey: 123 });
+   */
+  async getPurchaseOrder(params: GetPurchaseOrderParameters): Promise<GetPurchaseOrder[]> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('getpurchaseorder.nv', params);
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+    // Create the return array
+    const purchaseOrders: GetPurchaseOrder[] = [];
+    // Parse orders from xml object
+    let xmlOrders = [];
+    if (xmlObject.purchaseorder) {
+      xmlOrders = forceArray(xmlObject.purchaseorder);
+    } else if (xmlObject.purchaseorders?.purchaseorder) {
+      xmlOrders = forceArray(xmlObject.purchaseorders.purchaseorder);
+    }
+    // Add items to return array
+    xmlOrders.forEach((xmlOrder: any) => {
+      const purchaseOrder: GetPurchaseOrder = {
+        netvisorKey: parseInt(xmlOrder.netvisorkey),
+        orderNumber: xmlOrder.ordernumber,
+        orderStatus: xmlOrder.orderstatus,
+        orderDate: xmlOrder.orderdate,
+        vendorName: xmlOrder.vendorname,
+        vendorAddressLine: xmlOrder.vendoraddressline,
+        vendorPostNumber: xmlOrder.vendorpostnumber,
+        vendorCity: xmlOrder.vendorcity,
+        vendorCountry: xmlOrder.vendorcountry,
+        deliveryTerm: xmlOrder.deliveryterm,
+        deliveryMethod: xmlOrder.deliverymethod,
+        deliveryName: xmlOrder.deliveryname,
+        deliveryAddressLine: xmlOrder.deliveryaddressline,
+        deliveryPostNumber: xmlOrder.deliverypostnumber,
+        deliveryCity: xmlOrder.deliverycity,
+        deliveryCountry: xmlOrder.deliverycountry,
+        privateComment: xmlOrder.privatecomment,
+        comment: xmlOrder.comment,
+        ourReference: xmlOrder.ourreference,
+        paymentTerm: xmlOrder.paymentterm,
+        amount: {
+          value: parseFloat(xmlOrder.amount.value.replace(',', '.')),
+          attr: xmlOrder.amount.attr
+        },
+        purchaseOrderLines: {}
+      };
+
+      // Add purchase order lines
+      if (xmlOrder.purchaseorderlines?.purchaseorderproductdeliverygroup) {
+        purchaseOrder.purchaseOrderLines.purchaseOrderProductDeliveryGroup = [];
+        forceArray(xmlOrder.purchaseorderlines.purchaseorderproductdeliverygroup).forEach((xmlProductDeliveryGroup: any) => {
+          purchaseOrder.purchaseOrderLines.purchaseOrderProductDeliveryGroup!.push({
+            netvisorKey: parseInt(xmlProductDeliveryGroup.netvisorkey),
+            productCode: xmlProductDeliveryGroup.productcode || '',
+            productName: xmlProductDeliveryGroup.productname || '',
+            vendorProductCode: xmlProductDeliveryGroup.vendorproductcode || '',
+            orderedAmount: parseFloat(xmlProductDeliveryGroup.orderedamount.replace(',', '.')) || 0,
+            unitPrice: parseFloat(xmlProductDeliveryGroup.unitprice.replace(',', '.')) || 0,
+            vatPercent: parseFloat(xmlProductDeliveryGroup.vatpercent.replace(',', '.')) || 0,
+            lineSum: parseFloat(xmlProductDeliveryGroup.linesum.replace(',', '.')) || 0,
+            freightRate: parseFloat(xmlProductDeliveryGroup.freightrate?.replace(',', '.')) || 0
+          });
+        });
+      }
+      if (xmlOrder.purchaseorderlines?.purchaseorderproductline) {
+        purchaseOrder.purchaseOrderLines.purchaseOrderProductLine = [];
+        forceArray(xmlOrder.purchaseorderlines.purchaseorderproductline).forEach((xmlProductLine: any) => {
+          const purchaseOrderLine: GetPurchaseOrderProductLine = {
+            netvisorKey: parseInt(xmlProductLine.netvisorkey),
+            productCode: xmlProductLine.productcode || '',
+            productName: xmlProductLine.productname || '',
+            vendorProductCode: xmlProductLine.vendorproductcode || '',
+            orderedAmount: parseFloat(xmlProductLine.orderedamount.replace(',', '.')) || 0,
+            deliveredAmount: parseFloat(xmlProductLine.deliveredamount.replace(',', '.')) || 0,
+            unitPrice: parseFloat(xmlProductLine.unitprice.replace(',', '.')) || 0,
+            vatPercent: parseFloat(xmlProductLine.vatpercent.replace(',', '.')) || 0,
+            lineSum: parseFloat(xmlProductLine.linesum.replace(',', '.')) || 0,
+            freightRate: parseFloat(xmlProductLine.freightrate?.replace(',', '.')) || 0,
+            deliveryDate: {
+              value: xmlProductLine.deliverydate.value || '',
+              attr: { format: 'ansi' }
+            }
+          };
+          // Add optional attributes
+          if (xmlProductLine.productquality) {
+            purchaseOrderLine.productQuality = {
+              attr: { netvisorkey: parseInt(xmlProductLine.productquality.attr.netvisorkey) },
+              qualityDescription: xmlProductLine.productquality.qualitydescription,
+              qualityDeviation: xmlProductLine.productquality.qualitydeviation.toLowerCase() === 'true' ? true : false
+            };
+          }
+          if (xmlProductLine.inventoryplace) {
+            purchaseOrderLine.inventoryPlace = {
+              value: xmlProductLine.inventoryplace.value,
+              attr: { netvisorkey: parseInt(xmlProductLine.inventoryplace.attr.netvisorkey) }
+            };
+          }
+          if (xmlProductLine.accountingsuggestion) purchaseOrderLine.accountingSuggestion = xmlProductLine.accountingsuggestion;
+          if (xmlProductLine.dimension) {
+            purchaseOrderLine.dimension = [];
+            forceArray(xmlProductLine.dimension).forEach((xmlDimension: any) => {
+              purchaseOrderLine.dimension!.push({
+                dimensionName: xmlDimension.dimensionname,
+                dimensionItem: xmlDimension.dimensionitem
+              });
+            });
+          }
+          if (xmlProductLine.linkedpurchaseinvoicelines) {
+            purchaseOrderLine.linkedPurchaseInvoiceLines = { purchaseInvoice: [] };
+            forceArray(xmlProductLine.linkedpurchaseinvoicelines.purchaseinvoice).forEach((xmlLinkedInvoiceLine: any) => {
+              const linkedInvoiceLine: LinkedInvoiceLine = {
+                netvisorKey: parseInt(xmlLinkedInvoiceLine.netvisorkey),
+                invoiceNumber: xmlLinkedInvoiceLine.invoicenumber,
+                purchaseInvoiceProductLines: []
+              };
+              if (xmlLinkedInvoiceLine.purchaseinvoiceproductlines) {
+                forceArray(xmlLinkedInvoiceLine.purchaseinvoiceproductlines).forEach((xmlInvoiceProductLine: any) => {
+                  linkedInvoiceLine.purchaseInvoiceProductLines.push({
+                    netvisorKey: parseInt(xmlInvoiceProductLine.netvisorkey)
+                  });
+                });
+              }
+              purchaseOrderLine.linkedPurchaseInvoiceLines!.purchaseInvoice.push(linkedInvoiceLine);
+            });
+          }
+          // Push the purchase order line to the main return object
+          purchaseOrder.purchaseOrderLines.purchaseOrderProductLine!.push(purchaseOrderLine);
+        });
+      }
+      if (xmlOrder.purchaseorderlines?.purchaseordercommentline) {
+        purchaseOrder.purchaseOrderLines.purchaseOrderCommentLine = [];
+        forceArray(xmlOrder.purchaseorderlines.purchaseordercommentline).forEach((xmlCommentLine: any) => {
+          purchaseOrder.purchaseOrderLines.purchaseOrderCommentLine!.push({
+            netvisorKey: parseInt(xmlCommentLine.netvisorkey),
+            comment: xmlCommentLine.comment || ''
+          });
+        });
+      }
+      if (xmlOrder.purchaseorderlines?.linkedpurchaseinvoices) {
+        purchaseOrder.purchaseOrderLines.linkedPurchaseInvoices = { purchaseInvoice: [] };
+        forceArray(xmlOrder.purchaseorderlines.linkedpurchaseinvoices.purchaseinvoice).forEach((xmlLinkedInvoice: any) => {
+          purchaseOrder.purchaseOrderLines.linkedPurchaseInvoices!.purchaseInvoice.push({
+            netvisorKey: parseInt(xmlLinkedInvoice.netvisorkey),
+            invoiceNumber: xmlLinkedInvoice.invoicenumber,
+            uri: xmlLinkedInvoice.uri
+          });
+        });
+      }
+      purchaseOrders.push(purchaseOrder);
+    });
+    return purchaseOrders;
   }
 
   /**

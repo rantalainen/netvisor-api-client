@@ -410,6 +410,156 @@ export interface GetPurchaseInvoiceHandlingHistoryLine {
 
 /*
  * RESOURCE
+ * purchaseorderlist.nv
+ */
+
+export interface PurchaseOrderListParameters {
+  limitStartOrderNumber?: number;
+  limitEndOrderNumber?: number;
+  /** yyyy-MM-dd */
+  limitBeginDate?: string;
+  /** yyyy-MM-dd */
+  limitEndDate?: string;
+  limitOrderStatus?: 'proposal' | 'approved' | 'senttovendor' | 'archived';
+  searchComment?: string;
+  limitVendor?: number | string;
+  /** yyyy-MM-ddTHH:mm:ss */
+  lastModifiedStart?: string;
+  /** yyyy-MM-ddTHH:mm:ss */
+  lastModifiedEnd?: string;
+}
+
+export interface PurchaseOrderListItem {
+  netvisorKey: number;
+  orderNumber: string;
+  orderDate: {
+    value: string;
+    attr: { format: 'ansi' };
+  };
+  orderStatus: string;
+  vendorName: string;
+  amount: number;
+  uri: string;
+}
+
+/*
+ * RESOURCE
+ * getpurchaseorder.nv
+ */
+
+export interface GetPurchaseOrderParameters {
+  netvisorKey?: number;
+  netvisorKeyList?: string;
+}
+
+export interface GetPurchaseOrder {
+  netvisorKey: number;
+  orderNumber: string;
+  orderStatus: string;
+  orderDate: {
+    value: string;
+    attr: { format: 'ansi' };
+  };
+  vendorName: string;
+  vendorAddressLine: string;
+  vendorPostNumber: string;
+  vendorCity: string;
+  vendorCountry: {
+    value: string;
+    attr: { type: string };
+  };
+  deliveryTerm: string;
+  deliveryMethod: string;
+  deliveryName: string;
+  deliveryAddressLine: string;
+  deliveryPostNumber: string;
+  deliveryCity: string;
+  deliveryCountry: {
+    value: string;
+    attr: { type: string };
+  };
+  privateComment: string;
+  comment: string;
+  ourReference: string;
+  paymentTerm: string;
+  amount: {
+    value: number;
+    attr: {
+      currencycode: string;
+      type: 'ISO-4217';
+    };
+  };
+  purchaseOrderLines: {
+    purchaseOrderProductDeliveryGroup?: GetPurchaseOrderProductDeliveryGroup[];
+    purchaseOrderProductLine?: GetPurchaseOrderProductLine[];
+    purchaseOrderCommentLine?: {
+      netvisorKey?: number;
+      comment?: string;
+    }[];
+    linkedPurchaseInvoices?: {
+      purchaseInvoice: {
+        invoiceNumber: string;
+        netvisorKey: number;
+        uri: string;
+      }[];
+    };
+  };
+}
+
+export interface GetPurchaseOrderProductDeliveryGroup {
+  netvisorKey: number;
+  productCode: string;
+  productName: string;
+  vendorProductCode: string;
+  orderedAmount: number;
+  unitPrice: number;
+  vatPercent: number;
+  lineSum: number;
+  freightRate: number;
+}
+
+export interface GetPurchaseOrderProductLine {
+  netvisorKey: number;
+  productCode: string;
+  productName: string;
+  vendorProductCode: string;
+  orderedAmount: number;
+  deliveredAmount: number;
+  unitPrice: number;
+  vatPercent: number;
+  lineSum: number;
+  freightRate: number;
+  deliveryDate: {
+    value: string;
+    attr: { format: 'ansi' };
+  };
+  productQuality?: {
+    attr: { netvisorkey: number };
+    qualityDescription: string;
+    qualityDeviation: boolean;
+  };
+  inventoryPlace?: {
+    value: string;
+    attr: { netvisorkey: number };
+  };
+  accountingSuggestion?: string;
+  dimension?: {
+    dimensionName: string;
+    dimensionItem: string;
+  }[];
+  linkedPurchaseInvoiceLines?: {
+    purchaseInvoice: LinkedInvoiceLine[];
+  };
+}
+
+export interface LinkedInvoiceLine {
+  netvisorKey: number;
+  invoiceNumber: string;
+  purchaseInvoiceProductLines: { netvisorKey: number }[];
+}
+
+/*
+ * RESOURCE
  * purchaseorder.nv
  */
 
