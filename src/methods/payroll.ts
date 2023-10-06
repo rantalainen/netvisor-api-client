@@ -1,6 +1,8 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod, forceArray, parseXml, buildXml } from './_method';
 import {
+  Employee,
+  EmployeeParameters,
   GetEmployee,
   GetEmployeeAdditionalInformationField,
   GetEmployeeEmploymentPeriod,
@@ -36,6 +38,14 @@ function getEmployeeParseXml(xml: string): any {
     }
   });
   return xmlObject;
+}
+
+// Use class specific builder (charkey = val instead of value)
+// This is because there are some attributes with name 'value' in the xml and this confuses the builder
+export function employeeBuildXml(obj: Object): string {
+  const xmlBuilder = new xml2js.Builder({ attrkey: 'attr', charkey: 'val', headless: true });
+  const xmlString: string = xmlBuilder.buildObject(obj);
+  return xmlString;
 }
 
 export class NetvisorPayrollMethod extends NetvisorMethod {
@@ -412,6 +422,14 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
     }
 
     return employee;
+  }
+
+  /**
+   * Create or edit an employee in Netvisor. If you are creating a new employee, check required fields from Netvisor's documentation.
+   * @example await employee(employee, { method: 'add' });
+   */
+  async employee(employee: Employee, params: EmployeeParameters): Promise<void> {
+    await this._client.post('employee.nv', employeeBuildXml({ root: { employee: employee } }), params);
   }
 
   /**
