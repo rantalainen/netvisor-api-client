@@ -15,6 +15,8 @@ import {
   GetPayrollPaycheckBatchListParameters,
   GetPayrollPaycheckBatchParameters,
   GetPayrollPaycheckBatchPayrollLine,
+  PatchEmployee,
+  PatchEmployeeParameters,
   PayrollPeriodCollector
 } from '../interfaces/payroll';
 import * as xml2js from 'xml2js';
@@ -425,11 +427,19 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
   }
 
   /**
-   * Create or edit an employee in Netvisor. If you are creating a new employee, check required fields from Netvisor's documentation.
+   * Create or edit an employee in Netvisor.
    * @example await employee(employee, { method: 'add' });
    */
   async employee(employee: Employee, params: EmployeeParameters): Promise<void> {
     await this._client.post('employee.nv', employeeBuildXml({ root: { employee: employee } }), params);
+  }
+
+  /**
+   * Edit employee's basic information in Netvisor. Only edited properties needs to be included in the object.
+   * @example await patchEmployee(employee, { identifiertype: 'netvisorkey', identifier: '123' });
+   */
+  async patchEmployee(employee: PatchEmployee, params: PatchEmployeeParameters): Promise<void> {
+    await this._client.post('patchemployee.nv', buildXml({ root: { patchemployee: employee } }), params);
   }
 
   /**

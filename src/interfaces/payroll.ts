@@ -719,6 +719,136 @@ export interface Employee {
 
 /*
  * RESOURCE
+ * patchemployee.nv
+ */
+
+export interface PatchEmployeeParameters {
+  identifierType: 'netvisorkey' | 'number' | 'personalidentificationnumber';
+  identifier: string;
+}
+
+/*
+Taso	Elementti	Muoto	Ilmentymiä	Kuvaus	Esimerkki
+Root	Root	Aggregaatti	1	
+
+1	patchemployee	Aggregaatti	1	
+
+2	employeebaseinformation	Aggregaatti	1	
+
+3	companyname	Merkkijono	0..1	Yrityksen nimi	Test Company Oy
+3	firstname	Merkkijono, maks. 50	0..1	Palkansaajan etunimi	Anna
+3	lastname	Merkkijono, maks. 50	0..1	Palkansaajan sukunimi	Ammattilainen
+3	phonenumber	Merkkijono, maks. 50	0..1	Palkansaajan puhelinnumero	0501234567
+3	email	Merkkijono, maks.100	0..1	Palkansaajan sähköpostiosoite	anna.ammattilainen@test-company.fi
+2	employeepayrollinformation	Aggregaatti	0..1	
+
+3	streetaddress	Merkkijono, maks. 255	0..1	Palkansaajan katuosoite	Keisarinnankatu 1
+3	postnumber	Merkkijono, maks. 50	0..1	Palkansaajan postinumero	56120
+3	city	Merkkijono, maks. 255	0..1	Palkansaajan postitoimipaikka	Lappeenranta
+3	municipality	Merkkijono, maks. 255	0..1	Palkansaajan asuinpaikkakunta	Lappeenranta
+3	country	Merkkijono, maks. 2	0..1	Palkansaajan kotimaan koodi, oletus fi	fi
+3	nationality	Merkkijono, maks. 2	0..1	Palkansaajan kansalaisuus, oletus fi	se
+3	language	Merkkijono, maks. 2	0..1	Palkansaajan käyttämä kieli, oletus fi	fi
+3	employeenumber	Numeerinen	0..1	Palkansaajan yksilöllinen tunnistenumero	12
+3	payrollrulegroupname	Merkkijono, maks. 50	0..1	Palkansaajan palkkamallin nimi	Kuukausipalkka, perusmalli
+3	bankaccountnumber	Merkkijono, maks. 34	0..1	Palkansaajan pankkitilinumero, IBAN-tilinumero. Jos tuot pankkitilinumeron, tulee tuoda myös BIC-koodi (bankidentificationcode).	FI7179979580007335
+3	bankidentificationcode	Merkkijono. maks. 20	0..1	Pankin BIC-koodi	NDEAFIHH
+3	accountingaccountnumber	Numeerinen	0..1	Palkansaajan velkatilinumero	1751
+3	hierarchy	Merkkijono	0..1	Hierarkiataso	Test Company Oy
+Attr.	type	Merkkijono	0..1	Hierarkian linkitystyyppi	netvisor - Netvisorin tunniste (netvisorkey) tai customer - Jos yksilöidään nimellä, täytyy olla uniikki. Lue yrityshierarkiasta
+3	payslipdeliverymethod	Merkkijono	0..1	Palkkalaskelman toimitustapa	1 = paikallinen tulostus
+2 = tulostuspalvelu
+3 = verkkopalkka
+Attr.	type	Merkkijono	0..1	Toimitustavan linkitystyyppi	Attribuutti type on aina netvisor,
+eli Netvisorin tunniste (netvisorkey)
+3	isjointowner	Numeerinen	0..1	Osakasasemassa maksajaan	1=kyllä
+0=ei
+3	isathlete	Numeerinen	0..1	Urheilija	1=kyllä
+0=ei
+3	isperformingartist	Numeerinen	0..1	Esiintyvä taiteilija	1=kyllä
+0=ei
+3	employeeinsurancetype	Numeerinen	0..1	Työeläkevakuutuksen tyyppi	1=Tyel
+2=MYEL
+3=YEL
+4=Ei eläkevakuutettu
+3	ispersonworkingonaroadferryonalandislands	Numeerinen	0..1	Ahvenanmaan maantielautalla työskentelevä henkilö	1=kyllä
+0=ei
+3	isentrepreneurwithoptionalyelormyel	Numeerinen	0..1	Yrittäjä, ei YEL- tai MYEL-vakuuttamisvelvollisuutta	1=kyllä
+0=ei
+1 voidaan antaa vain, mikäli employeeinsurancetype=4
+3	ispersonreceivingeppoinsurancesalary	Kokonaisluku	0..1	EPPO-lain mukaista vakuutuspalkkaa saaja henkilö	1=kyllä
+0=ei
+3	nosocialsecuritypayment	Numeerinen	0..1	Ei työnantajan sairausvakuutusmaksun alainen	1=kyllä
+0=ei
+3	receivessalaryfromdiplomaticembassy	Numeerinen	0..1	Diplomaattisen edustuston maksamaa palkkaa saava henkilö	1=kyllä
+0=ei
+3	activity	Numeerinen	0..1	Aktiivisuus	1=kyllä
+0=ei
+3	foreclosure	Numeerinen	0..1	Ulosotto	1=kyllä
+0=ei
+3	foreclosuremaintenancepersons	Numeerinen	0..1	Ulosotossa elatuksen varassa olevat henkilöt	Annettava jos tieto ulosotta annetaan arvolla 1
+3	taxnumber	Merkkijono	0..1	Palkansaajan veronumero	12345678912
+3	placeofbusiness	Merkkijono	0..1	Toimipaikka tulorekisteriin (nimi)	Pääkonttori
+2	employeesettings	Aggregaatti	0..1	Palkansaajan asetukset	
+3	payrollservice	Merkkijono	0..1	Palkanlaskentapalvelu	enabled tai disabled
+3	resourcemanagement	Merkkijono	0..1	Resurssinhallinta	enabled tai disabled
+*/
+
+export interface PatchEmployee {
+  employeeBaseInformation?: {
+    companyName?: string;
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    email?: string;
+  };
+  employeePayrollInformation?: {
+    streetAddress?: string;
+    postNumber?: string;
+    city?: string;
+    municipality?: string;
+    country?: string;
+    nationality?: string;
+    language?: string;
+    employeeNumber?: number;
+    payrollRuleGroupName?: string;
+    bankAccountNumber?: string;
+    bankIdentificationCode?: string;
+    accountingAccountNumber?: number;
+    hierarchy?: {
+      value: string;
+      attr: { type: 'netvisor' | 'customer' };
+    };
+    payslipDeliveryMethod?: {
+      /** 1 = paikallinen tulostus, 2 = tulostuspalvelu, 3 = verkkopalkka */
+      value: 1 | 2 | 3;
+      attr: { type: 'netvisor' };
+    };
+    isJointOwner?: 1 | 0;
+    isAthlete?: 1 | 0;
+    isPerformingArtist?: 1 | 0;
+    /** 1 = Tyel, 2 = MYEL, 3 = YEL, 4 = Ei eläkevakuutettu */
+    employeeInsuranceType?: 1 | 2 | 3 | 4;
+    isPersonWorkingOnARoadFerryOnAlandIslands?: 1 | 0;
+    /** If set to true, employeeInsuranceType must be 4 */
+    isEntrepreneurWithOptionalYelOrMyel?: 1 | 0;
+    isPersonReceivingEppoInsuranceSalary?: 1 | 0;
+    noSocialSecurityPayment?: 1 | 0;
+    receivesSalaryFromDiplomaticEmbassy?: 1 | 0;
+    activity?: 1 | 0;
+    foreclosure?: 1 | 0;
+    foreclosureMaintenancePersons?: number;
+    taxNumber?: string;
+    placeOfBusiness?: string;
+  };
+  employeeSettings?: {
+    payrollService?: 'enabled' | 'disabled';
+    resourceManagement?: 'enabled' | 'disabled';
+  };
+}
+
+/*
+ * RESOURCE
  * getpayrollpaycheckbatchlist.nv
  */
 
