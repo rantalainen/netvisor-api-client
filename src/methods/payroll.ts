@@ -7,6 +7,8 @@ import {
   GetEmployeeAdditionalInformationField,
   GetEmployeeEmploymentPeriod,
   GetEmployeeParameters,
+  GetEmployeeSalaryParametersItem,
+  GetEmployeeSalaryParametersParams,
   GetEmployeesItem,
   GetEmployeesParameters,
   GetPayrollPaycheckBatch,
@@ -23,7 +25,7 @@ import * as xml2js from 'xml2js';
 
 // Use class specific parser (charkey = val instead of value)
 // This is because there are some attributes with name 'value' in the xml and this confuses the parser
-function getEmployeeParseXml(xml: string): any {
+function employeeParseXml(xml: string): any {
   const xmlParser = new xml2js.Parser({
     attrkey: 'attr',
     charkey: 'val',
@@ -101,7 +103,7 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
     // Get the raw xml response from Netvisor
     const responseXml = await this._client.get('getemployee.nv', params);
     // Parse the xml to js object
-    const xmlObject: any = getEmployeeParseXml(responseXml);
+    const xmlObject: any = employeeParseXml(responseXml);
 
     const employee: GetEmployee = {
       employeeBaseInformation: {
@@ -440,6 +442,30 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
    */
   async patchEmployee(employee: PatchEmployee, params: PatchEmployeeParameters): Promise<void> {
     await this._client.post('patchemployee.nv', buildXml({ root: { patchemployee: employee } }), params);
+  }
+
+  /**
+   * Get employee salary parameters from Netvisor
+   * @example await getEmployeeSalaryParameters({ identifierType: 'number', identifier: '1001' });
+   */
+  async getEmployeeSalaryParameters(params: GetEmployeeSalaryParametersParams): Promise<GetEmployeeSalaryParametersItem[]> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('getemployeesalaryparameters.nv', params);
+    // Parse the xml to js object
+    const xmlObject: any = employeeParseXml(responseXml);
+    // Create the return array
+    const employeeSalaryParameters: GetEmployeeSalaryParametersItem[] = [];
+    // Add items to return array
+    if (xmlObject.employeeparameters?.parameters?.parameter) {
+      forceArray(xmlObject.employeeparameters.parameters.parameter).forEach((xmlSalaryParam: any) => {
+        // Create the paycheck batch item object
+        employeeSalaryParameters.push({
+          ratioNumber: parseInt(xmlSalaryParam.rationumber),
+          value: parseInt(xmlSalaryParam.value)
+        });
+      });
+    }
+    return employeeSalaryParameters;
   }
 
   /**

@@ -849,6 +849,31 @@ export interface PatchEmployee {
 
 /*
  * RESOURCE
+ * getemployeesalaryparameters.nv
+ */
+
+export interface GetEmployeeSalaryParametersParams {
+  identifierType: 'netvisorkey' | 'number' | 'pin';
+  identifier: string;
+}
+
+/*
+Taso	Elementti	Muoto	Ilmentymiä	Kuvaus	Esimerkki
+root	root	Aggregaatti	1	 	 
+1	employeesalaryparameters	Aggregaatti	1	 	 
+2	parameters	Aggregaatti	1	 	 
+3	parameter	Aggregaatti	0..n	 	 
+4	rationumber	Numero	1	Palkkaperusteen palkkalajin numero (yrityskohtaiset palkkalajit)	123
+ 4 	 value 	Desimaaliluku	1	Palkkaperusteen arvo	12,34
+*/
+
+export interface GetEmployeeSalaryParametersItem {
+  ratioNumber: number;
+  value: number;
+}
+
+/*
+ * RESOURCE
  * getpayrollpaycheckbatchlist.nv
  */
 
