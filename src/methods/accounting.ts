@@ -46,7 +46,7 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
         forceArray(xmlVoucher.voucherline).forEach((xmlVoucherLine) => {
           const voucherLineTemplate: AccountingLedgerVoucherLine = {
             netvisorKey: parseInt(xmlVoucherLine.netvisorkey),
-            lineSum: parseFloat(xmlVoucherLine.linesum),
+            lineSum: parseFloat(xmlVoucherLine.linesum.replace(',', '.')),
             description: xmlVoucherLine.description,
             accountNumber: parseInt(xmlVoucherLine.accountnumber),
             vatPercent: parseInt(xmlVoucherLine.vatpercent),

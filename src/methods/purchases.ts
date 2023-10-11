@@ -58,7 +58,7 @@ export class NetvisorPurchasesMethod extends NetvisorMethod {
           organizationId: xmlVendor.vendorbaseinformation.organizationid
         },
         vendorAdditionalInformation: {
-          defaultVatPercent: parseFloat(xmlVendor.vendoradditionalinformation.defaultvatpercent),
+          defaultVatPercent: parseFloat(xmlVendor.vendoradditionalinformation.defaultvatpercent.replace(',', '.')),
           isPartialVatReducedPrivileged: xmlVendor.vendoradditionalinformation.ispartialvatreducedprivileged === '1' ? true : false
         }
       };
