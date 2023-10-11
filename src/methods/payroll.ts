@@ -1,25 +1,45 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod, forceArray, parseXml, buildXml } from './_method';
 import {
+  AddJobPeriod,
+  AddJobPeriodParameters,
+  AttachEmployeeToSettlementPoint,
+  AttachEmployeeToSettlementPointParameters,
+  DeleteJobPeriodParameters,
+  EditJobPeriod,
+  EditJobPeriodParameters,
+  Employee,
+  EmployeeParameters,
+  EmployeeSalaryParameters,
   GetEmployee,
   GetEmployeeAdditionalInformationField,
   GetEmployeeEmploymentPeriod,
   GetEmployeeParameters,
+  GetEmployeeSalaryParametersItem,
+  GetEmployeeSalaryParametersParams,
   GetEmployeesItem,
   GetEmployeesParameters,
+  GetPayrollPartiesItem,
   GetPayrollPaycheckBatch,
   GetPayrollPaycheckBatchAllocationCurve,
   GetPayrollPaycheckBatchListItem,
   GetPayrollPaycheckBatchListParameters,
   GetPayrollPaycheckBatchParameters,
   GetPayrollPaycheckBatchPayrollLine,
-  PayrollPeriodCollector
+  PatchEmployee,
+  PatchEmployeeParameters,
+  PayrollAdvance,
+  PayrollExternalSalaryPayment,
+  PayrollPaycheckBatch,
+  PayrollPeriodCollector,
+  PayrollRatioListItem,
+  PayrollRatioListParameters
 } from '../interfaces/payroll';
 import * as xml2js from 'xml2js';
 
 // Use class specific parser (charkey = val instead of value)
 // This is because there are some attributes with name 'value' in the xml and this confuses the parser
-function getEmployeeParseXml(xml: string): any {
+function employeeParseXml(xml: string): any {
   const xmlParser = new xml2js.Parser({
     attrkey: 'attr',
     charkey: 'val',
@@ -36,6 +56,14 @@ function getEmployeeParseXml(xml: string): any {
     }
   });
   return xmlObject;
+}
+
+// Use class specific builder (charkey = val instead of value)
+// This is because there are some attributes with name 'value' in the xml and this confuses the builder
+export function employeeBuildXml(obj: Object): string {
+  const xmlBuilder = new xml2js.Builder({ attrkey: 'attr', charkey: 'val', headless: true });
+  const xmlString: string = xmlBuilder.buildObject(obj);
+  return xmlString;
 }
 
 export class NetvisorPayrollMethod extends NetvisorMethod {
@@ -89,7 +117,7 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
     // Get the raw xml response from Netvisor
     const responseXml = await this._client.get('getemployee.nv', params);
     // Parse the xml to js object
-    const xmlObject: any = getEmployeeParseXml(responseXml);
+    const xmlObject: any = employeeParseXml(responseXml);
 
     const employee: GetEmployee = {
       employeeBaseInformation: {
@@ -415,6 +443,108 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
   }
 
   /**
+   * Create or edit an employee in Netvisor.
+   * @example await employee(employee, { method: 'add' });
+   */
+  async employee(employee: Employee, params: EmployeeParameters): Promise<void> {
+    await this._client.post('employee.nv', employeeBuildXml({ root: { employee: employee } }), params);
+  }
+
+  /**
+   * Edit employee's basic information in Netvisor. Only edited properties needs to be included in the object.
+   * @example await patchEmployee(employee, { identifiertype: 'netvisorkey', identifier: '123' });
+   */
+  async patchEmployee(employee: PatchEmployee, params: PatchEmployeeParameters): Promise<void> {
+    await this._client.post('patchemployee.nv', buildXml({ root: { patchemployee: employee } }), params);
+  }
+
+  /**
+   * Get employee salary parameters from Netvisor
+   * @example await getEmployeeSalaryParameters({ identifierType: 'number', identifier: '1001' });
+   */
+  async getEmployeeSalaryParameters(params: GetEmployeeSalaryParametersParams): Promise<GetEmployeeSalaryParametersItem[]> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('getemployeesalaryparameters.nv', params);
+    // Parse the xml to js object
+    const xmlObject: any = employeeParseXml(responseXml);
+    // Create the return array
+    const employeeSalaryParameters: GetEmployeeSalaryParametersItem[] = [];
+    // Add items to return array
+    if (xmlObject.employeeparameters?.parameters?.parameter) {
+      forceArray(xmlObject.employeeparameters.parameters.parameter).forEach((xmlSalaryParam: any) => {
+        // Create the paycheck batch item object
+        employeeSalaryParameters.push({
+          ratioNumber: parseInt(xmlSalaryParam.rationumber),
+          value: parseInt(xmlSalaryParam.value)
+        });
+      });
+    }
+    return employeeSalaryParameters;
+  }
+
+  /**
+   * Add, edit or remove employee's salary parameters in Netvisor. When removing a value from salary parameter, leave 'value' property empty.
+   * @example await employeeSalaryParameters(salaryParameters);
+   */
+  async employeeSalaryParameters(salaryParameters: EmployeeSalaryParameters): Promise<void> {
+    await this._client.post('employeesalaryparameters.nv', employeeBuildXml({ root: { employeesalaryparameters: salaryParameters } }));
+  }
+
+  /**
+   * Get payroll ratio list from Netvisor
+   * @example await payrollRatioList({ source: 'userparameters' });
+   */
+  async payrollRatioList(params: PayrollRatioListParameters): Promise<PayrollRatioListItem[]> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('payrollratiolist.nv', params);
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+    // Create the return array
+    const payrollRatioList: PayrollRatioListItem[] = [];
+    // Add items to return array
+    if (xmlObject.payrollratios?.payrollratio) {
+      forceArray(xmlObject.payrollratios.payrollratio).forEach((xmlPayrollRatio: any) => {
+        // Create the paycheck batch item object
+        payrollRatioList.push({
+          names: {
+            name: xmlPayrollRatio.names.name
+          },
+          identifier: {
+            value: parseInt(xmlPayrollRatio.identifier.value),
+            attr: xmlPayrollRatio.identifier.attr
+          },
+          source: {
+            value: xmlPayrollRatio.source.value,
+            attr: { netvisorkey: parseInt(xmlPayrollRatio.source.attr.netvisorkey) }
+          },
+          ratioNumber: parseInt(xmlPayrollRatio.rationumber) || undefined,
+          defaultDebitAccountNumber: parseInt(xmlPayrollRatio.defaultdebitaccountnumber) || undefined,
+          defaultCreditAccountNumber: parseInt(xmlPayrollRatio.defaultcreditaccountnumber) || undefined
+        });
+      });
+    }
+    return payrollRatioList;
+  }
+
+  /**
+   * Create a new paycheck batch in Netvisor.
+   * @example await payrollPaycheckBatch(paycheckBatch);
+   * @returns Netvisor key of the created paycheck batch.
+   */
+  async payrollPaycheckBatch(paycheckBatch: PayrollPaycheckBatch): Promise<string> {
+    const response = await this._client.post('payrollpaycheckbatch.nv', buildXml({ root: { payrollpaycheckbatch: paycheckBatch } }));
+    return parseXml(response).replies.inserteddataidentifier;
+  }
+
+  /**
+   * Create a new payroll or trip expense advance in Netvisor.
+   * @example await payrollAdvance(advance);
+   */
+  async payrollAdvance(payrollAdvance: PayrollAdvance): Promise<void> {
+    await this._client.post('payrolladvance.nv', buildXml({ root: { payrolladvance: payrollAdvance } }));
+  }
+
+  /**
    * Get payroll paycheck list from Netvisor
    * @example await getPayrollPaycheckBatchList({ startDate: '2023-09-01', endDate: '2023-09-30' });
    */
@@ -589,5 +719,82 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
     }
 
     return paycheck;
+  }
+
+  /**
+   * Create an external salary payment to Netvisor.
+   * @example await payrollExternalSalaryPayment(payment);
+   */
+  async payrollExternalSalaryPayment(payment: PayrollExternalSalaryPayment): Promise<void> {
+    // Netvisor wants sum in string format '1234,56'
+    payment.externalPaymentSum = String(payment.externalPaymentSum).replace('.', ',');
+    await this._client.post('payrollexternalsalarypayment.nv', buildXml({ root: { payrollexternalsalarypayment: payment } }));
+  }
+
+  /**
+   * Create a new job period for employee in Netvisor.
+   * @example await addJobPeriod(jobPeriod, { employeeIdentifier: 123 });
+   * @returns Added job period's netvisor key
+   */
+  async addJobPeriod(jobPeriod: AddJobPeriod, params: AddJobPeriodParameters): Promise<string> {
+    const response = await this._client.post('addjobperiod.nv', buildXml({ root: { employmentperiods: jobPeriod } }), params);
+    return parseXml(response).replies.inserteddataidentifier;
+  }
+
+  /**
+   * Edit existing job period in Netvisor.
+   * @example await editJobPeriod(jobPeriod, { netvisorKey: 123 });
+   */
+  async editJobPeriod(jobPeriod: EditJobPeriod, params: EditJobPeriodParameters): Promise<void> {
+    await this._client.post('editjobperiod.nv', buildXml({ root: { employmentperiods: jobPeriod } }), params);
+  }
+
+  /**
+   * Delete existing job period in Netvisor.
+   * @example await deleteJobPeriod({ netvisorKey: 123 });
+   */
+  async deleteJobPeriod(params: DeleteJobPeriodParameters): Promise<void> {
+    await this._client.post('deletejobperiod.nv', undefined, params);
+  }
+
+  /**
+   * Get payroll parties from Netvisor
+   * @example await getPayrollParties();
+   */
+  async getPayrollParties(): Promise<GetPayrollPartiesItem[]> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('getpayrollparties.nv');
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+    // Create the return array
+    const payrollParties: GetPayrollPartiesItem[] = [];
+    // Add items to return array
+    if (xmlObject.payrollparties?.party) {
+      forceArray(xmlObject.payrollparties.party).forEach((xmlParty: any) => {
+        // Create the payroll party item object
+        payrollParties.push({
+          netvisorKey: parseInt(xmlParty.netvisorkey),
+          name: xmlParty.name,
+          partyInternalType: xmlParty.partyinternaltype,
+          useOnlyInReporting: xmlParty.useonlyinreporting === '1' ? true : false
+        });
+      });
+    }
+    return payrollParties;
+  }
+
+  /**
+   * Attach existing employee to one or more settlement points in Netvisor.
+   * @example await attachEmployeeToSettlementPoint(settlementPoints, { identifierType: 'netvisorkey', identifier: 123 });
+   */
+  async attachEmployeeToSettlementPoint(
+    settlementPoints: AttachEmployeeToSettlementPoint,
+    params: AttachEmployeeToSettlementPointParameters
+  ): Promise<void> {
+    await this._client.post(
+      'attachemployeetosettlementpoint.nv',
+      buildXml({ root: { attachemployeetosettlementpoint: settlementPoints } }),
+      params
+    );
   }
 }
