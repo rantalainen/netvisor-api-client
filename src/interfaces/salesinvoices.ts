@@ -120,7 +120,7 @@ export interface SalesInvoiceListItem {
 
 export interface GetSalesInvoiceParameters {
   /** Haettavan laskun Netvisor tunnus (Huom. ei pakollinen jos annetaan parametrille netvisorkeylist arvo; vaihtoehtoinen parametri netvisorkeylist:in kanssa) */
-  netvisorKey: number;
+  netvisorKey?: number;
   /** Jos ei anneta parametria, tekee saman kuin jos antaa pdfimage=lastsentprintservice
   palauttaa mahdollisen tulostuspalveluun lähetetyn pdf:n LastSentInvoicePDFBase64Data-kentässä
   palauttaa laskun kuvan pdf-muodossa LastSentInvoicePDFBase64Data-kentässä
@@ -241,9 +241,13 @@ export interface GetSalesInvoiceSalesInvoice {
     salesInvoiceAttachment: GetSalesInvoiceAttachment[];
   };
   documents?: {
-    salesOrder: {
+    salesOrder?: {
       netvisorKey: number;
       orderNumber: number;
+    };
+    salesInvoice?: {
+      netvisorKey: number;
+      invoiceNumber: number;
     };
   }[];
 }

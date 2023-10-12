@@ -222,14 +222,25 @@ export class NetvisorSalesMethod extends NetvisorMethod {
       }
       if (xmlSalesInvoice.documents) {
         salesInvoice.documents = [];
-        forceArray(xmlSalesInvoice.documents.salesorder).forEach((order: any) => {
-          salesInvoice.documents!.push({
-            salesOrder: {
-              netvisorKey: parseInt(order.netvisorkey),
-              orderNumber: parseInt(order.ordernumber)
-            }
+        if (xmlSalesInvoice.documents.salesorder) {
+          forceArray(xmlSalesInvoice.documents.salesorder).forEach((order: any) => {
+            salesInvoice.documents!.push({
+              salesOrder: {
+                netvisorKey: parseInt(order.netvisorkey),
+                orderNumber: parseInt(order.ordernumber)
+              }
+            });
           });
-        });
+        } else if (xmlSalesInvoice.documents.salesinvoice) {
+          forceArray(xmlSalesInvoice.documents.salesinvoice).forEach((invoice: any) => {
+            salesInvoice.documents!.push({
+              salesInvoice: {
+                netvisorKey: parseInt(invoice.netvisorkey),
+                invoiceNumber: parseInt(invoice.invoicenumber)
+              }
+            });
+          });
+        }
       }
 
       // Add invoice product lines if there is any
