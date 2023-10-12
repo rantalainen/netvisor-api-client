@@ -112,7 +112,7 @@ export class NetvisorApiClient {
       'X-Netvisor-Authentication-CustomerId': this.options.customerId,
       'X-Netvisor-Authentication-PartnerId': this.options.partnerId,
       'X-Netvisor-Authentication-Timestamp': new Date().toISOString().replace('T', ' ').replace('Z', ''),
-      'X-Netvisor-Authentication-TransactionId': crypto.randomBytes(32).toString('hex').substring(0, 16),
+      'X-Netvisor-Authentication-TransactionId': Date.now().toString() + crypto.randomBytes(32).toString('hex').substring(0, 16),
       'X-Netvisor-Interface-Language': this.options.language,
       'X-Netvisor-Organisation-ID': this.options.organizationId,
       'X-Netvisor-Authentication-MACHashCalculationAlgorithm': 'SHA256',
