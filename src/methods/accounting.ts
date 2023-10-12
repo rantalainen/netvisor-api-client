@@ -63,7 +63,10 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
           if (xmlVoucherLine.dimension) {
             voucherLineTemplate.dimension = [];
             forceArray(xmlVoucherLine.dimension).forEach((xmlDimension) => {
-              voucherLineTemplate.dimension!.push(xmlDimension);
+              voucherLineTemplate.dimension!.push({
+                dimensionName: xmlDimension.dimensionname,
+                dimensionItem: xmlDimension.dimensionitem
+              });
             });
           }
           voucherTemplate.voucherLine.push(voucherLineTemplate);
