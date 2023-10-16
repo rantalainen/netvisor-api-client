@@ -266,7 +266,7 @@ export class NetvisorPurchasesMethod extends NetvisorMethod {
       }
       if (xmlInvoice.foreigncurrencyamount) {
         purchaseInvoice.foreignCurrencyAmount = parseFloat(xmlInvoice.foreigncurrencyamount.replace(',', '.'));
-        purchaseInvoice.foreignCurrencyNameID = xmlInvoice.foreigncurrencynamenameid || undefined;
+        purchaseInvoice.foreignCurrencyNameID = xmlInvoice.foreigncurrencynameid || undefined;
       }
       if (xmlInvoice.voucherid) purchaseInvoice.voucherId = parseInt(xmlInvoice.voucherid);
       if (xmlInvoice.previewimage) {
