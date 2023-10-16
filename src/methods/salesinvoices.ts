@@ -244,7 +244,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
       }
 
       // Add invoice product lines if there is any
-      if (xmlSalesInvoice.invoicelines.invoiceline.salesinvoiceproductline) {
+      if (xmlSalesInvoice.invoicelines?.invoiceline.salesinvoiceproductline) {
         // Add array to the main sales invoice object for invoice product lines
         salesInvoice.invoiceLines.invoiceLine.salesInvoiceProductLine = [];
         // Loop through the product lines in xml object and add them to the array
@@ -295,7 +295,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
       }
 
       // Add invoice comment lines if there is any
-      if (xmlSalesInvoice.invoicelines.invoiceline.salesinvoicecommentline) {
+      if (xmlSalesInvoice.invoicelines?.invoiceline.salesinvoicecommentline) {
         // Add array to the main sales invoice object for invoice comment lines
         salesInvoice.invoiceLines.invoiceLine.salesInvoiceCommentLine = [];
         // Loop through the comment lines in xml object and add them to the array
