@@ -26,7 +26,7 @@ type SalesInvoiceInvoiceStatus =
   | 'undelivered'
   | 'delivered'
   | 'billed';
-type VatCode =
+export type VatCode =
   | 'NONE'
   | 'KOOS'
   | 'EUOS'

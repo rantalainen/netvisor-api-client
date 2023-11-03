@@ -15,7 +15,9 @@ import {
   GetPurchaseOrderParameters,
   GetPurchaseOrder,
   GetPurchaseOrderProductLine,
-  LinkedInvoiceLine
+  LinkedInvoiceLine,
+  Vendor,
+  VendorParameters
 } from '../interfaces/purchases';
 import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
 
@@ -161,6 +163,16 @@ export class NetvisorPurchasesMethod extends NetvisorMethod {
       vendorList.push(vendor);
     });
     return vendorList;
+  }
+
+  /**
+   * Create or edit a vendor in Netvisor
+   * @example await vendor(vendorObject, { method: 'add' })
+   * @returns the added/edited vendor's netvisor key
+   */
+  async vendor(vendor: Vendor, params: VendorParameters): Promise<string> {
+    const response = await this._client.post('vendor.nv', buildXml({ root: { vendor: vendor } }), params);
+    return parseXml(response).replies.inserteddataidentifier;
   }
 
   /**

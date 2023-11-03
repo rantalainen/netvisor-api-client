@@ -95,6 +95,106 @@ export interface GetVendor {
 
 /*
  * RESOURCE
+ * vendor.nv
+ */
+
+export interface VendorParameters {
+  method: 'add' | 'edit';
+  /** Must be given if method is 'edit' */
+  netvisorKey?: number;
+}
+
+export interface Vendor {
+  vendorBaseInformation?: {
+    code?: string;
+    name?: string;
+    address?: string;
+    postCode?: string;
+    city?: string;
+    country?: {
+      value: string;
+      attr: { type: 'ISO-3166' };
+    };
+    organizationId?: string;
+    groupName?: string;
+    vendorBankAccounts?: {
+      vendorDomesticBankAccounts?: {
+        vendorDomesticBankAccount: {
+          /** When adding a new bank account, this is not needed */
+          netvisorKey?: number;
+          iban: string;
+          bankName: string;
+          isDefault: boolean;
+        }[];
+      };
+      vendorForeignBankAccounts?: {
+        vendorForeignBankAccount: {
+          /** When adding a new bank account, this is not needed */
+          netvisorKey?: number;
+          bban: string;
+          bicSwift: string;
+          bankName: string;
+          clearingCode?: string;
+          clearingNumber?: string;
+          bankAddress?: string;
+          country: {
+            value: string;
+            attr: { type: 'ISO-3166' };
+          };
+          currencyCode: {
+            value: string;
+            attr: { type: 'ISO-4217' };
+          };
+          isDefault: boolean;
+          includeAddresssInForeignPayments: boolean;
+        }[];
+      };
+    };
+  };
+  vendorContactDetails?: {
+    phoneNumber?: string;
+    email?: string;
+    faxNumber?: string;
+    contactPersonName?: string;
+    contactPersonPhoneNumber?: string;
+    contactPersonEmail?: string;
+    homePage?: string;
+    comment?: string;
+  };
+  vendorAdditionalInformation?: {
+    defaultVatPercent?: number;
+    isPartialVatReducePrivileged?: boolean;
+    paymentTermDiscountPercent?: number;
+    paymentTermCashDiscountDays?: number;
+    paymentTermNetDays?: number;
+    currencyCode?: {
+      value: string;
+      attr: { type: 'ISO-4217' };
+    };
+    vendorDimensions?: {
+      dimension: {
+        dimensionName: string;
+        dimensionItem: string;
+      }[];
+    };
+    vendorAccountingAccounts?: {
+      vendorAccountingAccount: {
+        accountNumber: string;
+        isDefault: boolean;
+      }[];
+    };
+    vendorAcceptanceDetails?: {
+      vendorAcceptanceDetail: {
+        acceptanceName?: string;
+        isDefault?: boolean;
+        isForced?: boolean;
+      }[];
+    };
+  };
+}
+
+/*
+ * RESOURCE
  * purchaseinvoice.nv
  */
 

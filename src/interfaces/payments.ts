@@ -1,3 +1,5 @@
+import { VatCode } from './salesinvoices';
+
 /*
  * RESOURCE
  * salespaymentlist.nv
@@ -81,6 +83,50 @@ export interface Payment {
     paymentGroupPayment: {
       sum: number;
       reference: number;
+    }[];
+  };
+}
+
+/*
+ * RESOURCE
+ * salespayment.nv
+ */
+
+export interface SalesPayment {
+  sum: {
+    value: number;
+    attr: { currency: string };
+  };
+  paymentDate: string;
+  targetIdentifier: {
+    value: string;
+    attr: { type: 'netvisor' | 'reference' | 'invoicenumber'; targetType?: 'invoice' | 'order' };
+  };
+  sourceName: string;
+  paymentMethod: {
+    value: string;
+    attr: {
+      type: 'alternative' | 'bankaccount';
+      overrideAccountingAccountNumber?: number;
+      overrideSalesReceivableAccountNumber?: number;
+    };
+  };
+  salesPaymentVoucherLines?: {
+    voucherLine: {
+      lineSum: {
+        value: number;
+        attr: { type: 'net' | 'gross' };
+      };
+      description?: string;
+      accountNumber: number;
+      vatPercent: {
+        value: number;
+        attr: { vatCode: VatCode };
+      };
+      dimension?: {
+        dimensionName: string;
+        dimensionItem: string;
+      }[];
     }[];
   };
 }

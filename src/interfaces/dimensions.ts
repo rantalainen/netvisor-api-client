@@ -9,7 +9,7 @@ export interface DimensionListParameters {
 
 export interface DimensionListItem {
   netvisorKey: number;
-  name: number;
+  name: string;
   isHidden: boolean;
   linkType: number;
   dimensionDetails: {
