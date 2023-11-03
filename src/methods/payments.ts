@@ -57,4 +57,14 @@ export class NetvisorPaymentMethod extends NetvisorMethod {
     const response = await this._client.post('payment.nv', buildXml({ root: { payment: payment } }));
     return parseXml(response).replies.inserteddataidentifier;
   }
+
+  /**
+   * Create a new sales payment in Netvisor.
+   * @example await salesPayment(salesPaymentData)
+   * @returns the added sales payment's netvisor key
+   */
+  async salesPayment(salesPayment: Payment): Promise<string> {
+    const response = await this._client.post('salespayment.nv', buildXml({ root: { salesPayment: salesPayment } }));
+    return parseXml(response).replies.inserteddataidentifier;
+  }
 }

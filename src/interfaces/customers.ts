@@ -277,3 +277,15 @@ export interface Customer {
     }[];
   };
 }
+
+/*
+ * RESOURCE
+ * salespersonnellist.nv
+ */
+
+export interface SalesPersonnelListItem {
+  netvisorKey: number;
+  firstName: string;
+  lastName: string;
+  provisionPercent?: number;
+}

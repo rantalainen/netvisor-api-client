@@ -12,7 +12,9 @@ import {
   Product,
   InventoryByWarehouse,
   InventoryByWarehouseParameters,
-  WarehouseEvent
+  WarehouseEvent,
+  GetInventoryPlacesParameters,
+  GetInventoryPlacesItem
 } from '../interfaces/products';
 import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
 
@@ -589,5 +591,48 @@ export class NetvisorProductsMethod extends NetvisorMethod {
   async warehouseEvent(event: WarehouseEvent): Promise<string> {
     const response = await this._client.post('warehouseevent.nv', buildXml({ root: { warehouseevent: event } }));
     return parseXml(response).replies.inserteddataidentifier;
+  }
+
+  /**
+   * Get inventory places and shelves from Netvisor
+   * @example await getInventoryPlaces()
+   * @returns {GetInventoryPlacesItem[]} If no inventory places was retrieved, empty array will be returned.
+   */
+  async getInventoryPlaces(params?: GetInventoryPlacesParameters): Promise<GetInventoryPlacesItem[]> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('getinventoryplaces.nv', params);
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+    // Create the return object
+    const inventoryPlaces: GetInventoryPlacesItem[] = [];
+    // Add items to return object
+    if (xmlObject.inventoryplaces.inventoryplace) {
+      forceArray(xmlObject.inventoryplaces.inventoryplace).forEach((xmlInventoryPlace) => {
+        const inventoryPlace: GetInventoryPlacesItem = {
+          netvisorKey: parseInt(xmlInventoryPlace.netvisorkey),
+          inventoryPlaceName: xmlInventoryPlace.inventoryplacename,
+          inventoryPlaceEmailAddress: xmlInventoryPlace.inventoryplaceemailaddress,
+          inventoryPlaceShelves: {
+            inventoryPlaceShelve: []
+          }
+        };
+
+        // Add shelves to inventory place
+        if (xmlInventoryPlace.inventoryplaceshelves.inventoryplaceshelve) {
+          forceArray(xmlInventoryPlace.inventoryplaceshelves.inventoryplaceshelve).forEach((xmlInventoryPlaceShelve) => {
+            inventoryPlace.inventoryPlaceShelves.inventoryPlaceShelve.push({
+              netvisorKey: parseInt(xmlInventoryPlaceShelve.netvisorkey),
+              shelveName: xmlInventoryPlaceShelve.shelvename,
+              shelveHierarchy: {
+                shelveHierarchyName: xmlInventoryPlaceShelve.shelvehierarchy.shelvehierarchyname
+              }
+            });
+          });
+        }
+
+        inventoryPlaces.push(inventoryPlace);
+      });
+    }
+    return inventoryPlaces;
   }
 }

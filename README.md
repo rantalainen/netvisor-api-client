@@ -97,14 +97,18 @@ const xmlString = await netvisor.sales.getXmlData('getsalesinvoice.nv', { netvis
 |---------------|-----------------------------------|------------------------------------|----------|
 | accounting    | accountingLedger()                | accountingledger.nv                | 2.1.0    |
 | accounting    | accounting()                      | accounting.nv                      | 2.1.0    |
+| accounting    | accountList()                     | accountlist.nv                     | 2.5.0    |
+| accounting    | voucherTypeList()                 | vouchertypelist.nv                 | 2.5.0    |
 | customers     | customerList()                    | customerlist.nv                    | 2.0.0    |
 | customers     | getCustomer()                     | getcustomer.nv                     | 2.0.0    |
 | customers     | customer()                        | customer.nv                        | 2.0.0    |
+| customers     | salesPersonnelList()              | salespersonnellist.nv              | 2.5.0    |
 | dimensions    | dimensionList()                   | dimensionlist.nv                   | 2.0.0    |
 | dimensions    | dimensionItem()                   | dimensionitem.nv                   | 2.1.0    |
 | dimensions    | dimensionDelete()                 | dimensiondelete.nv                 | 2.1.0    |
 | payments      | salesPaymentList()                | salespaymentlist.nv                | 2.0.0    |
 | payments      | payment()                         | payment.nv                         | 2.2.0    |
+| payments      | salesPayment()                    | salespayment.nv                    | 2.5.0    |
 | payroll       | payrollPeriodCollector()          | payrollperiodcollector.nv          | 2.2.0    |
 | payroll       | getEmployees()                    | getemployees.nv                    | 2.3.0    |
 | payroll       | getEmployee()                     | getemployee.nv                     | 2.3.0    |
@@ -129,7 +133,9 @@ const xmlString = await netvisor.sales.getXmlData('getsalesinvoice.nv', { netvis
 | products      | extendedProductList()             | extendedproductlist.nv             | 2.1.0    |
 | products      | inventoryByWarehouse()            | inventorybywarehouse.nv            | 2.2.0    |
 | products      | warehouseEvent()                  | warehouseevent.nv                  | 2.2.0    |
+| products      | getInventoryPlaces()              | getinventoryplaces.nv              | 2.5.0    |
 | purchases     | getVendor()                       | getvendor.nv                       | 2.2.0    |
+| purchases     | vendor()                          | vendor.nv                          | 2.5.0    |
 | purchases     | purchaseInvoice()                 | purchaseinvoice.nv                 | 2.2.0    |
 | purchases     | purchaseInvoiceList()             | purchaseinvoicelist.nv             | 2.3.0    |
 | purchases     | getPurchaseInvoice()              | getpurchaseinvoice.nv              | 2.3.0    |

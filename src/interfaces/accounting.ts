@@ -116,3 +116,89 @@ export interface AccountingVoucherLine {
     dimensionItem: string;
   }[];
 }
+
+/*
+ * RESOURCE
+ * accountlist.nv
+ */
+
+export interface AccountList {
+  companyDefaultAccounts: {
+    tradePayables: number;
+    purchaseVatReceivable: number;
+    roundingOffDifference: number;
+    vatPayable: number;
+    taxAccount: number;
+    advancePayments: number;
+    salesReceivables: number;
+    salesVatDebt: number;
+    inventory: number;
+    salesDiscount: number;
+    salesExchangeRateDifferences: number;
+    collection: number;
+    purchaseDiscounts: number;
+    purchasesExchangeRateDifferences: number;
+    purchaseInvoiceAccrual: number;
+    salesInvoiceAccrual: number;
+    purchaseDomesticDefault: number;
+    purchaseEUDefault: number;
+    purchaseOutsideEuDefault: number;
+    salesDomesticDefault: number;
+    salesEUDefault: number;
+    salesOutsideEUDefault: number;
+  };
+  accounts: {
+    account: AccountListAccount[];
+  };
+}
+
+export interface AccountListAccount {
+  netvisorKey: number;
+  number: string;
+  name: string;
+  foreignName?: {
+    value: string;
+    attr: { 'iso-3166': 'fi' | 'en' | 'se' };
+  }[];
+  accountType: 'account' | 'accountgroup';
+  fatherNetvisorKey: number;
+  isActive: boolean;
+  isCumulative: boolean;
+  sort: number;
+  endSort: number;
+  isNaturalNegative: boolean;
+}
+
+/*
+ * RESOURCE
+ * vouchertypelist.nv
+ */
+
+export interface VoucherTypeList {
+  defaultVoucherTypes: {
+    salesInvoices: DefaultVoucherType;
+    salesInvoicePayments: DefaultVoucherType;
+    purchaseInvoices: DefaultVoucherType;
+    purchaseInvoicePayments: DefaultVoucherType;
+    otherSystemGeneratedVouchers: DefaultVoucherType;
+    bankStatementViewVouchers: DefaultVoucherType;
+    accruals: DefaultVoucherType;
+  };
+  voucherTypes: {
+    voucherType: VoucherType[];
+  };
+}
+
+interface DefaultVoucherType {
+  netvisorKey: number;
+}
+
+export interface VoucherType {
+  netvisorKey: number;
+  abbreviation: string;
+  name: string;
+  foreignName?: {
+    value: string;
+    attr: { 'ISO-639-1': 'fi' | 'en' | 'sv' };
+  }[];
+}

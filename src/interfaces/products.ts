@@ -583,3 +583,30 @@ export interface WarehouseEvent {
     }[];
   };
 }
+
+/*
+ * RESOURCE
+ * getinventoryplaces.nv
+ */
+
+export interface GetInventoryPlacesParameters {
+  inventoryPlaceLocationFreeText?: string;
+  inventoryPlaceDescriptionFreeText?: string;
+  /** Comma separated list of NetvisorKeys */
+  inventoryPlaceNetvisorKeys?: string;
+}
+
+export interface GetInventoryPlacesItem {
+  netvisorKey: number;
+  inventoryPlaceName: string;
+  inventoryPlaceEmailAddress: string;
+  inventoryPlaceShelves: {
+    inventoryPlaceShelve: {
+      netvisorKey: number;
+      shelveName: string;
+      shelveHierarchy: {
+        shelveHierarchyName?: string;
+      };
+    }[];
+  };
+}

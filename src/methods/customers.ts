@@ -6,7 +6,8 @@ import {
   GetCustomerParameters,
   GetCustomer,
   CustomerParameters,
-  Customer
+  Customer,
+  SalesPersonnelListItem
 } from '../interfaces/customers';
 
 export class NetvisorCustomerMethod extends NetvisorMethod {
@@ -237,5 +238,37 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
     const response = await this._client.post('customer.nv', buildXml({ root: { customer: customer } }), params);
     if (params.method === 'add') return parseXml(response).replies.inserteddataidentifier;
     return params.id?.toString() || '';
+  }
+
+  /**
+   * Get sales personnel from Netvisor.
+   * @example await salesPersonnelList()
+   * @returns {SalesPersonnelListItem[]} Returns array even when getting only a single sales person.
+   */
+  async salesPersonnelList(): Promise<SalesPersonnelListItem[]> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('salespersonnellist.nv');
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+    // Create the return array
+    const salesPersonnelList: SalesPersonnelListItem[] = [];
+    // Create array from the xml result
+    let xmlSalesPersonnel: any[] = [];
+    if (xmlObject.salespersonnellist.salesperson) {
+      // If there were multiple customers in the result
+      xmlSalesPersonnel = forceArray(xmlObject.salespersonnellist.salesperson);
+    }
+
+    // Add customers to return array
+    xmlSalesPersonnel.forEach((xmlCustomer) => {
+      salesPersonnelList.push({
+        netvisorKey: parseInt(xmlCustomer.attr.netvisorkey),
+        firstName: xmlCustomer.firstname || '',
+        lastName: xmlCustomer.lastname || '',
+        provisionPercent: parseFloat(xmlCustomer.provisionpercent.replace(',', '.')) || undefined
+      });
+    });
+
+    return salesPersonnelList;
   }
 }
