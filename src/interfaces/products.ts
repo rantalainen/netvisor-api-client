@@ -562,7 +562,7 @@ export interface WarehouseEvent {
         attr: { type: 'customer' };
       };
       product: {
-        value: string;
+        value: string | number;
         attr: { type: 'netvisor' | 'customer' };
       };
       inventoryPlace?:
@@ -579,7 +579,7 @@ export interface WarehouseEvent {
         value: string;
         attr: { format: 'ansi' };
       };
-      status?: 'open' | 'handled' | 'bypassed';
+      status: 'open' | 'handled' | 'bypassed';
     }[];
   };
 }

@@ -10,7 +10,6 @@ import {
   VoucherType,
   VoucherTypeList
 } from '../interfaces/accounting';
-import { parse } from 'path';
 
 export class NetvisorAccountingMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {

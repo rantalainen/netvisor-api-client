@@ -1,8 +1,5 @@
 import { NetvisorApiClient } from '..';
-import fs from 'fs';
 import * as xml2js from 'xml2js';
-
-type BufferEncoding = 'ascii' | 'utf8' | 'utf-8' | 'utf16le' | 'ucs2' | 'ucs-2' | 'base64' | 'latin1' | 'binary' | 'hex';
 
 export class NetvisorMethod {
   protected _client!: NetvisorApiClient;

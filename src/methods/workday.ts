@@ -1,5 +1,5 @@
 import { NetvisorApiClient } from '..';
-import { NetvisorMethod, forceArray, parseXml, buildXml } from './_method';
+import { NetvisorMethod, parseXml, buildXml } from './_method';
 import { TripExpense, Workday } from '../interfaces/workday';
 
 export class NetvisorWorkdayMethod extends NetvisorMethod {
