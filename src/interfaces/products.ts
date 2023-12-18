@@ -558,7 +558,7 @@ export interface WarehouseEvent {
   warehouseEventLines: {
     warehouseEventLine: {
       eventType: {
-        value: 'Hankinta' | 'Myynti' | 'Inventointi' | 'Korjaus' | 'Varastosiirto' | 'Valmistus';
+        value: string;
         attr: { type: 'customer' };
       };
       product: {
