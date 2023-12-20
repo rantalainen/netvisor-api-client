@@ -620,7 +620,10 @@ export interface GetPurchaseOrderProductDeliveryGroup {
 
 export interface GetPurchaseOrderProductLine {
   netvisorKey: number;
-  productCode: string;
+  productCode: {
+    value: string;
+    attr: { netvisorkey: string };
+  };
   productName: string;
   vendorProductCode: string;
   orderedAmount: number;
