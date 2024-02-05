@@ -582,3 +582,14 @@ export interface Tag {
     };
   };
 }
+
+/*
+ * RESOURCE
+ * updatesalesinvoicestatus.nv
+ */
+
+export interface UpdateSalesInvoiceStatusParameters {
+  netvisorKey?: number;
+  netvisorKeyList?: string;
+  status: 'open' | 'paid' | 'unsent' | 'overdue' | 'reminded' | 'requested' | 'collected' | 'creditloss';
+}

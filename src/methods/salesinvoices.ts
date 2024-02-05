@@ -7,7 +7,8 @@ import {
   GetSalesInvoiceSalesInvoice,
   GetSalesInvoiceSalesInvoiceProductLine,
   SalesInvoiceParameters,
-  SalesInvoice
+  SalesInvoice,
+  UpdateSalesInvoiceStatusParameters
 } from '../interfaces/salesinvoices';
 
 export class NetvisorSalesMethod extends NetvisorMethod {
@@ -307,5 +308,13 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     });
 
     return salesInvoices;
+  }
+
+  /**
+   * Update sales invoice's or list of sales invoices' status to Netvisor.
+   * @example await updateSalesInvoiceStatus({ netvisorKey: 123, invoiceStatus: 'paid'})
+   */
+  async updateSalesInvoiceStatus(params: UpdateSalesInvoiceStatusParameters): Promise<void> {
+    await this._client.post('updatesalesinvoicestatus.nv', undefined, params);
   }
 }
