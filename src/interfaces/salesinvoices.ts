@@ -404,7 +404,7 @@ export interface SalesInvoice {
     | string;
   deliveryOffice?: {
     value: string;
-    attr: { type: 'Customer' | 'Netvisor' };
+    attr: { type: 'customer' | 'netvisor' };
   };
   deliveryAddressName?: string;
   deliveryAddressLine?: string;
