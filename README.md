@@ -149,6 +149,7 @@ const xmlString = await netvisor.sales.getXmlData('getsalesinvoice.nv', { netvis
 | sales         | updateSalesInvoiceStatus()        | updatesalesinvoicestatus.nv        | 2.6.0    |
 | workday       | tripExpense()                     | tripexpense.nv                     | 2.2.0    |
 | workday       | workday()                         | workday.nv                         | 2.2.0    |
+| workday       | getRecordTypeList()               | getrecordtypelist.nv               | 2.7.0    |
 
 
 ## Examples

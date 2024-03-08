@@ -1,6 +1,6 @@
 import { NetvisorApiClient } from '..';
-import { NetvisorMethod, parseXml, buildXml } from './_method';
-import { TripExpense, Workday } from '../interfaces/workday';
+import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
+import { GetRecordTypeItem, GetRecordTypeItemName, TripExpense, Workday } from '../interfaces/workday';
 
 export class NetvisorWorkdayMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
@@ -23,5 +23,28 @@ export class NetvisorWorkdayMethod extends NetvisorMethod {
    */
   async workday(record: Workday): Promise<void> {
     await this._client.post('workday.nv', buildXml({ root: { workday: record } }));
+  }
+
+  async getRecordTypeList(): Promise<GetRecordTypeItem[]> {
+    const responseXml = await this._client.get('getRecordTypeList.nv');
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+    // Create the return array
+    const recordTypes: GetRecordTypeItem[] = [];
+
+    if (xmlObject.recordtypes?.recordtype) {
+      forceArray(xmlObject.recordtypes.recordtype).forEach((recordType: any) => {
+        recordTypes.push({
+          names: {
+            name: forceArray(recordType.names.name as GetRecordTypeItemName[])
+          },
+          netvisorKey: parseInt(recordType.netvisorkey),
+          ratioNumber: parseInt(recordType.rationumber),
+          characterType: parseInt(recordType.charactertype),
+          unitType: parseInt(recordType.unittype)
+        });
+      });
+    }
+    return recordTypes;
   }
 }

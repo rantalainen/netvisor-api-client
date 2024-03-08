@@ -203,3 +203,25 @@ export interface Workday {
     }[];
   }[];
 }
+
+/*
+ * RESOURCE
+ * getrecordtypelist.nv
+ */
+
+export interface GetRecordTypeItem {
+  names: {
+    name: GetRecordTypeItemName[];
+  };
+  netvisorKey: number;
+  ratioNumber: number;
+  /** 1=Tuntikirjaus, 2= Vuosiloma, 5=Muu poissaolo */
+  characterType: number;
+  /** 1=Tunti, 2=Päivä */
+  unitType: number;
+}
+
+export interface GetRecordTypeItemName {
+  value: string;
+  attr: { 'iso639-1code': string };
+}
