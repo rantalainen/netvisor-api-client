@@ -30,7 +30,7 @@ export class NetvisorPaymentMethod extends NetvisorMethod {
           sum: parseFloat(xmlSalesPayment.sum.replace(',', '.')),
           referenceNumber: xmlSalesPayment.referencenumber,
           foreignCurrencyAmount: parseFloat(xmlSalesPayment.foreigncurrencyamount.replace(',', '.')),
-          invoiceNumber: parseInt(xmlSalesPayment.invoicenumber),
+          invoiceNumber: parseInt(xmlSalesPayment.invoicenumber?.value),
           paymentAccountName: xmlSalesPayment.paymentaccountname,
           voucherID: parseInt(xmlSalesPayment.voucherid),
           lastModifiedTimestamp: xmlSalesPayment.lastmodifiedtimestamp,
