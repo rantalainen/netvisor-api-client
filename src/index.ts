@@ -1,6 +1,7 @@
-import got from 'got';
+import got, { Got } from 'got';
 import crypto from 'crypto';
 import * as xml2js from 'xml2js';
+import { Agent } from 'https';
 import CacheableLookup from 'cacheable-lookup';
 import { NetvisorCustomerMethod } from './methods/customers';
 import { NetvisorPaymentMethod } from './methods/payments';
@@ -11,8 +12,7 @@ import { NetvisorProductsMethod } from './methods/products';
 import { NetvisorPurchasesMethod } from './methods/purchases';
 import { NetvisorPayrollMethod } from './methods/payroll';
 import { NetvisorWorkdayMethod } from './methods/workday';
-
-const cacheableLookup = new CacheableLookup();
+import { HttpsAgent } from 'agentkeepalive';
 
 export interface NetvisorApiClientOptions {
   /** Integration name, sent as `X-Netvisor-Authentication-Sender` in requests */
@@ -25,10 +25,15 @@ export interface NetvisorApiClientOptions {
 
   language?: string;
   baseUri?: string;
+
   /** Request timeout in milliseconds, defaults to 120000 (120 secs) */
   timeout?: number;
 
+  /** Instance of `cacheable-lookup` or `true` to enable internal DNS cache, defaults to `undefined` (no caching) */
   dnsCache?: CacheableLookup | boolean;
+
+  /** Instance of `https.Agent` or `true` to enable internal Keep Alive Agent, defaults to `true` */
+  keepAliveAgent?: boolean | Agent;
 }
 
 export interface NetvisorRequestHeaders {
@@ -46,9 +51,14 @@ export interface NetvisorRequestHeaders {
   'Content-Type'?: string;
 }
 
+// Create global https agent
+const httpsAgent = new HttpsAgent();
+
 export class NetvisorApiClient {
-  [propName: string]: any;
   options: NetvisorApiClientOptions;
+
+  /** Got instance to be used when making requests */
+  gotInstance: Got;
 
   readonly customers: NetvisorCustomerMethod;
   readonly payments: NetvisorPaymentMethod;
@@ -90,10 +100,22 @@ export class NetvisorApiClient {
 
     this.options = options;
 
-    // If dnsCache is true, then fallback to internal instance of cacheableLookup
-    if (this.options.dnsCache === true) {
-      this.options.dnsCache = cacheableLookup;
+    // Use internal keepAliveAgent by default
+    if (this.options.keepAliveAgent === true || this.options.keepAliveAgent === undefined) {
+      this.options.keepAliveAgent = httpsAgent;
     }
+
+    // Set gotInstance defaults, can also include other options
+    this.gotInstance = got.extend({
+      // Agent options
+      agent: { https: this.options.keepAliveAgent || undefined },
+
+      // DNS caching options
+      dnsCache: this.options.dnsCache || undefined,
+
+      // Timeout
+      timeout: this.options.timeout
+    });
   }
 
   _generateHeaderMAC(url: string, headers: NetvisorRequestHeaders): string {
@@ -141,15 +163,9 @@ export class NetvisorApiClient {
 
     const headers = this._generateHeaders(url);
 
-    const request: any = await got.post(url, {
+    const request: any = await this.gotInstance.post(url, {
       body,
-      headers,
-      timeout: {
-        request: this.options.timeout
-      },
-
-      agent: { https: this.keepAliveAgent },
-      dnsCache: this.options.dnsCache || undefined
+      headers
     });
 
     try {
@@ -167,14 +183,7 @@ export class NetvisorApiClient {
 
     const headers = this._generateHeaders(url);
 
-    const request: any = await got(url, {
-      headers,
-      timeout: {
-        request: this.options.timeout
-      },
-      agent: { https: this.keepAliveAgent },
-      dnsCache: this.options.dnsCache || undefined
-    });
+    const request: any = await this.gotInstance(url, { headers });
 
     try {
       await this._checkRequestStatus(request.body);
