@@ -245,12 +245,13 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
 
   /**
    * Create a customer office to Netvisor. When editing an existing customer office, only give the properties that that are being edited.
-   * @example await office(office, { method: 'add', customerid: 2 })
+   * @example await office(office, { method: 'add', customerId: 2 })
    * @returns the customer netvisor ID
    */
   async office(office: Office, params: OfficeParameters): Promise<string> {
-    const response = await this._client.post('office.nv', buildXml({ root: { office } }), params);
-    return params.customerid.toString();
+    await this._client.post('office.nv', buildXml({ root: { office } }), params);
+
+    return params.customerId.toString();
   }
 
   /**
@@ -261,7 +262,7 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
   async contactPerson(contactPerson: ContactPerson): Promise<string> {
     const response = await this._client.post('contactperson.nv', buildXml({ root: { contactperson: contactPerson } }));
     if (contactPerson.method === 'add') return parseXml(response).replies.inserteddataidentifier;
-    return contactPerson.contactpersonidentifier?.value.toString() || '';
+    return contactPerson.contactPersonIdentifier?.value.toString() || '';
   }
 
   /**

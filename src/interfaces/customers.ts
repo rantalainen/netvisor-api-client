@@ -285,37 +285,37 @@ export interface Customer {
 
 export interface OfficeParameters {
   method: 'add' | 'edit';
-  customerid: number;
-  officeid?: number;
+  customerId: number;
+  officeId?: number;
 }
 
 export interface Office {
   name: string;
-  phonenumber?: string;
-  telefaxnumber?: string;
-  officeidentifier?: string;
-  emailinvoicingaddress?: string;
-  officecontactaddress?: {
-    streetaddress: string;
-    postnumber: string;
+  phoneNumber?: string;
+  telefaxNumber?: string;
+  officeIdentifier?: string;
+  emailInvoicingAddress?: string;
+  officeContactAddress?: {
+    streetAddress: string;
+    postNumber: string;
     city: string;
     country?: {
       value: string;
       attr: { type: 'ISO-3166' };
     };
   };
-  officevisitaddress?: {
-    streetaddress: string;
-    postnumber: string;
+  officeVisitAddress?: {
+    streetAddress: string;
+    postNumber: string;
     city: string;
     country?: {
       value: string;
       attr: { type: 'ISO-3166' };
     };
   };
-  officefinvoicedetails?: {
-    finvoiceaddress: string;
-    finvoiceroutercode: string;
+  officeFinvoiceDetails?: {
+    finvoiceAddress: string;
+    finvoiceRouterCode: string;
   };
 }
 
@@ -326,43 +326,43 @@ export interface Office {
 
 export interface ContactPerson {
   method: 'add' | 'edit' | 'delete';
-  customeridentifier: {
+  customerIdentifier: {
     value: number;
     attr: {
-        type: 'netvisor';
-    };
-};
-  contactpersonidentifier?: {
-    value: string;
-    attr: {
-        type: 'netvisor';
+      type: 'netvisor';
     };
   };
-  isdefault?: string;
-  firstname: string;
-  lastname: string;
+  contactPersonIdentifier?: {
+    value: string;
+    attr: {
+      type: 'netvisor';
+    };
+  };
+  isDefault?: string;
+  firstName: string;
+  lastName: string;
   language: {
     value: 'FI' | 'EN' | 'SE';
     attr: { type: 'ISO-3166' };
   };
-  phonenumber?: number;
+  phoneNumber?: number;
   email?: string;
   title?: string;
-  officeidentifier?: {
+  officeIdentifier?: {
     value: string;
     attr: {
-        type: 'netvisor';
+      type: 'netvisor';
     };
   };
-  positionidentifier?: {
+  positionIdentifier?: {
     value: string;
     attr: {
-        type: 'netvisor';
+      type: 'netvisor';
     };
   };
-  contactpersonaddress?: {
-    streetaddress?: string;
-    postnumber?: number;
+  contactPersonAddress?: {
+    streetAddress?: string;
+    postNumber?: number;
     city?: string;
     country?: {
       value: string;
