@@ -254,9 +254,9 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
   }
 
   /**
-   * Create a customer contact person to Netvisor. When editin an existing contact person, only give the properties that are being edited.
+   * Create a customer contact person to Netvisor. When editing an existing contact person, only give the properties that are being edited.
    * @example await contactPerson(contactPerson)
-   * @returns: the customer netvisor ID
+   * @returns: the contact person netvisor ID
    */
   async contactPerson(contactPerson: ContactPerson): Promise<string> {
     const response = await this._client.post('contactperson.nv', buildXml({ root: { contactperson: contactPerson } }));
