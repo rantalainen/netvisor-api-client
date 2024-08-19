@@ -7,6 +7,9 @@ import {
   GetCustomer,
   CustomerParameters,
   Customer,
+  OfficeParameters,
+  Office,
+  ContactPerson,
   SalesPersonnelListItem
 } from '../interfaces/customers';
 
@@ -238,6 +241,27 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
     const response = await this._client.post('customer.nv', buildXml({ root: { customer: customer } }), params);
     if (params.method === 'add') return parseXml(response).replies.inserteddataidentifier;
     return params.id?.toString() || '';
+  }
+
+  /**
+   * Create a customer office to Netvisor. When editing an existing customer office, only give the properties that that are being edited.
+   * @example await office(office, { method: 'add', customerid: 2 })
+   * @returns the customer netvisor ID
+   */
+  async office(office: Office, params: OfficeParameters): Promise<string> {
+    const response = await this._client.post('office.nv', buildXml({ root: { office } }), params);
+    return params.customerid.toString();
+  }
+
+  /**
+   * Create a customer contact person to Netvisor. When editin an existing contact person, only give the properties that are being edited.
+   * @example await contactperson(contactperson)
+   * @returns: the customer netvisor ID
+   */
+  async contactperson(contactperson: ContactPerson): Promise<string> {
+    const response = await this._client.post('contactperson.nv', buildXml({ root: { contactperson } }));
+    if (contactperson.method === 'add') return parseXml(response).replies.inserteddataidentifier;
+    return contactperson.contactpersonidentifier?.value.toString() || '';
   }
 
   /**
