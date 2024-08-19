@@ -280,6 +280,99 @@ export interface Customer {
 
 /*
  * RESOURCE
+ * office.nv
+ */
+
+export interface OfficeParameters {
+  method: 'add' | 'edit';
+  customerid: number;
+  officeid?: number;
+}
+
+export interface Office {
+  name: string;
+  phonenumber?: string;
+  telefaxnumber?: string;
+  officeidentifier?: string;
+  emailinvoicingaddress?: string;
+  officecontactaddress?: {
+    streetaddress: string;
+    postnumber: string;
+    city: string;
+    country?: {
+      value: string;
+      attr: { type: 'ISO-3166' };
+    };
+  };
+  officevisitaddress?: {
+    streetaddress: string;
+    postnumber: string;
+    city: string;
+    country?: {
+      value: string;
+      attr: { type: 'ISO-3166' };
+    };
+  };
+  officefinvoicedetails?: {
+    finvoiceaddress: string;
+    finvoiceroutercode: string;
+  };
+}
+
+/*
+ * RESOURCE
+ * contactperson.nv
+ */
+
+export interface ContactPerson {
+  method: 'add' | 'edit' | 'delete';
+  customeridentifier: {
+    value: number;
+    attr: {
+        type: 'netvisor';
+    };
+};
+  contactpersonidentifier?: {
+    value: string;
+    attr: {
+        type: 'netvisor';
+    };
+  };
+  isdefault?: string;
+  firstname: string;
+  lastname: string;
+  language: {
+    value: 'FI' | 'EN' | 'SE';
+    attr: { type: 'ISO-3166' };
+  };
+  phonenumber?: number;
+  email?: string;
+  title?: string;
+  officeidentifier?: {
+    value: string;
+    attr: {
+        type: 'netvisor';
+    };
+  };
+  positionidentifier?: {
+    value: string;
+    attr: {
+        type: 'netvisor';
+    };
+  };
+  contactpersonaddress?: {
+    streetaddress?: string;
+    postnumber?: number;
+    city?: string;
+    country?: {
+      value: string;
+      attr: { type: 'ISO-3166' };
+    };
+  };
+}
+
+/*
+ * RESOURCE
  * salespersonnellist.nv
  */
 
