@@ -14,13 +14,7 @@ npm install @rantalainen/netvisor-api-client
 
 ## Setup
 
-### Import to NodeJS project
-
-```js
-const { NetvisorApiClient } = require('@rantalainen/netvisor-api-client');
-```
-
-### Import to TypeScript project
+### Import
 
 ```ts
 import { NetvisorApiClient } from '@rantalainen/netvisor-api-client';
