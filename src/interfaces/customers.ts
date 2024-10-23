@@ -89,15 +89,13 @@ export interface GetCustomer {
     contactPersonPhone: string;
   };
   customerContactPersons?: {
-    customerContactPerson: {
-      contactPersonID: number;
-      contactPersonFirstName: string;
-      contactPersonLastName: string;
-      contactPersonPhoneNumber: string;
-      contactPersonEmail: string;
-      contactPersonOfficeNetvisorKey: number;
-    };
-  };
+    contactPersonID: number;
+    contactPersonFirstName: string;
+    contactPersonLastName: string;
+    contactPersonPhoneNumber: string;
+    contactPersonEmail: string;
+    contactPersonOfficeNetvisorKey: number;
+  }[];
   customerOfficeDetails?: {
     officeNetvisorKey: number;
     officeName: string;

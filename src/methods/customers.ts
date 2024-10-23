@@ -142,18 +142,20 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
       }
       // Add customer contact person if it exists
       if (xmlCustomer.customercontactpersons) {
-        customer.customerContactPersons = {
-          customerContactPerson: {
-            contactPersonID: parseInt(xmlCustomer.customercontactpersons.customercontactperson.contactpersonid),
-            contactPersonFirstName: xmlCustomer.customercontactpersons.customercontactperson.contactpersonfirstname,
-            contactPersonLastName: xmlCustomer.customercontactpersons.customercontactperson.contactpersonlastname,
-            contactPersonPhoneNumber: xmlCustomer.customercontactpersons.customercontactperson.contactpersonphonenumber,
-            contactPersonEmail: xmlCustomer.customercontactpersons.customercontactperson.contactpersonemail,
+        customer.customerContactPersons = [];
+        forceArray(xmlCustomer.customercontactpersons.customercontactperson).forEach((xmlCustomerContact) => {
+          const customerContactPerson = {
+            contactPersonID: parseInt(xmlCustomerContact.contactpersonid),
+            contactPersonFirstName: xmlCustomerContact.contactpersonfirstname,
+            contactPersonLastName: xmlCustomerContact.contactpersonlastname,
+            contactPersonPhoneNumber: xmlCustomerContact.contactpersonphonenumber,
+            contactPersonEmail: xmlCustomerContact.contactpersonemail,
             contactPersonOfficeNetvisorKey: parseInt(
-              xmlCustomer.customercontactpersons.customercontactperson.contactpersonofficenetvisorkey
+              xmlCustomerContact.contactpersonofficenetvisorkey
             )
-          }
-        };
+          };
+          customer.customerContactPersons!.push(customerContactPerson);
+        });
       }
       // Add customer offices if there is any
       if (xmlCustomer.customerofficedetails) {
