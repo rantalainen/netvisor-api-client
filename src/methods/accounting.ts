@@ -1,6 +1,8 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
 import {
+  AccountBalanceAccount,
+  AccountBalanceParameters,
   AccountList,
   AccountListAccount,
   AccountingLedgerParameters,
@@ -224,5 +226,54 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
       });
     }
     return voucherTypeList;
+  }
+  /**
+   * Get account balances from date interval or separate dates depending of the intervaltype parameter. Dates are comma separated.
+   * @example await netvisor.accounting.getAccountBalance({
+      netvisorKey: 1067,
+      balanceDates: '2024-09-01,2024-12-31',
+      intervalType: '3'
+    })
+      * @param {number} netvisorKey - Netvisor key of the account.
+      * @param {string} balanceDates - Dates for the account balance. Dates are comma separated. Example: 2024-09-01,2024-09-30
+      * @param {number} intervalType - If not given or 0 then balances are fetched from separate dates defined by the balancedates parameter
+      * Otherwise balances are fetched in defined steps inside the balancedates interval. The balances of the first and last day are always fetched.
+      * not given or 0 = No Interval (separate dates)
+      * 1 = Day
+      * 2 = Week
+      * 3 = Month
+      * 4 = Year
+      * 
+   * @returns {AccountBalanceAccount} Returns account balance object with account balances.
+   */
+  async getAccountBalance(params: AccountBalanceParameters): Promise<AccountBalanceAccount> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('accountbalance.nv', params);
+    // Parse the xml to js object
+    const xmlObject: any = parseXml(responseXml);
+
+    const accountBalance: AccountBalanceAccount = {
+      account: {
+        attr: { netvisorkey: parseInt(xmlObject.account.attr.netvisorkey) },
+        accountbalance: []
+      }
+    };
+
+    // Add items to account balance array
+    if (xmlObject.account?.accountbalance) {
+      forceArray(xmlObject.account.accountbalance).forEach((xmlAccountBalance) => {
+        const accountBalanceTemplate = {
+          attr: {
+            date: xmlAccountBalance.attr.date
+          },
+          debet: parseFloat(xmlAccountBalance.debet.replace(',', '.')),
+          kredit: parseFloat(xmlAccountBalance.kredit.replace(',', '.')),
+          balance: parseFloat(xmlAccountBalance.balance.replace(',', '.'))
+        };
+        accountBalance.account.accountbalance.push(accountBalanceTemplate);
+      });
+    }
+
+    return accountBalance;
   }
 }

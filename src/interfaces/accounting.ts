@@ -202,3 +202,33 @@ export interface VoucherType {
     attr: { 'ISO-639-1': 'fi' | 'en' | 'sv' };
   }[];
 }
+
+export interface AccountBalanceParameters {
+  netvisorKey: number;
+  /** Fetch account balances from date interval or separate dates depending of the intervaltype parameter. Dates are comma separated. Example: 2024-09-01,2024-09-30 */
+  balanceDates: string;
+  /** If not given or 0 then balances are fetched from separate dates defined by the balancedates parameter
+Otherwise balances are fetched in defined steps inside the balancedates interval. The balances of the first and last day are always fetched.
+not given or 0 = No Interval (separate dates)
+1 = Day
+2 = Week
+3 = Month
+4 = Year */
+  intervalType?: 0 | 1 | 2 | 3 | 4;
+}
+
+interface AccountBalance {
+  attr: {
+    date: string;
+  };
+  debet: number;
+  kredit: number;
+  balance: number;
+}
+
+export interface AccountBalanceAccount {
+  account: {
+    attr: { netvisorkey: number };
+    accountbalance: AccountBalance[];
+  };
+}
