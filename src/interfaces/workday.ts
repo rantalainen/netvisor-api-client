@@ -179,6 +179,7 @@ export interface Workday {
       dimensionName: string;
       dimensionItem: string | { value: string; attr: { fatherid: number } };
     }[];
+    contractId?: string;
   }[];
   /** Use either workdayHour or workdayTime property */
   workdayTime?: {

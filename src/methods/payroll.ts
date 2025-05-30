@@ -102,7 +102,8 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
           realName: employee.realname,
           employmentStatus: employee.employmentstatus === '1' ? true : false,
           payrollService: employee.payrollservice === '1' ? true : false,
-          resourceManagement: employee.resourcemanagement === '1' ? true : false
+          resourceManagement: employee.resourcemanagement === '1' ? true : false,
+          lunchBenefit: employee.lunchbenefit === '1' ? true : false
         });
       });
     }
@@ -133,6 +134,7 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
         fullName: xmlObject.employee.employeebaseinformation.fullname,
         payrollService: xmlObject.employee.employeebaseinformation.payrollservice === '1' ? true : false,
         resourceManagement: xmlObject.employee.employeebaseinformation.resourcemanagement === '1' ? true : false,
+        lunchBenefit: xmlObject.employee.employeebaseinformation.lunchbenefit === '1' ? true : false,
         nationality: {
           value: xmlObject.employee.employeebaseinformation.nationality.val,
           attr: xmlObject.employee.employeebaseinformation.nationality.attr

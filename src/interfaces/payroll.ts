@@ -20,6 +20,7 @@ export interface GetEmployeesItem {
   employmentStatus: boolean;
   payrollService: boolean;
   resourceManagement: boolean;
+  lunchBenefit: boolean;
 }
 
 /*
@@ -57,6 +58,7 @@ export interface GetEmployee {
     fullName: string;
     payrollService: boolean;
     resourceManagement: boolean;
+    lunchBenefit: boolean;
     nationality: {
       value: string;
       attr: { type: 'ISO-3166' };

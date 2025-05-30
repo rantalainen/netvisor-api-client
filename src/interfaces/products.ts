@@ -156,7 +156,7 @@ export interface Product {
     description?: string;
     unitPrice?: {
       value: number;
-      attr: { type: 'net' };
+      attr: { type: 'net' | 'gross' };
     };
     unit?: string;
     purchasePrice?: number;
@@ -189,7 +189,7 @@ export interface Product {
     inventoryAlertLimit?: number;
   };
   productBookKeepingDetails?: {
-    defaultVatPercent?: number;
+    defaultVatPercentage?: number;
     defaultDomesticAccountNumber?: number;
     defaultEuAccountNumber?: number;
     defaultOutsideEuAccountNumber?: number;

@@ -43,9 +43,11 @@ export interface NetvisorRequestHeaders {
   'X-Netvisor-Authentication-CustomerId': string;
   'X-Netvisor-Authentication-PartnerId': string;
   'X-Netvisor-Authentication-Timestamp': string;
+  'X-Netvisor-Authentication-TimestampUnix': string | number;
   'X-Netvisor-Authentication-TransactionId': string;
-  'X-Netvisor-Interface-Language': string | undefined;
+  'X-Netvisor-Interface-Language'?: string;
   'X-Netvisor-Organisation-ID': string;
+  'X-Netvisor-Authentication-UseHTTPResponseStatusCodes'?: '1';
   'X-Netvisor-Authentication-MAC'?: string;
   'X-Netvisor-Authentication-MACHashCalculationAlgorithm': string;
   'Content-Type'?: string;
@@ -119,26 +121,36 @@ export class NetvisorApiClient {
   }
 
   _generateHeaderMAC(url: string, headers: NetvisorRequestHeaders): string {
-    return crypto
-      .createHash('sha256')
-      .update(
-        `${url}&${headers['X-Netvisor-Authentication-Sender']}&${headers['X-Netvisor-Authentication-CustomerId']}&${headers['X-Netvisor-Authentication-Timestamp']}&${headers['X-Netvisor-Interface-Language']}&${headers['X-Netvisor-Organisation-ID']}&${headers['X-Netvisor-Authentication-TransactionId']}&${this.options.customerKey}&${this.options.partnerKey}`,
-        'latin1'
-      )
-      .digest('hex');
+    const key = this.options.customerKey + '&' + this.options.partnerKey;
+    const message = [
+      url,
+      headers['X-Netvisor-Authentication-Sender'],
+      headers['X-Netvisor-Authentication-CustomerId'],
+      headers['X-Netvisor-Authentication-Timestamp'],
+      headers['X-Netvisor-Interface-Language'],
+      headers['X-Netvisor-Organisation-ID'],
+      headers['X-Netvisor-Authentication-TransactionId'],
+      headers['X-Netvisor-Authentication-TimestampUnix'],
+      this.options.customerKey,
+      this.options.partnerKey
+    ].join('&');
+
+    return crypto.createHmac('sha256', Buffer.from(key, 'latin1')).update(Buffer.from(message, 'latin1')).digest('hex');
   }
 
   _generateHeaders(url: string): NetvisorRequestHeaders {
     const headers: NetvisorRequestHeaders = {
+      'Content-Type': 'text/plain',
       'X-Netvisor-Authentication-Sender': this.options.integrationName,
       'X-Netvisor-Authentication-CustomerId': this.options.customerId,
       'X-Netvisor-Authentication-PartnerId': this.options.partnerId,
       'X-Netvisor-Authentication-Timestamp': new Date().toISOString().replace('T', ' ').replace('Z', ''),
+      'X-Netvisor-Authentication-TimestampUnix': Math.floor(Date.now() / 1000).toString(),
       'X-Netvisor-Authentication-TransactionId': Date.now().toString() + crypto.randomBytes(32).toString('hex').substring(0, 16),
       'X-Netvisor-Interface-Language': this.options.language,
       'X-Netvisor-Organisation-ID': this.options.organizationId,
-      'X-Netvisor-Authentication-MACHashCalculationAlgorithm': 'SHA256',
-      'Content-Type': 'text/xml'
+      'X-Netvisor-Authentication-UseHTTPResponseStatusCodes': '1',
+      'X-Netvisor-Authentication-MACHashCalculationAlgorithm': 'HMACSHA256'
     };
 
     headers['X-Netvisor-Authentication-MAC'] = this._generateHeaderMAC(url, headers);

@@ -144,7 +144,8 @@ export interface GetCustomer {
       value: string;
       attr: { type: 'ISO-3166' };
     };
-    euStandardFinvoice: number;
+    euStandardFinvoice?: number;
+    inCollectionProhibitation: number;
     customerDimensions?: {
       dimension: {
         dimensionName: {

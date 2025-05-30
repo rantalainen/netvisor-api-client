@@ -94,6 +94,7 @@ export interface SalesInvoiceListItem {
     value: SalesInvoiceListInvoiceStatus;
     attr: { substatus?: InvoiceSubStatusParameter; isincollection: number };
   };
+  CustomerNetvisorKey: number;
   customerCode: string;
   customerName: string;
   referenceNumber: string;
@@ -199,6 +200,7 @@ export interface GetSalesInvoiceSalesInvoice {
     value: string;
     attr: { 'iso-3166': string };
   };
+  invoicingCustomerInCollectionProhibitation: number;
   matchPartialPaymentsByDefault: string;
   deliveryAddressName: string;
   deliveryAddressLine: string;

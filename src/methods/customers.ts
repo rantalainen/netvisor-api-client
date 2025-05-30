@@ -121,7 +121,8 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
           defaultPaymentTerm: xmlCustomer.customeradditionalinformation.defaultpaymentterm,
           taxHandlingType: xmlCustomer.customeradditionalinformation.taxhandlingtype,
           balanceLimit: parseFloat(xmlCustomer.customeradditionalinformation.balancelimit.replace(',', '.')) || null,
-          euStandardFinvoice: parseInt(xmlCustomer.customeradditionalinformation.eustandardfinvoice) || 0
+          euStandardFinvoice: parseInt(xmlCustomer.customeradditionalinformation.eustandardfinvoice) || 0,
+          inCollectionProhibitation: parseInt(xmlCustomer.customeradditionalinformation.incollectionprohibition) || 0
         }
       };
       // Add base information's optional properties if they exist
@@ -150,9 +151,7 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
             contactPersonLastName: xmlCustomerContact.contactpersonlastname,
             contactPersonPhoneNumber: xmlCustomerContact.contactpersonphonenumber,
             contactPersonEmail: xmlCustomerContact.contactpersonemail,
-            contactPersonOfficeNetvisorKey: parseInt(
-              xmlCustomerContact.contactpersonofficenetvisorkey
-            )
+            contactPersonOfficeNetvisorKey: parseInt(xmlCustomerContact.contactpersonofficenetvisorkey)
           };
           customer.customerContactPersons!.push(customerContactPerson);
         });
