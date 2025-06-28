@@ -148,7 +148,7 @@ export class NetvisorPurchasesMethod extends NetvisorMethod {
         vendor.vendorContactDetails = {};
         if (xmlVendor.vendorcontactdetails.phonenumber)
           vendor.vendorContactDetails.phoneNumber = xmlVendor.vendorcontactdetails.phonenumber;
-        if (xmlVendor.vendorcontactdetails.email) vendor.vendorContactDetails.phoneNumber = xmlVendor.vendorcontactdetails.email;
+        if (xmlVendor.vendorcontactdetails.email) vendor.vendorContactDetails.email = xmlVendor.vendorcontactdetails.email;
         if (xmlVendor.vendorcontactdetails.faxnumber) vendor.vendorContactDetails.faxNumber = xmlVendor.vendorcontactdetails.faxnumber;
         if (xmlVendor.vendorcontactdetails.contactpersonname)
           vendor.vendorContactDetails.contactPersonName = xmlVendor.vendorcontactdetails.contactpersonname;
