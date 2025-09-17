@@ -55,7 +55,7 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
             lineSum: parseFloat(xmlVoucherLine.linesum.replace(',', '.')),
             description: xmlVoucherLine.description,
             accountNumber: parseInt(xmlVoucherLine.accountnumber),
-            vatPercent: parseInt(xmlVoucherLine.vatpercent),
+            vatPercent: parseFloat(xmlVoucherLine.vatpercent.replace(',', '.')),
             vatCode: xmlVoucherLine.vatcode === '-' ? 'NONE' : xmlVoucherLine.vatcode
           };
           // Add account dimension to template if it exists
