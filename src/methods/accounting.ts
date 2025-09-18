@@ -10,8 +10,10 @@ import {
   AccountingLedgerVoucherLine,
   AccountingVoucher,
   VoucherType,
-  VoucherTypeList
+  VoucherTypeList,
+  AccountBalance
 } from '../interfaces/accounting';
+import fs from 'fs';
 
 export class NetvisorAccountingMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
@@ -234,7 +236,8 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
       balanceDates: '2024-09-01,2024-12-31',
       intervalType: '3'
     })
-      * @param {number} netvisorKey - Netvisor key of the account.
+      * @param {number} netvisorKey - Netvisor key of the account. If not given then all accounts are fetched.
+      * @param {string} netvisorKeyList - Comma separated list of account netvisorkeys. If not given then all accounts are fetched.
       * @param {string} balanceDates - Dates for the account balance. Dates are comma separated. Example: 2024-09-01,2024-09-30
       * @param {number} intervalType - If not given or 0 then balances are fetched from separate dates defined by the balancedates parameter
       * Otherwise balances are fetched in defined steps inside the balancedates interval. The balances of the first and last day are always fetched.
@@ -243,7 +246,7 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
       * 2 = Week
       * 3 = Month
       * 4 = Year
-      * 
+      *
    * @returns {AccountBalanceAccount} Returns account balance object with account balances.
    */
   async getAccountBalance(params: AccountBalanceParameters): Promise<AccountBalanceAccount> {
@@ -252,28 +255,38 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
     // Parse the xml to js object
     const xmlObject: any = parseXml(responseXml);
 
+    // fs.writeFileSync('accountbalance.json', JSON.stringify(xmlObject, null, 2));
+
     const accountBalance: AccountBalanceAccount = {
-      account: {
-        attr: { netvisorkey: parseInt(xmlObject.account.attr.netvisorkey) },
-        accountbalance: []
-      }
+      accountBalances: []
     };
 
-    // Add items to account balance array
-    if (xmlObject.account?.accountbalance) {
-      forceArray(xmlObject.account.accountbalance).forEach((xmlAccountBalance) => {
-        const accountBalanceTemplate = {
-          attr: {
-            date: xmlAccountBalance.attr.date
-          },
-          debet: parseFloat(xmlAccountBalance.debet.replace(',', '.')),
-          kredit: parseFloat(xmlAccountBalance.kredit.replace(',', '.')),
-          balance: parseFloat(xmlAccountBalance.balance.replace(',', '.'))
+    // Add items to account balances array
+    if (xmlObject.accountbalances?.account) {
+      // Loop through each account
+      for (const xmlAccount of forceArray(xmlObject.accountbalances?.account)) {
+        // Create a template for account
+        const accountTemplate = {
+          account: {
+            attr: { netvisorkey: parseInt(xmlAccount.attr.netvisorkey) },
+            accountbalance: [] as AccountBalance[]
+          }
         };
-        accountBalance.account.accountbalance.push(accountBalanceTemplate);
-      });
+        // Loop through account balances for each date
+        for (const xmlAccountBalance of forceArray(xmlAccount.accountbalance)) {
+          const balanceTemplate: AccountBalance = {
+            attr: {
+              date: xmlAccountBalance.attr.date
+            },
+            debet: parseFloat(xmlAccountBalance.debet.replace(',', '.')),
+            kredit: parseFloat(xmlAccountBalance.kredit.replace(',', '.')),
+            balance: parseFloat(xmlAccountBalance.balance.replace(',', '.'))
+          };
+          accountTemplate.account.accountbalance.push(balanceTemplate);
+        }
+        accountBalance.accountBalances.push(accountTemplate);
+      }
     }
-
     return accountBalance;
   }
 }

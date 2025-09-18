@@ -203,8 +203,16 @@ export interface VoucherType {
   }[];
 }
 
+/*
+ * RESOURCE
+ * accountbalance.nv
+ */
+
 export interface AccountBalanceParameters {
-  netvisorKey: number;
+  /** Netvisorkey of the account. If not given then all accounts are fetched. */
+  netvisorKey?: number;
+  /** Comma separated list of account netvisorkeys. If not given then all accounts are fetched. */
+  netvisorKeyList?: string;
   /** Fetch account balances from date interval or separate dates depending of the intervaltype parameter. Dates are comma separated. Example: 2024-09-01,2024-09-30 */
   balanceDates: string;
   /** If not given or 0 then balances are fetched from separate dates defined by the balancedates parameter
@@ -217,7 +225,7 @@ not given or 0 = No Interval (separate dates)
   intervalType?: 0 | 1 | 2 | 3 | 4;
 }
 
-interface AccountBalance {
+export interface AccountBalance {
   attr: {
     date: string;
   };
@@ -227,8 +235,10 @@ interface AccountBalance {
 }
 
 export interface AccountBalanceAccount {
-  account: {
-    attr: { netvisorkey: number };
-    accountbalance: AccountBalance[];
-  };
+  accountBalances: {
+    account: {
+      attr: { netvisorkey: number };
+      accountbalance: AccountBalance[];
+    };
+  }[];
 }

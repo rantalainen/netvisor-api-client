@@ -104,6 +104,7 @@ dist
 .tern-port
 
 test.js
+test.ts
 src/test.ts
 nodemon.json
 dist/
