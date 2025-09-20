@@ -181,7 +181,20 @@ export class NetvisorPurchasesMethod extends NetvisorMethod {
    * @returns the added purhcase invoice's netvisor key
    */
   async purchaseInvoice(purchaseInvoice: PurchaseInvoice): Promise<string> {
-    const response = await this._client.post('purchaseinvoice.nv', buildXml({ root: { purchaseInvoice: purchaseInvoice } }));
+    // Dimension name and item must be in the order: dimension_name, dimension_item
+    const purchaseInvoiceProcessed: PurchaseInvoice = {
+      ...purchaseInvoice,
+      purchaseInvoiceLines: {
+        purchaseInvoiceLine: purchaseInvoice?.purchaseInvoiceLines.purchaseInvoiceLine.map((line => ({
+          ...line,
+          dimension: line.dimension ? line.dimension.map((d) => ({
+            dimensionName: d.dimensionName,
+            dimensionItem: d.dimensionItem,
+          })) : []
+        })))
+      }
+    };
+    const response = await this._client.post('purchaseinvoice.nv', buildXml({ root: { purchaseInvoice: purchaseInvoiceProcessed } }));
     return parseXml(response).replies.inserteddataidentifier;
   }
 
