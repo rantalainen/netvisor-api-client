@@ -8,8 +8,11 @@ import {
   GetSalesInvoiceSalesInvoiceProductLine,
   SalesInvoiceParameters,
   SalesInvoice,
-  UpdateSalesInvoiceStatusParameters
+  UpdateSalesInvoiceStatusParameters,
+  DeletedSalesInvoices,
+  DeletedSalesOrders
 } from '../interfaces/salesinvoices';
+import { isArray } from 'util';
 
 export class NetvisorSalesMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
@@ -318,5 +321,37 @@ export class NetvisorSalesMethod extends NetvisorMethod {
    */
   async updateSalesInvoiceStatus(params: UpdateSalesInvoiceStatusParameters): Promise<void> {
     await this._client.post('updatesalesinvoicestatus.nv', undefined, params);
+  }
+
+  /**
+   * Get list of deleted sales invoices.
+   * @param deletedsince Date string in format YYYY-MM-DD. Searches for events that have been deleted after a specified date. Events can be searched for up to 7 days back in history.
+   */
+  async getDeletedSalesInvoices(params: { deletedsince: string }): Promise<DeletedSalesInvoices> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('deletedsalesinvoices.nv', params);
+    // Parse the xml to js object
+    const xmlObject: DeletedSalesInvoices = parseXml(responseXml);
+
+    if (!Array.isArray(xmlObject.deletedsalesinvoices.deletedsalesinvoice)) {
+      xmlObject.deletedsalesinvoices.deletedsalesinvoice = forceArray(xmlObject.deletedsalesinvoices.deletedsalesinvoice);
+    }
+    return xmlObject;
+  }
+
+  /**
+   * Get list of deleted sales orders.
+   * @param deletedsince Date string in format YYYY-MM-DD. Searches for events that have been deleted after a specified date. Events can be searched for up to 7 days back in history.
+   */
+  async getDeletedSalesOrders(params: { deletedsince: string }): Promise<DeletedSalesOrders> {
+    // Get the raw xml response from Netvisor
+    const responseXml = await this._client.get('deletedsalesorders.nv', params);
+    // Parse the xml to js object
+    const xmlObject: DeletedSalesOrders = parseXml(responseXml);
+
+    if (!Array.isArray(xmlObject.deletedsalesorders.deletedsalesorder)) {
+      xmlObject.deletedsalesorders.deletedsalesorder = forceArray(xmlObject.deletedsalesorders.deletedsalesorder);
+    }
+    return xmlObject;
   }
 }

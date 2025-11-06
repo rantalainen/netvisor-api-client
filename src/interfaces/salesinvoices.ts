@@ -595,3 +595,25 @@ export interface UpdateSalesInvoiceStatusParameters {
   netvisorKeyList?: string;
   status: 'open' | 'paid' | 'unsent' | 'overdue' | 'reminded' | 'requested' | 'collected' | 'creditloss';
 }
+
+export interface DeletedSalesInvoices {
+  deletedsalesinvoices: {
+    deletedsalesinvoice: DeletedSalesInvoice[];
+  };
+}
+
+export interface DeletedSalesInvoice {
+  netvisorkey: string;
+  deletedate: {
+    value: string;
+    attr: {
+      format: string;
+    };
+  };
+}
+
+export interface DeletedSalesOrders {
+  deletedsalesorders: {
+    deletedsalesorder: DeletedSalesInvoice[];
+  };
+}
