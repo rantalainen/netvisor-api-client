@@ -331,7 +331,12 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     // Get the raw xml response from Netvisor
     const responseXml = await this._client.get('deletedsalesinvoices.nv', params);
     // Parse the xml to js object
-    const xmlObject: DeletedSalesInvoices = parseXml(responseXml);
+    const xmlObject: DeletedSalesInvoices | { deletedsalesinvoices: '' } = parseXml(responseXml);
+
+    // Handle case where there are no deleted sales invoices
+    if (xmlObject.deletedsalesinvoices === '') {
+      return { deletedsalesinvoices: { deletedsalesinvoice: [] } };
+    }
 
     if (!Array.isArray(xmlObject.deletedsalesinvoices.deletedsalesinvoice)) {
       xmlObject.deletedsalesinvoices.deletedsalesinvoice = forceArray(xmlObject.deletedsalesinvoices.deletedsalesinvoice);
@@ -347,7 +352,12 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     // Get the raw xml response from Netvisor
     const responseXml = await this._client.get('deletedsalesorders.nv', params);
     // Parse the xml to js object
-    const xmlObject: DeletedSalesOrders = parseXml(responseXml);
+    const xmlObject: DeletedSalesOrders | { deletedsalesorders: '' } = parseXml(responseXml);
+
+    // Handle case where there are no deleted sales invoices
+    if (xmlObject.deletedsalesorders === '') {
+      return { deletedsalesorders: { deletedsalesorder: [] } };
+    }
 
     if (!Array.isArray(xmlObject.deletedsalesorders.deletedsalesorder)) {
       xmlObject.deletedsalesorders.deletedsalesorder = forceArray(xmlObject.deletedsalesorders.deletedsalesorder);
