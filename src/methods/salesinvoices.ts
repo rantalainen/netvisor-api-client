@@ -275,7 +275,8 @@ export class NetvisorSalesMethod extends NetvisorMethod {
             salesInvoiceProductLineSum: parseFloat(xmlProductLine.salesinvoiceproductlinesum.replace(',', '.')),
             accountingAccountSuggestion: parseInt(xmlProductLine.accountingaccountsuggestion) || null,
             accountingAccountSuggestionAccountNumber: parseInt(xmlProductLine.accountingaccountsuggestionaccountnumber) || null,
-            provisionPercentage: parseFloat(xmlProductLine.provisionpercentage.replace(',', '.'))
+            provisionPercentage: parseFloat(xmlProductLine.provisionpercentage.replace(',', '.')),
+            orderNumber: xmlProductLine.ordernumber
           };
           // Add optional properties if they exist in the original xml invoice line
           if (xmlProductLine.salesinvoiceproductlinedeliverydate) {
