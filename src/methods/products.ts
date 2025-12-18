@@ -264,18 +264,29 @@ export class NetvisorProductsMethod extends NetvisorMethod {
               translation: forceArray(xmlExtProductItem.productgroup.productgrouptranslations.translation)
             }
           },
-          productUnit: {
-            netvisorKey: parseInt(xmlExtProductItem.productunit.netvisorkey),
-            productUnitTranslations: {
-              translation: forceArray(xmlExtProductItem.productunit.productunittranslations.translation)
-            }
-          },
+          productUnit: xmlExtProductItem.productunit
+            ? {
+                netvisorKey: parseInt(xmlExtProductItem.productunit.netvisorkey),
+                productUnitTranslations: {
+                  translation: forceArray(xmlExtProductItem.productunit.productunittranslations.translation)
+                }
+              }
+            : undefined,
           productPriceInformation: {
-            defaultNetPrice: {
-              value: parseFloat(xmlExtProductItem.productpriceinformation.defaultnetprice.value.replace(',', '.')),
-              attr: xmlExtProductItem.productpriceinformation.defaultnetprice.attr
-            },
-            defaultGrossPrice: parseFloat(xmlExtProductItem.productpriceinformation.defaultgrossprice.replace(',', '.')),
+            defaultNetPrice:
+              typeof xmlExtProductItem.productpriceinformation.defaultnetprice === 'string'
+                ? {
+                    value: parseFloat(xmlExtProductItem.productpriceinformation.defaultnetprice.replace(',', '.')),
+                    attr: { ispricebase: 'false' }
+                  }
+                : {
+                    value: parseFloat(xmlExtProductItem.productpriceinformation.defaultnetprice.value.replace(',', '.')),
+                    attr: xmlExtProductItem.productpriceinformation.defaultnetprice.attr
+                  },
+            defaultGrossPrice:
+              typeof xmlExtProductItem.productpriceinformation.defaultgrossprice === 'string'
+                ? parseFloat(xmlExtProductItem.productpriceinformation.defaultgrossprice.replace(',', '.'))
+                : parseFloat(xmlExtProductItem.productpriceinformation.defaultgrossprice.value.replace(',', '.')),
             vat: {
               netvisorKey: parseInt(xmlExtProductItem.productpriceinformation.vat.netvisorkey),
               percentage: parseFloat(xmlExtProductItem.productpriceinformation.vat.percentage.replace(',', '.'))
@@ -338,8 +349,10 @@ export class NetvisorProductsMethod extends NetvisorMethod {
         if (xmlExtProductItem.productstorageinformation) {
           extProductItem.productStorageInformation = {
             defaultInvetoryPlace: {},
-            alertLimit: parseFloat(xmlExtProductItem.productstorageinformation.alertlimit.replace(',', '.')),
-            customsTariffHeader: xmlExtProductItem.productstorageinformation.customstariffheading
+            alertLimit: xmlExtProductItem.productstorageinformation.alertlimit
+              ? parseFloat(xmlExtProductItem.productstorageinformation.alertlimit.replace(',', '.'))
+              : null,
+            customsTariffHeader: xmlExtProductItem.productstorageinformation.customstariffheader
           };
           if (xmlExtProductItem.productstorageinformation.defaultinventoryplace) {
             extProductItem.productStorageInformation.defaultInvetoryPlace = {

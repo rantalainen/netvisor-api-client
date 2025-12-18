@@ -294,7 +294,7 @@ export interface ExtendedProductListItem {
       }[];
     };
   };
-  productUnit: {
+  productUnit?: {
     netvisorKey: number;
     productUnitTranslations?: {
       translation: {
@@ -360,7 +360,7 @@ export interface ExtendedProductListItem {
         shelveName: string;
       }[];
     };
-    alertLimit: number;
+    alertLimit: number | null;
     customsTariffHeader: string;
     productBatchLinkingMode?: {
       netvisorKey: number;
