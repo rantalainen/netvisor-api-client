@@ -283,6 +283,7 @@ export interface GetSalesInvoiceSalesInvoiceProductLine {
   accountingAccountSuggestionAccountNumber: number | null;
   dimension?: SalesInvoiceDimension[];
   provisionPercentage: number;
+  orderNumber?: string;
 }
 
 export interface GetSalesInvoiceSalesInvoiceCommentLine {
