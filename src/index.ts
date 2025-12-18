@@ -224,12 +224,8 @@ export class NetvisorApiClient {
         if (status[0] === 'OK') {
           resolve(true);
         } else {
-          // Create a proper error with the Netvisor error details
-          const errorMessage = status[1];
-          const error = new Error(errorMessage);
-          error.name = 'NetvisorError';
-
-          reject(error);
+          reject(status[1] || 'Unknown error in checkRequestStatus');
+          // TODO: Add proper error handling
         }
       });
     });
