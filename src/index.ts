@@ -177,7 +177,9 @@ export class NetvisorApiClient {
 
     const request: any = await this.gotInstance.post(url, {
       body,
-      headers
+      headers,
+      // Don't throw on 4xx/5xx status codes, handle errors based on Netvisor response XML
+      throwHttpErrors: false
     });
 
     try {
@@ -195,7 +197,11 @@ export class NetvisorApiClient {
 
     const headers = this._generateHeaders(url);
 
-    const request: any = await this.gotInstance(url, { headers });
+    const request: any = await this.gotInstance(url, {
+      headers,
+      // Don't throw on 4xx/5xx status codes, handle errors based on Netvisor response XML
+      throwHttpErrors: false
+    });
 
     try {
       await this._checkRequestStatus(request.body);
@@ -218,7 +224,12 @@ export class NetvisorApiClient {
         if (status[0] === 'OK') {
           resolve(true);
         } else {
-          reject(status[1]);
+          // Create a proper error with the Netvisor error details
+          const errorMessage = status[1];
+          const error = new Error(errorMessage);
+          error.name = 'NetvisorError';
+
+          reject(error);
         }
       });
     });
