@@ -301,7 +301,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
         // Price groups
         if (xmlExtProductItem.productpriceinformation.pricegroups) {
           extProductItem.productPriceInformation.priceGroups = { group: [] };
-          forceArray(xmlExtProductItem.productpriceinformation.pricegroups.group).forEach((xmlPriceGroup: any) => {
+          forceArray(xmlExtProductItem.productpriceinformation.pricegroups.pricegroup).forEach((xmlPriceGroup: any) => {
             extProductItem.productPriceInformation.priceGroups!.group.push({
               netvisorKey: parseInt(xmlPriceGroup.netvisorkey),
               priceGroupName: xmlPriceGroup.pricegroupname,
