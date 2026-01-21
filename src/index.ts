@@ -212,22 +212,42 @@ export class NetvisorApiClient {
     }
   }
 
-  _checkRequestStatus(request: any): Promise<any> {
+  async _checkRequestStatus(request: any): Promise<any> {
     const xmlParser = new xml2js.Parser();
 
-    return new Promise(async (resolve, reject) => {
-      xmlParser.parseString(request, (error, xmlResult) => {
-        if (error) return reject(error);
-
-        const status: any = xmlResult.Root.ResponseStatus[0].Status;
-
-        if (status[0] === 'OK') {
-          resolve(true);
-        } else {
-          reject(status[1] || 'Unknown error in checkRequestStatus');
-          // TODO: Add proper error handling
-        }
+    try {
+      const xmlResult = await new Promise((resolve, reject) => {
+        xmlParser.parseString(request, (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        });
       });
-    });
+
+      // Check if the parsed XML has the expected structure
+      if (!xmlResult || typeof xmlResult !== 'object') {
+        throw new Error('Invalid XML response structure');
+      }
+
+      const rootResult = xmlResult as any;
+
+      if (!rootResult.Root || !rootResult.Root.ResponseStatus || !rootResult.Root.ResponseStatus[0]) {
+        throw new Error('Missing ResponseStatus in XML response');
+      }
+
+      const status: any = rootResult.Root.ResponseStatus[0].Status;
+
+      if (!status || !Array.isArray(status)) {
+        throw new Error('Invalid Status format in XML response');
+      }
+
+      if (status[0] === 'OK') {
+        return true;
+      } else {
+        throw new Error(status[1] || 'Unknown error in checkRequestStatus');
+      }
+    } catch (error) {
+      // Re-throw the error with the original request for context
+      throw `${error}: ${request}`;
+    }
   }
 }
