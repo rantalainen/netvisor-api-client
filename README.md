@@ -90,6 +90,7 @@ const xmlString = await netvisor.sales.getXmlData('getsalesinvoice.nv', { netvis
 | ---------- | --------------------------------- | ---------------------------------- | ----- |
 | accounting | accountingLedger()                | accountingledger.nv                | 2.1.0 |
 | accounting | accounting()                      | accounting.nv                      | 2.1.0 |
+| accounting | accountingEdit()                  | accountingedit.nv                  | 4.2.0 |
 | accounting | accountList()                     | accountlist.nv                     | 2.5.0 |
 | accounting | getAccountBalance()               | accountbalance.nv                  | 3.1.2 |
 | accounting | voucherTypeList()                 | vouchertypelist.nv                 | 2.5.0 |

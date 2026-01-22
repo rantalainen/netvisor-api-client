@@ -85,6 +85,7 @@ export interface AccountingVoucher {
   description?: string;
   voucherClass: string;
   checked?: boolean;
+  comment?: string;
   voucherLine: AccountingVoucherLine[];
   voucherAttachments?: {
     voucherAttachment: {
@@ -115,6 +116,15 @@ export interface AccountingVoucherLine {
     dimensionName: string;
     dimensionItem: string;
   }[];
+}
+
+/*
+ * RESOURCE
+ * accountingledger.nv
+ */
+
+export interface AccountingEditVoucher extends AccountingVoucher {
+  netvisorKey: number;
 }
 
 /*

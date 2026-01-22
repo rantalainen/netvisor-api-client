@@ -11,7 +11,8 @@ import {
   AccountingVoucher,
   VoucherType,
   VoucherTypeList,
-  AccountBalance
+  AccountBalance,
+  AccountingEditVoucher
 } from '../interfaces/accounting';
 import fs from 'fs';
 
@@ -94,6 +95,15 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
   async accounting(voucher: AccountingVoucher): Promise<string> {
     const response = await this._client.post('accounting.nv', buildXml({ root: { voucher: voucher } }));
     return parseXml(response).replies.inserteddataidentifier;
+  }
+
+  /**
+   * Edit accounting voucher in Netvisor
+   * @example await accountingEdit(voucherObject);
+   * @returns {string} NetvisorKey of the saved voucher
+   */
+  async accountingEdit(voucher: AccountingEditVoucher): Promise<void> {
+    await this._client.post('accountingedit.nv', buildXml({ root: { voucher: voucher } }));
   }
 
   /**
