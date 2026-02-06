@@ -215,7 +215,7 @@ export interface GetRecordTypeItem {
     name: GetRecordTypeItemName[];
   };
   netvisorKey: number;
-  ratioNumber: number;
+  ratioNumber: string;
   /** 1=Tuntikirjaus, 2= Vuosiloma, 5=Muu poissaolo */
   characterType: number;
   /** 1=Tunti, 2=Päivä */

@@ -39,7 +39,7 @@ export class NetvisorWorkdayMethod extends NetvisorMethod {
             name: forceArray(recordType.names.name as GetRecordTypeItemName[])
           },
           netvisorKey: parseInt(recordType.netvisorkey),
-          ratioNumber: parseInt(recordType.rationumber),
+          ratioNumber: recordType.rationumber,
           characterType: parseInt(recordType.charactertype),
           unitType: parseInt(recordType.unittype)
         });

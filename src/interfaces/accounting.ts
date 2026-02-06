@@ -25,10 +25,13 @@ type VatCode =
  */
 
 export interface AccountingLedgerParameters {
+  netvisorKey?: number;
+  /** Comma separated list of voucher Netvisor keys. E.g. '1,2,3' */
+  netvisorKeyList?: string;
   /** Format yyyy-MM-DD */
-  startDate: string;
+  startDate?: string;
   /** Format yyyy-MM-DD */
-  endDate: string;
+  endDate?: string;
   accountNumberStart?: number;
   accountNumberEnd?: number;
   changedSince?: string;
@@ -36,6 +39,11 @@ export interface AccountingLedgerParameters {
   lastModifiedEnd?: string;
   showGenerator?: 1;
   voucherStatus?: 1 | 2 | 3;
+  /** Use the Netvisor key of the voucher type to filter vouchers */
+  voucherType?: number;
+  includeTransactionHistory?: 0 | 1;
+  includeAttachmentsMetadata?: 0 | 1;
+  includeTransactionAllocations?: 0 | 1;
 }
 
 export interface AccountingLedgerVoucher {
@@ -44,7 +52,10 @@ export interface AccountingLedgerVoucher {
   voucherDate: string;
   voucherNumber: number;
   voucherDescription: string;
-  voucherClass: string;
+  voucherClass: {
+    value: string;
+    attr: { netvisorKey: number };
+  };
   linkedSourceNetvisorKey: {
     value: number;
     attr: { type: 'purchaseinvoice' | 'salesinvoice' };

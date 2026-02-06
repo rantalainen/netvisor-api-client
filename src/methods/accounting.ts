@@ -14,7 +14,6 @@ import {
   AccountBalance,
   AccountingEditVoucher
 } from '../interfaces/accounting';
-import fs from 'fs';
 
 export class NetvisorAccountingMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
