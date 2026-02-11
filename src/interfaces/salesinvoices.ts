@@ -90,6 +90,10 @@ export interface SalesInvoiceListItem {
     value: string;
     attr: { format: 'ansi' };
   };
+  invcoiceDueDate: {
+    value: string;
+    attr: { format: 'ansi' };
+  };
   invoiceStatus: {
     value: SalesInvoiceListInvoiceStatus;
     attr: { substatus?: InvoiceSubStatusParameter; isincollection: number };

@@ -39,6 +39,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
           netvisorKey: parseInt(xmlSalesInvoice.netvisorkey),
           invoiceNumber: xmlSalesInvoice.invoicenumber,
           invoiceDate: xmlSalesInvoice.invoicedate,
+          invcoiceDueDate: xmlSalesInvoice.invoiceduedate,
           invoiceStatus: xmlSalesInvoice.invoicestatus,
           CustomerNetvisorKey: parseInt(xmlSalesInvoice.customernetvisorkey),
           customerCode: xmlSalesInvoice.customercode,
