@@ -64,6 +64,14 @@ export interface AccountingLedgerVoucher {
   voucherLine: AccountingLedgerVoucherLine[];
 }
 
+type TransactionAllocation = {
+  attr: {
+    type: 'allocatedby' | 'allocatedto';
+  };
+  voucherLineNetvisorKey: number;
+  voucherNetvisorKey: number;
+};
+
 export interface AccountingLedgerVoucherLine {
   netvisorKey: number;
   lineSum: number;
@@ -71,6 +79,8 @@ export interface AccountingLedgerVoucherLine {
   accountNumber: number;
   vatPercent: number;
   vatCode: VatCode;
+  transactionFollowUpStatus?: 'Open' | 'Closed';
+  transactionAllocations?: TransactionAllocation[];
   accountDimension?: {
     value: string;
     attr: { netvisorkey: number };
@@ -262,4 +272,21 @@ export interface AccountBalanceAccount {
       accountbalance: AccountBalance[];
     };
   }[];
+}
+
+/*
+ * RESOURCE
+ * settransactionallocation.nv
+ */
+
+export interface TransactionAllocationItem {
+  attr: { action: 'attach' | 'detach' };
+  allocationFromVoucherLineNetvisorKey: number;
+  allocationToVoucherLineNetvisorKey: number;
+}
+
+export interface SetTransactionAllocation {
+  transactionAllocations: {
+    transactionAllocation: TransactionAllocationItem[];
+  };
 }

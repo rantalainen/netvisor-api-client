@@ -12,7 +12,8 @@ import {
   VoucherType,
   VoucherTypeList,
   AccountBalance,
-  AccountingEditVoucher
+  AccountingEditVoucher,
+  SetTransactionAllocation
 } from '../interfaces/accounting';
 
 export class NetvisorAccountingMethod extends NetvisorMethod {
@@ -60,6 +61,22 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
             vatPercent: parseFloat(xmlVoucherLine.vatpercent.replace(',', '.')),
             vatCode: xmlVoucherLine.vatcode === '-' ? 'NONE' : xmlVoucherLine.vatcode
           };
+          // Add transaction follow up status and transaction allocations to template if they exist
+          if (xmlVoucherLine.transactionfollowupstatus) {
+            voucherLineTemplate.transactionFollowUpStatus = xmlVoucherLine.transactionfollowupstatus;
+          }
+          if (xmlVoucherLine.transactionallocations) {
+            voucherLineTemplate.transactionAllocations = [];
+            forceArray(xmlVoucherLine.transactionallocations.transactionallocation).forEach((xmlTransactionAllocation) => {
+              voucherLineTemplate.transactionAllocations!.push({
+                attr: {
+                  type: xmlTransactionAllocation.attr.type
+                },
+                voucherLineNetvisorKey: parseInt(xmlTransactionAllocation.voucherlinenetvisorkey),
+                voucherNetvisorKey: parseInt(xmlTransactionAllocation.vouchernetvisorkey)
+              });
+            });
+          }
           // Add account dimension to template if it exists
           if (xmlVoucherLine.accountdimension) {
             voucherLineTemplate.accountDimension = {
@@ -258,6 +275,14 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
       *
    * @returns {AccountBalanceAccount} Returns account balance object with account balances.
    */
+  /**
+   * Set transaction allocations in Netvisor
+   * @example await setTransactionAllocation(allocationObject);
+   */
+  async setTransactionAllocation(allocation: SetTransactionAllocation): Promise<void> {
+    await this._client.post('settransactionallocation.nv', buildXml({ root: allocation }));
+  }
+
   async getAccountBalance(params: AccountBalanceParameters): Promise<AccountBalanceAccount> {
     // Get the raw xml response from Netvisor
     const responseXml = await this._client.get('accountbalance.nv', params);
