@@ -276,6 +276,94 @@ export interface AccountBalanceAccount {
 
 /*
  * RESOURCE
+ * accountingbudget.nv
+ */
+
+export interface AccountingBudgetDimension {
+  dimensionname: string;
+  dimensionitem: {
+    value: string;
+    attr?: { fatherid?: number };
+  };
+}
+
+export interface AccountingBudgetCombination {
+  combinationsum: number;
+  dimension: AccountingBudgetDimension | AccountingBudgetDimension[];
+}
+
+export interface AccountingBudget {
+  ratio: {
+    value: string;
+    attr?: { type?: 'account' | 'ratio' };
+  };
+  sum: number;
+  year: number;
+  month: number;
+  version: string;
+  vatclass?: number;
+  combinations?: {
+    combination: AccountingBudgetCombination | AccountingBudgetCombination[];
+  };
+}
+
+/*
+ * RESOURCE
+ * accountingbudgetaccountbudget.nv
+ */
+
+export interface AccountingBudgetAccountBudgetMonth {
+  sum: number;
+  vat: number;
+  month: number;
+  year: number;
+}
+
+export interface AccountingBudgetAccountIdentifier {
+  accountnumber: number;
+  accountname: string;
+  accountgroup: number;
+}
+
+export interface AccountingBudgetLockedDimension {
+  dimensionname: string;
+  dimensionitemname: string;
+  budgetaccount:
+    | {
+        accountidentifier: AccountingBudgetAccountIdentifier;
+        budgetmonth: AccountingBudgetAccountBudgetMonth | AccountingBudgetAccountBudgetMonth[];
+      }
+    | {
+        accountidentifier: AccountingBudgetAccountIdentifier;
+        budgetmonth: AccountingBudgetAccountBudgetMonth | AccountingBudgetAccountBudgetMonth[];
+      }[];
+}
+
+export interface AccountingBudgetAccountBudget {
+  method: 'change' | 'replace';
+  lockeddimension?: AccountingBudgetLockedDimension | AccountingBudgetLockedDimension[];
+}
+
+/*
+ * RESOURCE
+ * accountingbudgetaccountlist.nv
+ */
+
+export interface AccountingBudgetAccountListParameters {
+  /** Year must be between 1950-2050 */
+  year: number;
+}
+
+export interface AccountingBudgetAccount {
+  netvisorKey: number;
+  name: string;
+  number: string;
+  group: string;
+  type: string;
+}
+
+/*
+ * RESOURCE
  * settransactionallocation.nv
  */
 

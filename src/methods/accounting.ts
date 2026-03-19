@@ -13,7 +13,11 @@ import {
   VoucherTypeList,
   AccountBalance,
   AccountingEditVoucher,
-  SetTransactionAllocation
+  SetTransactionAllocation,
+  AccountingBudget,
+  AccountingBudgetAccountBudget,
+  AccountingBudgetAccountListParameters,
+  AccountingBudgetAccount
 } from '../interfaces/accounting';
 
 export class NetvisorAccountingMethod extends NetvisorMethod {
@@ -281,6 +285,45 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
    */
   async setTransactionAllocation(allocation: SetTransactionAllocation): Promise<void> {
     await this._client.post('settransactionallocation.nv', buildXml({ root: allocation }));
+  }
+
+  /**
+   * Get budget account list from Netvisor
+   * @example await accountingBudgetAccountList({ year: 2024 })
+   * @returns {AccountingBudgetAccount[]} Returns account groups and accounts for budgeting.
+   */
+  /**
+   * Import budget data to Netvisor
+   * @example await accountingBudget(budgetObject)
+   */
+  /**
+   * Import account budget data to Netvisor
+   * @example await accountingBudgetAccountBudget(budgetObject)
+   */
+  async accountingBudgetAccountBudget(budget: AccountingBudgetAccountBudget): Promise<void> {
+    await this._client.post('accountingbudgetaccountbudget.nv', buildXml({ root: { accountingbudgetaccountbudget: budget } }));
+  }
+
+  async accountingBudget(budget: AccountingBudget): Promise<void> {
+    await this._client.post('accountingbudget.nv', buildXml({ root: { accountingbudget: budget } }));
+  }
+
+  async accountingBudgetAccountList(params: AccountingBudgetAccountListParameters): Promise<AccountingBudgetAccount[]> {
+    const responseXml = await this._client.get('accountingbudgetaccountlist.nv', params);
+    const xmlObject: any = parseXml(responseXml);
+    const accountList: AccountingBudgetAccount[] = [];
+    if (xmlObject.accountingbudgetaccountlist?.account) {
+      forceArray(xmlObject.accountingbudgetaccountlist.account).forEach((xmlAccount: any) => {
+        accountList.push({
+          netvisorKey: parseInt(xmlAccount.netvisorkey),
+          name: xmlAccount.name,
+          number: xmlAccount.number,
+          group: xmlAccount.group,
+          type: xmlAccount.type
+        });
+      });
+    }
+    return accountList;
   }
 
   async getAccountBalance(params: AccountBalanceParameters): Promise<AccountBalanceAccount> {
