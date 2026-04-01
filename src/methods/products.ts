@@ -17,6 +17,7 @@ import {
   GetInventoryPlacesItem
 } from '../interfaces/products';
 import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
+import { reorderProperties } from '../utils/reorder-properties';
 
 export class NetvisorProductsMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
@@ -204,7 +205,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
    * @returns the added or edited product's netvisor key
    */
   async product(product: Product, params: ProductParameters): Promise<string> {
-    const response = await this._client.post('product.nv', buildXml({ root: { product: product } }), params);
+    const response = await this._client.post('product.nv', buildXml({ root: { product: reorderProperties(product, 'Product') } }), params);
     if (params.method === 'add') return parseXml(response).replies.inserteddataidentifier;
     return params.id?.toString() || '';
   }
@@ -602,7 +603,7 @@ export class NetvisorProductsMethod extends NetvisorMethod {
    * @returns {string} The created warehouse event's netvisor key
    */
   async warehouseEvent(event: WarehouseEvent): Promise<string> {
-    const response = await this._client.post('warehouseevent.nv', buildXml({ root: { warehouseevent: event } }));
+    const response = await this._client.post('warehouseevent.nv', buildXml({ root: { warehouseevent: reorderProperties(event, 'WarehouseEvent') } }));
     return parseXml(response).replies.inserteddataidentifier;
   }
 
