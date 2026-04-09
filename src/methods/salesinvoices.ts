@@ -1,5 +1,6 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod, forceArray, parseXml, buildXml } from './_method';
+import { reorderProperties } from '../utils/reorder-properties';
 import {
   SalesInvoiceListParameters,
   SalesInvoiceListItem,
@@ -112,7 +113,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
    * @returns the added sales invoice's netvisor key
    */
   async salesInvoice(salesInvoice: SalesInvoice, params: SalesInvoiceParameters): Promise<string> {
-    const response = await this._client.post('salesinvoice.nv', buildXml({ root: { salesInvoice: salesInvoice } }), params);
+    const response = await this._client.post('salesinvoice.nv', buildXml({ root: { salesInvoice: reorderProperties(salesInvoice, 'SalesInvoice') } }), params);
     if (params.method === 'add') return parseXml(response).replies.inserteddataidentifier;
     return params.id?.toString() || '';
   }

@@ -1,5 +1,6 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
+import { reorderProperties } from '../utils/reorder-properties';
 import { GetRecordTypeItem, GetRecordTypeItemName, TripExpense, Workday } from '../interfaces/workday';
 
 export class NetvisorWorkdayMethod extends NetvisorMethod {
@@ -13,7 +14,7 @@ export class NetvisorWorkdayMethod extends NetvisorMethod {
    * @returns the added trip expense's netvisor key
    */
   async tripExpense(expense: TripExpense): Promise<string> {
-    const response = await this._client.post('tripexpense.nv', buildXml({ root: { tripexpense: expense } }));
+    const response = await this._client.post('tripexpense.nv', buildXml({ root: { tripexpense: reorderProperties(expense, 'TripExpense') } }));
     return parseXml(response).replies.inserteddataidentifier;
   }
 
@@ -22,7 +23,7 @@ export class NetvisorWorkdayMethod extends NetvisorMethod {
    * @example await workday(workdayData);
    */
   async workday(record: Workday): Promise<void> {
-    await this._client.post('workday.nv', buildXml({ root: { workday: record } }));
+    await this._client.post('workday.nv', buildXml({ root: { workday: reorderProperties(record, 'Workday') } }));
   }
 
   async getRecordTypeList(): Promise<GetRecordTypeItem[]> {

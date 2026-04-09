@@ -1,5 +1,6 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod, forceArray, parseXml, buildXml } from './_method';
+import { reorderProperties } from '../utils/reorder-properties';
 import { Payment, SalesPayment, SalesPaymentListItem, SalesPaymentListParameters } from '../interfaces/payments';
 
 export class NetvisorPaymentMethod extends NetvisorMethod {
@@ -54,7 +55,7 @@ export class NetvisorPaymentMethod extends NetvisorMethod {
    * @returns the added payment's netvisor key
    */
   async payment(payment: Payment): Promise<string> {
-    const response = await this._client.post('payment.nv', buildXml({ root: { payment: payment } }));
+    const response = await this._client.post('payment.nv', buildXml({ root: { payment: reorderProperties(payment, 'Payment') } }));
     return parseXml(response).replies.inserteddataidentifier;
   }
 
@@ -64,7 +65,7 @@ export class NetvisorPaymentMethod extends NetvisorMethod {
    * @returns the added sales payment's netvisor key
    */
   async salesPayment(salesPayment: SalesPayment): Promise<string> {
-    const response = await this._client.post('salespayment.nv', buildXml({ root: { salesPayment: salesPayment } }));
+    const response = await this._client.post('salespayment.nv', buildXml({ root: { salesPayment: reorderProperties(salesPayment, 'SalesPayment') } }));
     return parseXml(response).replies.inserteddataidentifier;
   }
 }

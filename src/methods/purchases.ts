@@ -20,6 +20,7 @@ import {
   VendorParameters
 } from '../interfaces/purchases';
 import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
+import { reorderProperties } from '../utils/reorder-properties';
 
 export class NetvisorPurchasesMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
@@ -171,7 +172,7 @@ export class NetvisorPurchasesMethod extends NetvisorMethod {
    * @returns the added/edited vendor's netvisor key
    */
   async vendor(vendor: Vendor, params: VendorParameters): Promise<string> {
-    const response = await this._client.post('vendor.nv', buildXml({ root: { vendor: vendor } }), params);
+    const response = await this._client.post('vendor.nv', buildXml({ root: { vendor: reorderProperties(vendor, 'Vendor') } }), params);
     return parseXml(response).replies.inserteddataidentifier;
   }
 
@@ -181,7 +182,7 @@ export class NetvisorPurchasesMethod extends NetvisorMethod {
    * @returns the added purhcase invoice's netvisor key
    */
   async purchaseInvoice(purchaseInvoice: PurchaseInvoice): Promise<string> {
-    const response = await this._client.post('purchaseinvoice.nv', buildXml({ root: { purchaseInvoice: purchaseInvoice } }));
+    const response = await this._client.post('purchaseinvoice.nv', buildXml({ root: { purchaseInvoice: reorderProperties(purchaseInvoice, 'PurchaseInvoice') } }));
     return parseXml(response).replies.inserteddataidentifier;
   }
 
@@ -587,7 +588,7 @@ export class NetvisorPurchasesMethod extends NetvisorMethod {
    * @returns the added purchase order's netvisor key
    */
   async purchaseOrder(purchaseOrder: PurchaseOrder, params: PurchaseOrderParameters): Promise<string> {
-    const response = await this._client.post('purchaseorder.nv', buildXml({ root: { purchaseOrder: purchaseOrder } }), params);
+    const response = await this._client.post('purchaseorder.nv', buildXml({ root: { purchaseOrder: reorderProperties(purchaseOrder, 'PurchaseOrder') } }), params);
     if (params.method === 'add') return parseXml(response).replies.inserteddataidentifier;
     return params.id?.toString() || '';
   }
