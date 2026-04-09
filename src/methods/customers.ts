@@ -1,5 +1,6 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
+import { reorderProperties } from '../utils/reorder-properties';
 import {
   CustomerListParameters,
   CustomerListItem,
@@ -239,7 +240,7 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
    * @returns the added customer's netvisor key
    */
   async customer(customer: Customer, params: CustomerParameters): Promise<string> {
-    const response = await this._client.post('customer.nv', buildXml({ root: { customer: customer } }), params);
+    const response = await this._client.post('customer.nv', buildXml({ root: { customer: reorderProperties(customer, 'Customer') } }), params);
     if (params.method === 'add') return parseXml(response).replies.inserteddataidentifier;
     return params.id?.toString() || '';
   }
@@ -250,7 +251,7 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
    * @returns the customer netvisor ID
    */
   async office(office: Office, params: OfficeParameters): Promise<string> {
-    await this._client.post('office.nv', buildXml({ root: { office } }), params);
+    await this._client.post('office.nv', buildXml({ root: { office: reorderProperties(office, 'Office') } }), params);
 
     return params.customerId.toString();
   }
@@ -261,7 +262,7 @@ export class NetvisorCustomerMethod extends NetvisorMethod {
    * @returns: the contact person netvisor ID
    */
   async contactPerson(contactPerson: ContactPerson): Promise<string> {
-    const response = await this._client.post('contactperson.nv', buildXml({ root: { contactperson: contactPerson } }));
+    const response = await this._client.post('contactperson.nv', buildXml({ root: { contactperson: reorderProperties(contactPerson, 'ContactPerson') } }));
     if (contactPerson.method === 'add') return parseXml(response).replies.inserteddataidentifier;
     return contactPerson.contactPersonIdentifier?.value.toString() || '';
   }

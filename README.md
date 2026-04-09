@@ -45,6 +45,20 @@ const netvisor = new NetvisorApiClient({
 });
 ```
 
+## XML element ordering
+
+The Netvisor API requires XML elements to be in a specific order. This client automatically reorders object properties to match the correct XML element order before sending requests, so users don't need to worry about the order in which they construct objects.
+
+The ordering is derived from the TypeScript interface declarations in `src/interfaces/`. A build-time script (`scripts/generate-property-order.ts`) reads the interfaces using `ts-morph` and generates a property order map at `src/generated/property-order.ts`. This map is used at runtime to reorder properties recursively before XML serialization.
+
+The property order map is regenerated automatically on every `npm run build` via the `prebuild` script. You can also regenerate it manually:
+
+```
+npm run generate:property-order
+```
+
+> :warning: **When adding or modifying interfaces in `src/interfaces/`, the properties MUST be declared in the same order as the Netvisor API documentation specifies.** The auto-reordering relies on the interface declaration order being the source of truth for the correct XML element order. If an interface has properties in the wrong order, the generated XML will also be in the wrong order.
+
 ## Methods
 
 All the methods will follow Visma Netvisor's integration resources. Methods are divided by category and there is also general methods for handling the raw xml data. More methods are added with future versions. If there is a method you need but it's not yet supported in the v2 api client, use previous versions of the api client or use one of the general xml methods. You can find currently implemented methods from [Added methods](#added-methods).

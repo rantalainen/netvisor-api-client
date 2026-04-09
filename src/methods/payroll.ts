@@ -1,5 +1,6 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod, forceArray, parseXml, buildXml } from './_method';
+import { reorderProperties } from '../utils/reorder-properties';
 import {
   AddJobPeriod,
   AddJobPeriodParameters,
@@ -76,7 +77,7 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
    * @example await payrollPeriodCollector(collectorData);
    */
   async payrollPeriodCollector(collector: PayrollPeriodCollector): Promise<void> {
-    await this._client.post('payrollperiodcollector.nv', buildXml({ root: { payrollperiodcollector: collector } }));
+    await this._client.post('payrollperiodcollector.nv', buildXml({ root: { payrollperiodcollector: reorderProperties(collector, 'PayrollPeriodCollector') } }));
   }
 
   /**
@@ -457,7 +458,7 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
    * @example await patchEmployee(employee, { identifiertype: 'netvisorkey', identifier: '123' });
    */
   async patchEmployee(employee: PatchEmployee, params: PatchEmployeeParameters): Promise<void> {
-    await this._client.post('patchemployee.nv', buildXml({ root: { patchemployee: employee } }), params);
+    await this._client.post('patchemployee.nv', buildXml({ root: { patchemployee: reorderProperties(employee, 'PatchEmployee') } }), params);
   }
 
   /**
@@ -534,7 +535,7 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
    * @returns Netvisor key of the created paycheck batch.
    */
   async payrollPaycheckBatch(paycheckBatch: PayrollPaycheckBatch): Promise<string> {
-    const response = await this._client.post('payrollpaycheckbatch.nv', buildXml({ root: { payrollpaycheckbatch: paycheckBatch } }));
+    const response = await this._client.post('payrollpaycheckbatch.nv', buildXml({ root: { payrollpaycheckbatch: reorderProperties(paycheckBatch, 'PayrollPaycheckBatch') } }));
     return parseXml(response).replies.inserteddataidentifier;
   }
 
@@ -543,7 +544,7 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
    * @example await payrollAdvance(advance);
    */
   async payrollAdvance(payrollAdvance: PayrollAdvance): Promise<void> {
-    await this._client.post('payrolladvance.nv', buildXml({ root: { payrolladvance: payrollAdvance } }));
+    await this._client.post('payrolladvance.nv', buildXml({ root: { payrolladvance: reorderProperties(payrollAdvance, 'PayrollAdvance') } }));
   }
 
   /**
@@ -730,7 +731,7 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
   async payrollExternalSalaryPayment(payment: PayrollExternalSalaryPayment): Promise<void> {
     // Netvisor wants sum in string format '1234,56'
     payment.externalPaymentSum = String(payment.externalPaymentSum).replace('.', ',');
-    await this._client.post('payrollexternalsalarypayment.nv', buildXml({ root: { payrollexternalsalarypayment: payment } }));
+    await this._client.post('payrollexternalsalarypayment.nv', buildXml({ root: { payrollexternalsalarypayment: reorderProperties(payment, 'PayrollExternalSalaryPayment') } }));
   }
 
   /**
@@ -739,7 +740,7 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
    * @returns Added job period's netvisor key
    */
   async addJobPeriod(jobPeriod: AddJobPeriod, params: AddJobPeriodParameters): Promise<string> {
-    const response = await this._client.post('addjobperiod.nv', buildXml({ root: { employmentperiods: jobPeriod } }), params);
+    const response = await this._client.post('addjobperiod.nv', buildXml({ root: { employmentperiods: reorderProperties(jobPeriod, 'AddJobPeriod') } }), params);
     return parseXml(response).replies.inserteddataidentifier;
   }
 
@@ -748,7 +749,7 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
    * @example await editJobPeriod(jobPeriod, { netvisorKey: 123 });
    */
   async editJobPeriod(jobPeriod: EditJobPeriod, params: EditJobPeriodParameters): Promise<void> {
-    await this._client.post('editjobperiod.nv', buildXml({ root: { employmentperiods: jobPeriod } }), params);
+    await this._client.post('editjobperiod.nv', buildXml({ root: { employmentperiods: reorderProperties(jobPeriod, 'EditJobPeriod') } }), params);
   }
 
   /**
@@ -795,7 +796,7 @@ export class NetvisorPayrollMethod extends NetvisorMethod {
   ): Promise<void> {
     await this._client.post(
       'attachemployeetosettlementpoint.nv',
-      buildXml({ root: { attachemployeetosettlementpoint: settlementPoints } }),
+      buildXml({ root: { attachemployeetosettlementpoint: reorderProperties(settlementPoints, 'AttachEmployeeToSettlementPoint') } }),
       params
     );
   }

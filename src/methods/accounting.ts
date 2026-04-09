@@ -1,5 +1,6 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
+import { reorderProperties } from '../utils/reorder-properties';
 import {
   AccountBalanceAccount,
   AccountBalanceParameters,
@@ -113,7 +114,7 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
    * @returns {string} NetvisorKey of the saved voucher
    */
   async accounting(voucher: AccountingVoucher): Promise<string> {
-    const response = await this._client.post('accounting.nv', buildXml({ root: { voucher: voucher } }));
+    const response = await this._client.post('accounting.nv', buildXml({ root: { voucher: reorderProperties(voucher, 'AccountingVoucher') } }));
     return parseXml(response).replies.inserteddataidentifier;
   }
 
@@ -123,7 +124,7 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
    * @returns {string} NetvisorKey of the saved voucher
    */
   async accountingEdit(voucher: AccountingEditVoucher): Promise<void> {
-    await this._client.post('accountingedit.nv', buildXml({ root: { voucher: voucher } }));
+    await this._client.post('accountingedit.nv', buildXml({ root: { voucher: reorderProperties(voucher, 'AccountingEditVoucher') } }));
   }
 
   /**
@@ -284,7 +285,7 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
    * @example await setTransactionAllocation(allocationObject);
    */
   async setTransactionAllocation(allocation: SetTransactionAllocation): Promise<void> {
-    await this._client.post('settransactionallocation.nv', buildXml({ root: allocation }));
+    await this._client.post('settransactionallocation.nv', buildXml({ root: reorderProperties(allocation, 'SetTransactionAllocation') }));
   }
 
   /**
@@ -301,11 +302,11 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
    * @example await accountingBudgetAccountBudget(budgetObject)
    */
   async accountingBudgetAccountBudget(budget: AccountingBudgetAccountBudget): Promise<void> {
-    await this._client.post('accountingbudgetaccountbudget.nv', buildXml({ root: { accountingbudgetaccountbudget: budget } }));
+    await this._client.post('accountingbudgetaccountbudget.nv', buildXml({ root: { accountingbudgetaccountbudget: reorderProperties(budget, 'AccountingBudgetAccountBudget') } }));
   }
 
   async accountingBudget(budget: AccountingBudget): Promise<void> {
-    await this._client.post('accountingbudget.nv', buildXml({ root: { accountingbudget: budget } }));
+    await this._client.post('accountingbudget.nv', buildXml({ root: { accountingbudget: reorderProperties(budget, 'AccountingBudget') } }));
   }
 
   async accountingBudgetAccountList(params: AccountingBudgetAccountListParameters): Promise<AccountingBudgetAccount[]> {

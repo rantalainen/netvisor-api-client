@@ -135,7 +135,7 @@ export class NetvisorApiClient {
       this.options.partnerKey
     ].join('&');
 
-    return crypto.createHmac('sha256', Buffer.from(key, 'latin1')).update(Buffer.from(message, 'latin1')).digest('hex');
+    return crypto.createHmac('sha256', Buffer.from(key, 'latin1') as Uint8Array).update(message, 'latin1').digest('hex');
   }
 
   _generateHeaders(url: string): NetvisorRequestHeaders {

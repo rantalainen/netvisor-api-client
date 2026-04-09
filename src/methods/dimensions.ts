@@ -1,5 +1,6 @@
 import { NetvisorApiClient } from '..';
 import { NetvisorMethod, parseXml, buildXml, forceArray } from './_method';
+import { reorderProperties } from '../utils/reorder-properties';
 import {
   DimensionListParameters,
   DimensionListItem,
@@ -63,7 +64,7 @@ export class NetvisorDimensionMethod extends NetvisorMethod {
    * @example await dimensionItem(dimensionItem, { method: 'add' })
    */
   async dimensionItem(dimensionItem: DimensionItem, params: DimensionItemParameters): Promise<void> {
-    await this._client.post('dimensionitem.nv', buildXml({ root: { dimensionitem: dimensionItem } }), params);
+    await this._client.post('dimensionitem.nv', buildXml({ root: { dimensionitem: reorderProperties(dimensionItem, 'DimensionItem') } }), params);
     return;
   }
 
