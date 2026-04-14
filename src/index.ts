@@ -13,6 +13,8 @@ import { NetvisorPurchasesMethod } from './methods/purchases';
 import { NetvisorPayrollMethod } from './methods/payroll';
 import { NetvisorWorkdayMethod } from './methods/workday';
 import { HttpsAgent } from 'agentkeepalive';
+import { NetvisorUserAccessMethod } from './methods/useraccess';
+import { NetvisorInvitationsMethod } from './methods/invitations';
 
 export interface NetvisorApiClientOptions {
   /** Integration name, sent as `X-Netvisor-Authentication-Sender` in requests */
@@ -71,6 +73,8 @@ export class NetvisorApiClient {
   readonly purchases: NetvisorPurchasesMethod;
   readonly payroll: NetvisorPayrollMethod;
   readonly workday: NetvisorWorkdayMethod;
+  readonly userAccess: NetvisorUserAccessMethod;
+  readonly invitations: NetvisorInvitationsMethod;
 
   constructor(options: NetvisorApiClientOptions) {
     // Set default connect URI
@@ -99,6 +103,8 @@ export class NetvisorApiClient {
     this.purchases = new NetvisorPurchasesMethod(this);
     this.payroll = new NetvisorPayrollMethod(this);
     this.workday = new NetvisorWorkdayMethod(this);
+    this.userAccess = new NetvisorUserAccessMethod(this);
+    this.invitations = new NetvisorInvitationsMethod(this);
 
     this.options = options;
 
@@ -135,7 +141,10 @@ export class NetvisorApiClient {
       this.options.partnerKey
     ].join('&');
 
-    return crypto.createHmac('sha256', Buffer.from(key, 'latin1') as Uint8Array).update(message, 'latin1').digest('hex');
+    return crypto
+      .createHmac('sha256', Buffer.from(key, 'latin1') as Uint8Array)
+      .update(message, 'latin1')
+      .digest('hex');
   }
 
   _generateHeaders(url: string): NetvisorRequestHeaders {
