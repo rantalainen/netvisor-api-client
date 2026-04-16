@@ -162,10 +162,10 @@ const xmlString = await netvisor.sales.getXmlData('getsalesinvoice.nv', { netvis
 | sales      | getSalesOrder()                   | getorder.nv                        | 2.0.1 |
 | sales      | salesInvoice()                    | salesinvoice.nv                    | 2.0.0 |
 | sales      | updateSalesInvoiceStatus()        | updatesalesinvoicestatus.nv        | 2.6.0 |
-| useraccess | getUserAccessRightsSummary()      | getuseraccessrightssummary.nv      | 4.6.0 |
-| useraccess | changeUserAccessRightValidity()   | changeuseraccessrightsvalidity.nv  | 4.6.0 |
-| useraccess | editUserAccessRights()            | edituseraccessrights.nv.nv         | 4.6.0 |
-| useraccess | deleteUserAccessRight()           | deleteuseraccessright.nv           | 4.6.0 |
+| userAccess | getUserAccessRightsSummary()      | getuseraccessrightssummary.nv      | 4.6.0 |
+| userAccess | changeUserAccessRightValidity()   | changeuseraccessrightsvalidity.nv  | 4.6.0 |
+| userAccess | editUserAccessRights()            | edituseraccessrights.nv            | 4.6.0 |
+| userAccess | deleteUserAccessRight()           | deleteuseraccessright.nv           | 4.6.0 |
 | workday    | tripExpense()                     | tripexpense.nv                     | 2.2.0 |
 | workday    | workday()                         | workday.nv                         | 2.2.0 |
 | workday    | getRecordTypeList()               | getrecordtypelist.nv               | 2.7.0 |

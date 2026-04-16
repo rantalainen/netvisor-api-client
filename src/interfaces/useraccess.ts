@@ -53,7 +53,7 @@ export interface UserAccessRightsSummary {
 
 /*
  * RESOURCE
- * changeeuseraccessrightvalidity.nv
+ * changeuseraccessrightsvalidity.nv
  */
 
 export interface UserAccessRightValidity {

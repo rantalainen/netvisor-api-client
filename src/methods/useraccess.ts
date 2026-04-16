@@ -59,7 +59,7 @@ export class NetvisorUserAccessMethod extends NetvisorMethod {
             isAccountant: user.roles.isaccountant === 'true',
             isPayrollAccountant: user.roles.ispayrollaccountant === 'true',
             isPayrollPersonnelManager: user.roles.ispayrollpersonnelmanager === 'true',
-            isPayrollEmployeeController: user.roles.ispayrolleemployeecontrolle === 'true'
+            isPayrollEmployeeController: user.roles.ispayrollemployeecontroller === 'true'
           },
           profiles: {
             accountingProfile: user.profiles.accountingprofile,

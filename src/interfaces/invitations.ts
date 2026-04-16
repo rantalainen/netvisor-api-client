@@ -3,7 +3,7 @@ export type InvitationStatus = 'WaitingForAuth' | 'Authenticated' | 'Verified' |
 
 /*
  * RESOURCE
- * getuserinvitation.nv
+ * getuserinvitations.nv
  */
 
 export interface GetUserInvitationParameters {

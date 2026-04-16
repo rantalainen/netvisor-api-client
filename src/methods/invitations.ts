@@ -25,7 +25,7 @@ export class NetvisorInvitationsMethod extends NetvisorMethod {
     // Parse the xml to js object
     const xmlObject = parseXml(responseXml);
 
-    // Add metadata and invitaion array to return array
+    // Add metadata and invitation array to return array
     if (xmlObject?.userinvitations) {
       // Create the return array
       const invitationList: GetUserInvitation = {
