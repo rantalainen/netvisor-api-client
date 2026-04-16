@@ -1,49 +1,113 @@
+export type AccountingProfile =
+  | 'AllRights'
+  | 'BrowsingRights'
+  | 'NoRights'
+  | 'PurchaseledgerUser'
+  | 'SalesledgerUser'
+  | 'PurchaseAndSalesLedgerUser'
+  | 'CompanyUser';
+export type PayrollProfile = 'AllRights' | 'BrowsingRights' | 'NoRights' | 'EmployeeRights' | 'AcceptorRights' | 'CompanyManagementRights';
+
 /*
  * RESOURCE
- * getuserinvitation.nv
+ * getuseraccessrightssummary.nv
  */
 
-export type InvitationType = 'Employee' | 'NewUser';
-export type InvitationStatus = 'WaitingForAuth' | 'Authenticated' | 'Verified' | 'EmailSendingFailed' | 'SmsSendingFailed' | 'TwoFaFailed';
-
-export interface GetUserInvitationParameters {
-  page?: number;
-  itemsOnPage?: number;
-  company?: number;
-  netvisorKeys?: number[];
-  invitationTypes?: InvitationType[];
-  /** If not given, Authenticated & WaitingForAuth are used by default */
-  invitationStatuses?: InvitationStatus[];
-  invitationMail?: string;
-  invitationPhone?: string;
-  invitationFirstNames?: string;
-  invitationLastNames?: string;
+export interface UserAccessRightsSummaryParameters {
+  company: number;
+  // Use empty string for all users, a single number for one user, or an array of numbers for multiple users
+  users: '' | number | number[];
 }
 
-export interface GetUserInvitation {
-  userInvitations: {
-    company: string | { value: string; attr: { netvisorkey: number } };
-    firstNames: string;
-  }[];
+export interface UserAccessRightsSummary {
+  company: {
+    attr: {
+      netvisorKey: number;
+      name: string;
+    };
+    users: {
+      user: {
+        attr: { netvisorKey: number };
+        firstName: string;
+        lastName: string;
+        roles: {
+          isCompanyAdmin: boolean;
+          isAccountOfficeSuperUser: boolean;
+          isUserAdmin: boolean;
+          isAuditor: boolean;
+          isAccountant: boolean;
+          isPayrollAccountant: boolean;
+          isPayrollPersonnelManager: boolean;
+          isPayrollEmployeeController: boolean;
+        };
+        profiles: {
+          accountingProfile: AccountingProfile;
+          payrollProfile: PayrollProfile;
+        };
+        validFrom?: string;
+        validTo?: string;
+      }[];
+    };
+  };
 }
 
 /*
  * RESOURCE
- * senduserinvitation.nv
+ * changeeuseraccessrightvalidity.nv
  */
 
-export interface SendUserInvitation {}
+export interface UserAccessRightValidity {
+  user: {
+    value: number;
+    attr: { type: 'netvisorkey' };
+  };
+  company: {
+    value: number;
+    attr: { type: 'netvisorkey' };
+  };
+  useForAllCompanies: 1 | 0;
+  /** Format YYYY-MM-DD */
+  validFrom: string;
+  /** Format YYYY-MM-DD */
+  validTo: string;
+}
 
 /*
  * RESOURCE
- * canceluserinvitation.nv
+ * edituseraccessrights.nv
  */
 
-export interface CancelUserInvitation {}
+export interface UserAccessRights {
+  user: {
+    value: number;
+    attr: { type: 'netvisorkey' };
+  };
+  company: {
+    value: number;
+    attr: { type: 'netvisorkey' };
+  };
+  isUserAdmin?: 1 | 0;
+  isAccountant?: 1 | 0;
+  isAuditor?: 1 | 0;
+  isPayrollAccountant?: 1 | 0;
+  isPayrollPersonnelManager?: 1 | 0;
+  isPayrollEmployeeController?: 1 | 0;
+  accountingProfile?: AccountingProfile;
+  payrollProfile?: PayrollProfile;
+}
 
 /*
  * RESOURCE
- * verifyuserinvitation.nv
+ * deleteuseraccessright.nv
  */
 
-export interface VerifyUserInvitation {}
+export interface DeleteUserAccessRight {
+  user: {
+    value: number;
+    attr: { type: 'netvisorkey' };
+  };
+  company: {
+    value: number;
+    attr: { type: 'netvisorkey' };
+  };
+}

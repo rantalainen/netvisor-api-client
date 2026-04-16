@@ -14,6 +14,11 @@ export class NetvisorInvitationsMethod extends NetvisorMethod {
     super(client);
   }
 
+  /**
+   * Get user invitations for the company. If no parameters are given, it will use default values
+   * @param params - Optional parameters for pagination and filtering. Default filter for invitationStatus is 'Authenticated, WaitingForAuth'
+   * @returns A list of user invitations and pagination metadata
+   */
   async getUserInvitations(params?: GetUserInvitationParameters): Promise<GetUserInvitation> {
     // Get the raw xml response from Netvisor
     const responseXml = await this._client.get('getuserinvitations.nv', params);
@@ -69,6 +74,11 @@ export class NetvisorInvitationsMethod extends NetvisorMethod {
     }
   }
 
+  /**
+   * Send a user invitation
+   * @param invitationData - Data for the user invitation
+   * @returns The id of the created invitation, or empty string if the invitation was not created successfully
+   */
   async sendUserInvitation(invitationData: SendUserInvitation): Promise<string> {
     // Send the xml data to Netvisor and get the response
     const responseXml = await this._client.post(
@@ -84,6 +94,11 @@ export class NetvisorInvitationsMethod extends NetvisorMethod {
     }
   }
 
+  /**
+   * Cancel a user invitation
+   * @param invitationData - Data for the user invitation to be cancelled. Only netvisorKey is required
+   * @returns True if the invitation was cancelled successfully, false otherwise
+   */
   async cancelUserInvitation(invitationData: CancelUserInvitation): Promise<boolean> {
     // Send the xml data to Netvisor and get the response
     const responseXml = await this._client.post(
@@ -98,7 +113,12 @@ export class NetvisorInvitationsMethod extends NetvisorMethod {
     return false;
   }
 
-  async verifyUserInvitation(invitationData: VerifyUserInvitation): Promise<any> {
+  /**
+   * Verify a user invitation
+   * @param invitationData - Data for the user invitation to be verified. Only netvisorKey is required
+   * @returns True if the invitation was verified successfully, false otherwise
+   */
+  async verifyUserInvitation(invitationData: VerifyUserInvitation): Promise<boolean> {
     // Send the xml data to Netvisor and get the response
     const responseXml = await this._client.post(
       'verifyuserinvitation.nv',
