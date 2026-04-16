@@ -121,7 +121,7 @@ export class NetvisorSalesMethod extends NetvisorMethod {
     return params.id?.toString() || '';
   }
 
-  private async parseSalesInvoiceOrSalesOrder(responseXml: string): Promise<GetSalesInvoiceSalesInvoice[]> {
+  async parseSalesInvoiceOrSalesOrder(responseXml: string): Promise<GetSalesInvoiceSalesInvoice[]> {
     // Parse the xml to js object
     const xmlObject: any = parseXml(responseXml);
 
@@ -314,6 +314,21 @@ export class NetvisorSalesMethod extends NetvisorMethod {
         forceArray(xmlSalesInvoice.invoicelines.invoiceline.salesinvoicecommentline).forEach((xmlCommentLine) => {
           salesInvoice.invoiceLines.invoiceLine.salesInvoiceCommentLine!.push(xmlCommentLine);
         });
+      }
+
+      // Add process history lines if there is any
+      if (xmlSalesInvoice.processhistory?.processhistoryline) {
+        salesInvoice.processHistory = { processHistoryLines: [] };
+        forceArray(xmlSalesInvoice.processhistory?.processhistoryline).forEach((xmlProcessHistoryLine) => {
+            salesInvoice.processHistory!.processHistoryLines.push({
+              processedTimeStamp: xmlProcessHistoryLine.processedtimestamp,
+              materialTypeName: xmlProcessHistoryLine.materialtypename,
+              userName: xmlProcessHistoryLine.username,
+              processChannelName: xmlProcessHistoryLine.processchannelname,
+              processStatus: xmlProcessHistoryLine.processstatus,
+            });
+          }
+        );
       }
       salesInvoices.push(salesInvoice);
     });

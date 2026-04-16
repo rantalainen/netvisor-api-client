@@ -256,6 +256,9 @@ export interface GetSalesInvoiceSalesInvoice {
       invoiceNumber: number;
     };
   }[];
+  processHistory?: {
+    processHistoryLines: SalesInvoiceProcessHistoryLine[];
+  }
 }
 
 export interface GetSalesInvoiceSalesInvoiceProductLine {
@@ -304,6 +307,17 @@ interface GetSalesInvoiceAttachment {
   attachmentDescription: string;
   fileName: string;
   documentData: string;
+}
+
+interface SalesInvoiceProcessHistoryLine {
+  processedTimeStamp: {
+    value: string;
+    attr: { format: 'ansi' };
+  };
+  materialTypeName: string;
+  userName: string;
+  processChannelName: string;
+  processStatus: string;
 }
 
 /*
