@@ -141,6 +141,17 @@ export interface GetSalesInvoiceParameters {
   netvisorKeyList?: string;
   /** Palauttaa myyntilaskua noudettaessa laskulle liittyvät tilaukset. */
   includeDocuments?: 0 | 1;
+  /** Palauttaa lisäkenttiä myyntilaskun noudossa seuraavasti:
+  arvolla 1: Events (ks. dokumentaatio alta)
+  arvolla 2: Accrual
+  arvolla 3: Events + Accrual
+  arvolla 4: Factoring
+  arvolla 5: Events + Factoring
+  arvolla 8: PaymentPlan
+  arvolla 16: CreditedInvoice NetvisorKey ja InvoiceNumber eli hyvityslaskulla tieto mikä lasku on hyvitetty.Tieto palautuu, kun hyvitys on tehty Netvisorin käyttöliittymässä myyntilaskulta.
+  arvolla 32: Palauttaa tiedon hyvitetystä tai hyvitettävästä laskusta, johon kohdistettu
+  arvolla 63: Palauttaa kaikki replyoption liput */
+  replyOption?: number;
 }
 
 export interface GetSalesInvoiceSalesInvoice {
