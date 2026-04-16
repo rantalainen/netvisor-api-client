@@ -117,6 +117,10 @@ const xmlString = await netvisor.sales.getXmlData('getsalesinvoice.nv', { netvis
 | dimensions | dimensionList()                   | dimensionlist.nv                   | 2.0.0 |
 | dimensions | dimensionItem()                   | dimensionitem.nv                   | 2.1.0 |
 | dimensions | dimensionDelete()                 | dimensiondelete.nv                 | 2.1.0 |
+| invitations| getUserInvitations()              | getuserinvitations.nv              | 4.6.0 |
+| invitations| sendUserInvitation()              | senduserinvitation.nv              | 4.6.0 |
+| invitations| cancelUserInvitation()            | canceluserinvitation.nv            | 4.6.0 |
+| invitations| verifyUserInvitation()            | verifyuserinvitation.nv            | 4.6.0 |
 | payments   | salesPaymentList()                | salespaymentlist.nv                | 2.0.0 |
 | payments   | payment()                         | payment.nv                         | 2.2.0 |
 | payments   | salesPayment()                    | salespayment.nv                    | 2.5.0 |
@@ -158,6 +162,10 @@ const xmlString = await netvisor.sales.getXmlData('getsalesinvoice.nv', { netvis
 | sales      | getSalesOrder()                   | getorder.nv                        | 2.0.1 |
 | sales      | salesInvoice()                    | salesinvoice.nv                    | 2.0.0 |
 | sales      | updateSalesInvoiceStatus()        | updatesalesinvoicestatus.nv        | 2.6.0 |
+| userAccess | getUserAccessRightsSummary()      | getuseraccessrightssummary.nv      | 4.6.0 |
+| userAccess | changeUserAccessRightValidity()   | changeuseraccessrightsvalidity.nv  | 4.6.0 |
+| userAccess | editUserAccessRights()            | edituseraccessrights.nv            | 4.6.0 |
+| userAccess | deleteUserAccessRight()           | deleteuseraccessright.nv           | 4.6.0 |
 | workday    | tripExpense()                     | tripexpense.nv                     | 2.2.0 |
 | workday    | workday()                         | workday.nv                         | 2.2.0 |
 | workday    | getRecordTypeList()               | getrecordtypelist.nv               | 2.7.0 |

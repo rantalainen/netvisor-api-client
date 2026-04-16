@@ -13,7 +13,6 @@ import {
   DeletedSalesInvoices,
   DeletedSalesOrders
 } from '../interfaces/salesinvoices';
-import { isArray } from 'util';
 
 export class NetvisorSalesMethod extends NetvisorMethod {
   constructor(client: NetvisorApiClient) {
@@ -113,7 +112,11 @@ export class NetvisorSalesMethod extends NetvisorMethod {
    * @returns the added sales invoice's netvisor key
    */
   async salesInvoice(salesInvoice: SalesInvoice, params: SalesInvoiceParameters): Promise<string> {
-    const response = await this._client.post('salesinvoice.nv', buildXml({ root: { salesInvoice: reorderProperties(salesInvoice, 'SalesInvoice') } }), params);
+    const response = await this._client.post(
+      'salesinvoice.nv',
+      buildXml({ root: { salesInvoice: reorderProperties(salesInvoice, 'SalesInvoice') } }),
+      params
+    );
     if (params.method === 'add') return parseXml(response).replies.inserteddataidentifier;
     return params.id?.toString() || '';
   }
