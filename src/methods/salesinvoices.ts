@@ -315,6 +315,20 @@ export class NetvisorSalesMethod extends NetvisorMethod {
           salesInvoice.invoiceLines.invoiceLine.salesInvoiceCommentLine!.push(xmlCommentLine);
         });
       }
+
+      // Add process history lines if there is any
+      if (xmlSalesInvoice.processhistory?.processhistoryline) {
+        salesInvoice.processHistory = { processHistoryLines: [] };
+        forceArray(xmlSalesInvoice.processhistory?.processhistoryline).forEach((xmlProcessHistoryLine) => {
+          salesInvoice.processHistory!.processHistoryLines.push({
+            processedTimeStamp: xmlProcessHistoryLine.processedtimestamp,
+            materialTypeName: xmlProcessHistoryLine.materialtypename,
+            userName: xmlProcessHistoryLine.username,
+            processChannelName: xmlProcessHistoryLine.processchannelname,
+            processStatus: xmlProcessHistoryLine.processstatus,
+          });
+        });
+      }
       salesInvoices.push(salesInvoice);
     });
 
