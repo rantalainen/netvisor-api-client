@@ -269,7 +269,7 @@ export interface GetSalesInvoiceSalesInvoice {
   }[];
   processHistory?: {
     processHistoryLines: SalesInvoiceProcessHistoryLine[];
-  }
+  };
 }
 
 export interface GetSalesInvoiceSalesInvoiceProductLine {
