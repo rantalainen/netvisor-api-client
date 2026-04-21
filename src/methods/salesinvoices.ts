@@ -318,9 +318,9 @@ export class NetvisorSalesMethod extends NetvisorMethod {
 
       // Add process history lines if there is any
       if (xmlSalesInvoice.processhistory?.processhistoryline) {
-        salesInvoice.processHistory = { processHistoryLines: [] };
+        salesInvoice.processHistory = { processHistoryLine: [] };
         forceArray(xmlSalesInvoice.processhistory?.processhistoryline).forEach((xmlProcessHistoryLine) => {
-          salesInvoice.processHistory!.processHistoryLines.push({
+          salesInvoice.processHistory!.processHistoryLine.push({
             processedTimeStamp: xmlProcessHistoryLine.processedtimestamp,
             materialTypeName: xmlProcessHistoryLine.materialtypename,
             userName: xmlProcessHistoryLine.username,

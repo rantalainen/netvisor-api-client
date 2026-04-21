@@ -268,7 +268,7 @@ export interface GetSalesInvoiceSalesInvoice {
     };
   }[];
   processHistory?: {
-    processHistoryLines: SalesInvoiceProcessHistoryLine[];
+    processHistoryLine: SalesInvoiceProcessHistoryLine[];
   };
 }
 
