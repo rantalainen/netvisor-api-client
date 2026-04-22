@@ -81,6 +81,9 @@ export interface SalesInvoiceListParameters {
   invoicingCustomerCountryCode?: string;
   /** Arvolla 1 palautetaan laskun sisäinen kommentti. Arvolla 2 palautetaan laskun valuuttasumma ja avoin valuuttasumma. Arvolla 3 palautetaan kaikki edellämainitut. */
   replyOption?: 1 | 2 | 3;
+  /** Parametria käytettäessä tulee käyttää myös parametreja lastmodifiedstart ja lastmodifiedend.
+   * Arvolla 1 pyyntö palauttaa myyntilaskut, joilla on muuttuneita (muokattuja tai uusia) suorituksia aikavälillä. */
+  includeModifiedPayments?: 1;
 }
 
 export interface SalesInvoiceListItem {
