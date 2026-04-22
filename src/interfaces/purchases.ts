@@ -260,8 +260,12 @@ export interface PurchaseInvoice {
       mimeType: string;
       attachmentDescription: string;
       fileName: string;
-      documentData: string;
-      documentType?: 'invoiceimage' | 'otherattachment';
+      documentData: {
+        value: string;
+        attr: {
+          documentType: 'invoiceimage' | 'otherattachment';
+        };
+      };
     }[];
   };
   purchaseInvoiceRelatedPurchaseOrderNumbers?: {
