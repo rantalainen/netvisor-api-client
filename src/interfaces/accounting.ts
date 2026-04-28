@@ -68,8 +68,7 @@ export interface AccountingLedgerVoucher {
 export type TransactionHistory = {
   transaction: {
     comment?: string;
-    timeStamp?: string;
-    format?: {
+    timeStamp?: {
       value: string;
       attr: { format: 'ansi' };
     };

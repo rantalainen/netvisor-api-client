@@ -110,7 +110,6 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
             voucherTemplate.transactionHistory!.transaction.push({
               comment: xmlTransactionHistory.comment,
               timeStamp: xmlTransactionHistory.timestamp,
-              format: xmlTransactionHistory.format,
               editor: xmlTransactionHistory.editor
             });
           });
