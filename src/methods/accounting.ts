@@ -55,8 +55,7 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
             attr: { type: xmlVoucher.linkedsourcenetvisorkey.attr.type }
           },
           voucherNetvisorUri: xmlVoucher.vouchernetvisoruri,
-          voucherLine: [],
-          transactionHistory: { transaction: [] }
+          voucherLine: []
         };
         // Add the voucher lines to template
         forceArray(xmlVoucher.voucherline).forEach((xmlVoucherLine) => {
