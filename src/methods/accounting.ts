@@ -56,7 +56,7 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
           },
           voucherNetvisorUri: xmlVoucher.vouchernetvisoruri,
           voucherLine: [],
-          transactionHistory: []
+          transactionHistory: { transaction: [] }
         };
         // Add the voucher lines to template
         forceArray(xmlVoucher.voucherline).forEach((xmlVoucherLine) => {
@@ -106,14 +106,13 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
 
         // Add transaction history to template if it exists and parameter includeTransactionHistory is set to 1
         if (params?.includeTransactionHistory === 1 && xmlVoucher.transactionhistory) {
-          forceArray(xmlVoucher.transactionhistory).forEach((xmlTransactionHistory) => {
-            const transactionHistoryTemplate: TransactionHistory = {
+          forceArray(xmlVoucher.transactionhistory.transaction).forEach((xmlTransactionHistory) => {
+            voucherTemplate.transactionHistory!.transaction.push({
               comment: xmlTransactionHistory.comment,
               timeStamp: xmlTransactionHistory.timestamp,
               format: xmlTransactionHistory.format,
               editor: xmlTransactionHistory.editor
-            };
-            voucherTemplate.transactionHistory!.push(transactionHistoryTemplate);
+            });
           });
         }
 
