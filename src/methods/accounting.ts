@@ -18,7 +18,8 @@ import {
   AccountingBudget,
   AccountingBudgetAccountBudget,
   AccountingBudgetAccountListParameters,
-  AccountingBudgetAccount
+  AccountingBudgetAccount,
+  TransactionHistory
 } from '../interfaces/accounting';
 
 export class NetvisorAccountingMethod extends NetvisorMethod {
@@ -54,7 +55,8 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
             attr: { type: xmlVoucher.linkedsourcenetvisorkey.attr.type }
           },
           voucherNetvisorUri: xmlVoucher.vouchernetvisoruri,
-          voucherLine: []
+          voucherLine: [],
+          transactionHistory: []
         };
         // Add the voucher lines to template
         forceArray(xmlVoucher.voucherline).forEach((xmlVoucherLine) => {
@@ -102,6 +104,19 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
           voucherTemplate.voucherLine.push(voucherLineTemplate);
         });
 
+        // Add transaction history to template if it exists and parameter includeTransactionHistory is set to 1
+        if (params?.includeTransactionHistory === 1 && xmlVoucher.transactionhistory) {
+          forceArray(xmlVoucher.transactionhistory).forEach((xmlTransactionHistory) => {
+            const transactionHistoryTemplate: TransactionHistory = {
+              comment: xmlTransactionHistory.comment,
+              timeStamp: xmlTransactionHistory.timestamp,
+              format: xmlTransactionHistory.format,
+              editor: xmlTransactionHistory.editor
+            };
+            voucherTemplate.transactionHistory!.push(transactionHistoryTemplate);
+          });
+        }
+
         voucherList.push(voucherTemplate);
       });
     }
@@ -114,7 +129,10 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
    * @returns {string} NetvisorKey of the saved voucher
    */
   async accounting(voucher: AccountingVoucher): Promise<string> {
-    const response = await this._client.post('accounting.nv', buildXml({ root: { voucher: reorderProperties(voucher, 'AccountingVoucher') } }));
+    const response = await this._client.post(
+      'accounting.nv',
+      buildXml({ root: { voucher: reorderProperties(voucher, 'AccountingVoucher') } })
+    );
     return parseXml(response).replies.inserteddataidentifier;
   }
 
@@ -302,7 +320,10 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
    * @example await accountingBudgetAccountBudget(budgetObject)
    */
   async accountingBudgetAccountBudget(budget: AccountingBudgetAccountBudget): Promise<void> {
-    await this._client.post('accountingbudgetaccountbudget.nv', buildXml({ root: { accountingbudgetaccountbudget: reorderProperties(budget, 'AccountingBudgetAccountBudget') } }));
+    await this._client.post(
+      'accountingbudgetaccountbudget.nv',
+      buildXml({ root: { accountingbudgetaccountbudget: reorderProperties(budget, 'AccountingBudgetAccountBudget') } })
+    );
   }
 
   async accountingBudget(budget: AccountingBudget): Promise<void> {
