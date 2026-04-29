@@ -62,7 +62,19 @@ export interface AccountingLedgerVoucher {
   };
   voucherNetvisorUri: string;
   voucherLine: AccountingLedgerVoucherLine[];
+  transactionHistory?: TransactionHistory;
 }
+
+export type TransactionHistory = {
+  transaction: {
+    comment?: string;
+    timeStamp?: {
+      value: string;
+      attr: { format: 'ansi' };
+    };
+    editor?: string;
+  }[];
+};
 
 type TransactionAllocation = {
   attr: {
