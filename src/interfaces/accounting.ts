@@ -156,8 +156,27 @@ export interface AccountingVoucherLine {
  * accountingledger.nv
  */
 
-export interface AccountingEditVoucher extends AccountingVoucher {
+export interface AccountingEditVoucher {
   netvisorKey: number;
+  calculationMode: 'net' | 'gross';
+  voucherDate: {
+    value: string;
+    attr: { format: 'ansi' };
+  };
+  number?: number;
+  description?: string;
+  voucherClass: string;
+  checked?: boolean;
+  comment?: string;
+  voucherLine: AccountingVoucherLine[];
+  voucherAttachments?: {
+    voucherAttachment: {
+      mimeType: string;
+      attachmentDescription: string;
+      fileName: string;
+      documentData: string;
+    }[];
+  };
 }
 
 /*

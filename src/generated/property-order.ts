@@ -31,7 +31,7 @@ export const PROPERTY_ORDER: Record<string, string[]> = {
   'AccountingBudgetDimension.dimensionitem.attr': ['fatherid'],
   'AccountingBudgetLockedDimension': ['dimensionname', 'dimensionitemname', 'budgetaccount'],
   'AccountingBudgetLockedDimension.budgetaccount': ['accountidentifier', 'budgetmonth'],
-  'AccountingEditVoucher': ['calculationMode', 'voucherDate', 'number', 'description', 'voucherClass', 'checked', 'comment', 'voucherLine', 'voucherAttachments', 'netvisorKey'],
+  'AccountingEditVoucher': ['netvisorKey', 'calculationMode', 'voucherDate', 'number', 'description', 'voucherClass', 'checked', 'comment', 'voucherLine', 'voucherAttachments'],
   'AccountingEditVoucher.voucherAttachments': ['voucherAttachment'],
   'AccountingEditVoucher.voucherAttachments.voucherAttachment': ['mimeType', 'attachmentDescription', 'fileName', 'documentData'],
   'AccountingEditVoucher.voucherDate': ['value', 'attr'],
