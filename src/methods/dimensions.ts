@@ -35,6 +35,8 @@ export class NetvisorDimensionMethod extends NetvisorMethod {
           name: xmlDimension.name,
           isHidden: xmlDimension.ishidden === 'True' ? true : false,
           linkType: parseInt(xmlDimension.linktype),
+          activityPeriodStart: xmlDimension.activityperiodstart,
+          activityPeriodEnd: xmlDimension.activityperiodend,
           dimensionDetails: {
             dimensionDetail: []
           }
@@ -45,6 +47,8 @@ export class NetvisorDimensionMethod extends NetvisorMethod {
             dimensionTemplate.dimensionDetails.dimensionDetail.push({
               netvisorKey: parseInt(xmlDimensionDetail.netvisorkey),
               name: xmlDimensionDetail.name,
+              code: xmlDimensionDetail.code,
+              label: xmlDimensionDetail.label,
               isHidden: xmlDimensionDetail.ishidden === 'True' ? true : false,
               level: parseInt(xmlDimensionDetail.level),
               sort: parseInt(xmlDimensionDetail.sort),
@@ -64,7 +68,11 @@ export class NetvisorDimensionMethod extends NetvisorMethod {
    * @example await dimensionItem(dimensionItem, { method: 'add' })
    */
   async dimensionItem(dimensionItem: DimensionItem, params: DimensionItemParameters): Promise<void> {
-    await this._client.post('dimensionitem.nv', buildXml({ root: { dimensionitem: reorderProperties(dimensionItem, 'DimensionItem') } }), params);
+    await this._client.post(
+      'dimensionitem.nv',
+      buildXml({ root: { dimensionitem: reorderProperties(dimensionItem, 'DimensionItem') } }),
+      params
+    );
     return;
   }
 

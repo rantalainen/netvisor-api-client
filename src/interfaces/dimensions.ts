@@ -12,10 +12,14 @@ export interface DimensionListItem {
   name: string;
   isHidden: boolean;
   linkType: number;
+  activityPeriodStart?: string;
+  activityPeriodEnd?: string;
   dimensionDetails: {
     dimensionDetail: {
       netvisorKey: number;
       name: string;
+      code?: string;
+      label?: string;
       isHidden: boolean;
       level: number;
       sort: number;
