@@ -267,6 +267,27 @@ export interface VoucherType {
 
 /*
  * RESOURCE
+ * accountingperiodlist.nv
+ */
+
+export interface AccountingPeriodList {
+  periodLockInformation: {
+    accountingPeriodLockDate?: string;
+    vatPeriodLockDate?: string;
+    purchaseLockDate?: string;
+    period: AccountingPeriod[];
+  };
+}
+
+export interface AccountingPeriod {
+  netvisorKey: number;
+  name: string;
+  beginDate: string;
+  endDate: string;
+}
+
+/*
+ * RESOURCE
  * accountbalance.nv
  */
 

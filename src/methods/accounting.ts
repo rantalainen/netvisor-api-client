@@ -19,7 +19,9 @@ import {
   AccountingBudgetAccountBudget,
   AccountingBudgetAccountListParameters,
   AccountingBudgetAccount,
-  TransactionHistory
+  TransactionHistory,
+  AccountingPeriodList,
+  AccountingPeriod
 } from '../interfaces/accounting';
 
 export class NetvisorAccountingMethod extends NetvisorMethod {
@@ -275,6 +277,48 @@ export class NetvisorAccountingMethod extends NetvisorMethod {
     }
     return voucherTypeList;
   }
+
+  /**
+   * Get accounting periods from Netvisor
+   * @example await accountingPeriodList()
+   * @returns {AccountingPeriodList} Returns lock dates and list of all accounting periods.
+   */
+  async accountingPeriodList(): Promise<AccountingPeriodList> {
+    const responseXml = await this._client.get('accountingperiodlist.nv');
+    const xmlObject: any = parseXml(responseXml);
+    const lockInfo = xmlObject.accountingperiodlist.periodlockinformation;
+
+    const result: AccountingPeriodList = {
+      periodLockInformation: {
+        period: []
+      }
+    };
+
+    if (lockInfo.accountingperiodlockdate?.value) {
+      result.periodLockInformation.accountingPeriodLockDate = lockInfo.accountingperiodlockdate.value;
+    }
+    if (lockInfo.vatperiodlockdate?.value) {
+      result.periodLockInformation.vatPeriodLockDate = lockInfo.vatperiodlockdate.value;
+    }
+    if (lockInfo.purchaselockdate?.value) {
+      result.periodLockInformation.purchaseLockDate = lockInfo.purchaselockdate.value;
+    }
+
+    if (lockInfo.period) {
+      forceArray(lockInfo.period).forEach((xmlPeriod) => {
+        const periodTemplate: AccountingPeriod = {
+          netvisorKey: parseInt(xmlPeriod.netvisorkey),
+          name: xmlPeriod.name,
+          beginDate: xmlPeriod.begindate.value,
+          endDate: xmlPeriod.enddate.value
+        };
+        result.periodLockInformation.period.push(periodTemplate);
+      });
+    }
+
+    return result;
+  }
+
   /**
    * Get account balances from date interval or separate dates depending of the intervaltype parameter. Dates are comma separated.
    * @example await netvisor.accounting.getAccountBalance({
